@@ -7,7 +7,7 @@ export default function Home({ joinRoom }) {
 
     const refreshButton = lobbies === undefined ?
         // Loader
-        <img src="/icons/Loader.svg" alt="Waiting..." className="margin_left_auto" />
+        <img src="/icons/Loader.svg" alt="Waiting..." className="loader_spin margin_left_auto" />
         // Button
         : <button className="margin_left_auto button_primary button_secondary button_mini button_mainbg hover_border_shadowed" onClick={requestLobbies}>Refresh</button>
 

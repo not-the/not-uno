@@ -265,6 +265,9 @@ export default function App() {
                 </button>
             </div>
 
+            {/* Background layer */}
+            <div id="main_background"/>
+
             {/* Backdrop */}
             <div className="backdrop"/>
 

@@ -73,7 +73,7 @@ export default function Config({ name, game, disabled }) {
     }
 
     return (
-        <div className="item border_shadowed" aria-disabled={condition ? "true" : "false"}>
+        <div className="item" aria-disabled={condition ? "true" : "false"}>
             <img src={option.icon} alt="" className="border_shadowed" />
             <label htmlFor={name}>
                 <div className="inner media_flex">

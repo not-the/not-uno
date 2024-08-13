@@ -66,7 +66,7 @@ export default function Lobby({ game, startGame }) {
                         <br/>
 
                         {/* Leave */}
-                        <button className="button_primary button_secondary button_lightbg"
+                        <button className="button_primary button_secondary button_lightbg hover_border_shadowed"
                             onClick={leaveGame}
                         >
                             <span>

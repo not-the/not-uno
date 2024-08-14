@@ -47,11 +47,11 @@ export default function Lobby({ game, startGame }) {
                         <br/>
 
                         {/* Share */}
-                        <div className="button_primary button_lightbg border_shadowed">
+                        <div className="button_primary button_lightbg border_shadowed no_interact">
                             <img src="/icons/person.svg" alt="" className="border_shadowed" />
                             <span>
                                 <span className="border_shadowed">
-                                    Invite your friends:
+                                    Invite your friends
                                 </span>
 
                                 <button className="button_primary button_secondary share_button button_lightbg hover_border_shadowed"
@@ -59,7 +59,7 @@ export default function Lobby({ game, startGame }) {
                                 >
                                     <span>{game.roomID}</span>
 
-                                    <img src="/icons/Share.svg" alt="" className="float_right" />
+                                    <img src="/icons/Share.svg" alt="" className="float_right parent_invert" />
                                 </button>
                             </span>
                         </div>
@@ -76,7 +76,7 @@ export default function Lobby({ game, startGame }) {
                     </div>
 
                     {/* Right */}
-                    <div className="col" style={{ "maxWidth": "300px" }}>
+                    <div className="col players_col">
                         {/* Players */}
                         <div>
                             {/* Title */}

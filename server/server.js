@@ -137,8 +137,12 @@ function testCards(card_a, card_b) {
 /** Sets the hidden property to true for all cards in an array */
 function hideAll(arr, obfuscate) {
     for(let i in arr) {
+        // Hidden flag
         if(obfuscate) arr[i] = { hidden:true }; // Strip all other card data
         else arr[i].hidden = true; // Set hidden property but leave card data intact
+
+        // Make wilds black
+        if(arr[i].choose_color) arr[i].color = 'black';
     }
     return arr;
 }

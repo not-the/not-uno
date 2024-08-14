@@ -21,7 +21,7 @@ export default function User({ user, game, tagline, title, classes="" }) {
                 {(game !== undefined && user.socketID === game?.host) ? "👑" : ""}
             </span>
 
-            <div>
+            <div className="right">
                 {/* Username */}
                 <div className="flex flex_center_vertically">
                     <span className={`name ${tagline ? " small_name" : null}`}>

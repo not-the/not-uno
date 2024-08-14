@@ -263,16 +263,23 @@ input.input_primary:focus {
 }
 
 /* Button */
-button {
+button,
+.button {
     cursor: pointer;
 
     background-color: transparent;
     border: none;
     color: var(--text);
+    text-align: left;
 }
 button:hover,
-button:focus-visible {
+button:focus-visible,
+.button:hover,
+.button:focus-visible {
     z-index: 1;
+}
+a.button {
+    text-decoration: none;
 }
 
 .button_primary {
@@ -301,11 +308,15 @@ button:focus-visible {
     /* cursor: not-allowed; */
     cursor: unset;
 }
-button.button_primary:not([disabled]):hover,
-button.button_primary:not([disabled]):focus-visible {
+.button_primary:not([disabled]):not(.no_interact):hover,
+.button_primary:not([disabled]):not(.no_interact):focus-visible {
     --shadow-distance: 5px;
     transform: translate(-1px, -1px);
     background-color: rgb(243, 251, 255);
+}
+.button_primary:not([disabled]):not(.no_interact):hover .parent_invert,
+.button_primary:not([disabled]):not(.no_interact):focus-visible .parent_invert {
+    filter: invert();
 }
 .button_primary > * {
     --shadow-color: rgba(0, 0, 0, 0.5);
@@ -320,16 +331,17 @@ button.button_primary:not([disabled]):focus-visible {
 
 /* Secondary */
 .button_secondary {
-    display: unset;
+    /* display: unset; */
+    justify-content: center;
     font-size: 12pt;
     padding: 6px 24px;
     border-width: 2px;
-    text-align: center;
 }
 .button_secondary:hover,
 .button_secondary:focus-visible {
     color: black;
 }
+.flex_left { justify-content: start; }
 
 .button_mini {
     max-width: max-content;
@@ -344,6 +356,8 @@ button.button_primary:not([disabled]):focus-visible {
 .button_mainbg { background-color: var(--bg-main); }
 .button_lightbg { background-color: var(--bg-lighter); }
 .button_comp { background-color: var(--bg-comp-light); }
+
+.button_border_bg_lighter { border-color: var(--bg-lighter); }
 
 
 /* Toggle switch */
@@ -495,6 +509,7 @@ button.button_primary:not([disabled]):focus-visible {
 }
 #config .item h4 {
     margin-bottom: 9px;
+    --shadow-distance: 4px;
 }
 #config .item .inner {
     display: flex;
@@ -610,6 +625,9 @@ button.share_button {
 
 
 /* Players */
+.players_col {
+    max-width: 300px;
+}
 .player {
     /* position: absolute; */
 
@@ -1294,11 +1312,14 @@ body:has(#profile) .backdrop {
 }
 .user {
     display: flex;
+    flex-wrap: nowrap;
     align-items: center;
     gap: 12px;
     text-align: left;
 
+    width: 100%;
     border-radius: 100px;
+    position: relative;
 
     filter: drop-shadow(2px 2px 3px rgba(5, 8, 37, 0.5));
 }
@@ -1309,9 +1330,14 @@ body:has(#profile) .backdrop {
     /* backdrop-filter: saturate(150%); */
 }
 .user .avatar {
-    width: 36px;
+    min-width: 36px;
     height: 36px;
     border-radius: 100%;
+}
+.user > .right {
+    outline: 1px solid red;
+    max-width: auto;
+    flex-shrink: 1;
 }
 .user .name {
     font-weight: 600;
@@ -1332,8 +1358,12 @@ body:has(#profile) .backdrop {
     font-size: 16pt;
 }
 .user .tagline {
-    white-space: pre;
-    font-weight: 450;
+    width: 100%;
+    outline: 2px solid white;
+
+    /* white-space: pre; */
+    text-wrap: wrap;
+    font-weight: 400;
     color: var(--secondary-text);
 }
 /* .user .after_name {
@@ -1371,12 +1401,19 @@ body:has(#profile) .backdrop {
 /* Footer */
 #footer_main {
     margin-left: auto;
+
+    --shadow-color: rgba(0, 0, 0, 0.3);
 }
 #footer_main > .inner {
-    border: 5px solid var(--bg-lighter);
+    /* border: 5px solid var(--bg-lighter);
     border-radius: 10px;
 
-    padding: 12px 24px;
+    padding: 12px 24px; */
+    padding: 6px 12px;
+
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
 }
 
 
@@ -1412,7 +1449,17 @@ body:has(#profile) .backdrop {
     .media_flex {
         flex-direction: column;
     }
+    .players_col {
+        max-width: unset;
+    }
+    .users_list {
+        display: grid;
+        column-gap: 6px;
+        row-gap: 12px;
+        grid-template-columns: auto auto;
+    }
     #footer_main {
         margin-left: initial;
+        width: 100%;
     }
 }

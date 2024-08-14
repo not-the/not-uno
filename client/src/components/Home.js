@@ -9,7 +9,7 @@ export default function Home({ joinRoom }) {
         // Loader
         <img src="/icons/Loader.svg" alt="Waiting..." className="loader_spin margin_left_auto" />
         // Button
-        : <button className="margin_left_auto button_primary button_secondary button_mini button_mainbg hover_border_shadowed" onClick={requestLobbies}>Refresh</button>
+        : <button className="margin_left_auto button_primary button_secondary button_mini button_mainbg button_border_bg_lighter hover_border_shadowed" onClick={requestLobbies}>Refresh</button>
 
     function requestLobbies() {
         setLobbies(undefined);

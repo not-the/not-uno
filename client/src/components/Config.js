@@ -52,7 +52,7 @@ export default function Config({ name, game, disabled }) {
             icon: "/icons/chat.svg",
             type: "boolean",
 
-            condition: () => game?.config?.public_lobby,
+            condition: () => game?.has_been_public,
             condition_reason: "Disabled for public games"
         },
         "xray": {

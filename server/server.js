@@ -186,7 +186,7 @@ class Uno {
         // State
         // this.started = false;
         this.state = 'lobby';
-        this.winner = false;
+        this.winner = undefined;
 
         this.players = [];
 
@@ -217,7 +217,7 @@ class Uno {
         const roomID = this.roomID;
 
         // Remove player from game
-        delete this.players[this.getPnumFromSocketID(socket.id)];
+        this.players.splice(this.getPnumFromSocketID(socket.id), 1);
 
         // Re-register user as being in room
         delete usersRooms[socket.id];
@@ -235,14 +235,28 @@ class Uno {
         });
 
         // All players have left
+        console.log('### ', this.players);
         if(this.players.length === 0) {
             // console.log(`Room [${roomID}] is empty, closing game...`);
-            delete allgames[roomID]; // Delete self
+            return this.destroy();
         }
 
         // Transfer ownership to remaining player
-        else if(socket.id === this.host) this.host = this.playersBySocket[0];
+        // else if(socket.id === this.host) this.host = this.playersBySocket[0];
 
+        this.updateClients();
+    }
+
+    destroy() {
+        this.destroyed = true;
+        delete allgames[this.roomID]; // Delete self
+        this.emit("gameState", false);
+    }
+
+    requestRematch(socketID) {
+        const pnum = this.getPnumFromSocketID(socketID);
+        if(this.players?.[pnum] === undefined) return;
+        this.players[pnum].wants_rematch = true;
         this.updateClients();
     }
 
@@ -259,6 +273,7 @@ class Uno {
 
     /** Send game state to clients */
     updateClients() {
+        // Clone
         let clone = this.publicClone();
 
         // Tailor data for each user
@@ -300,6 +315,7 @@ class Uno {
         // Special cases
         if(option === "public_lobby" && value === true) {
             this.config.enable_chat = false;
+            this.has_been_public = true;
         }
 
         // Update
@@ -324,8 +340,8 @@ class Uno {
         io.in(this.roomID).emit(eventName, data);
     }
 
-    /** Starts the game (host only)
-     * @param {*} socket Socket of player who made the request
+    /** Resets the game and starts it (host only)
+     * @param {Object} socket Socket of player who made the request
      */
     start(socket) {
         // Host
@@ -333,6 +349,9 @@ class Uno {
             socket.emit("toast", { msg: "Only the host can start the game" });
             return;
         };
+
+        // Needs to be either lobby or win screen
+        if(this.state !== "lobby" && this.winner === undefined) return;
 
         // Minimum players
         // if(this.players.length < 2) {
@@ -348,6 +367,8 @@ class Uno {
         this.turn_rotation_value = 0;
         this.direction = 1; // 1 is clockwise
         this.draw_count = 0; // This turns number of drawn cards
+        this.players = [];
+        this.winner = undefined;
 
         hideAll(this.deck, false);
         shuffle(this.deck); // Shuffle
@@ -428,26 +449,33 @@ class Uno {
     drawCard(socketID) {
         const pnum = this.getPnumFromSocketID(socketID);
 
-        if(this.turn !== pnum) return // console.warn(`[Player ${pnum}] Not your turn (Currently player ${this.turn}'s turn)`);
+        if(!this.isValidTurn(pnum)) return;
 
         // 1 draw limit
-        // if(!this.config.draw_until_match && game.draw_count > 0) {
+        if(!this.config.draw_until_match && this.draw_count > 0) {
+            // Test if last drawn card is valid. If not, end turn
+            // const deckTop = this.deck[this.deck.length-1];
+            // const playerCards = this.players[pnum].cards;
+            // const playerLast = playerCards[playerCards.length-1];
+            // console.log('###');
+            // console.log(deckTop, playerLast);
+            // if(!testCards(deckTop, playerLast)) this.nextTurn();
 
-        //     // Test if last drawn card is valid. If not, end turn
-        //     const deckTop = game.deck[game.deck.length-1];
-        //     const player = game.players[pnum];
-        //     const playerLast = player[player.length-1]
-        //     if(!testCards(deckTop, playerLast)) this.nextTurn(this);
+            // Update state
+            // this.updateClients();
 
-        //     // Update state
-        //     setGame(this);
-
-        //     return;
-        // }
+            return;
+        }
 
         // Move card
         this.moveCard("deck", pnum, false);
         this.draw_count++;
+
+        this.updateClients();
+    }
+
+    isValidTurn(pnum) {
+        return this.turn === pnum && this.winner === undefined;
     }
 
     /** Player play card (attempt to put into discard pile)
@@ -457,13 +485,10 @@ class Uno {
      * @returns {Boolean} If the move was unsuccessful, whether it not be the player's turn or the move is invalid, the method will return false
      */
     playCard(socketID, cardID, actionName, actionChoice, updateClients=true) {
-
         const pnum = this.getPnumFromSocketID(socketID);
 
-        if(this.turn !== pnum) {
-            // console.warn(`[Player ${pnum}] Not your turn`);
-            return false;
-        };
+        // Valid
+        if(!this.isValidTurn(pnum)) return;
 
         // Cards
         const playerCard = this.players[pnum].cards[cardID];
@@ -503,11 +528,16 @@ class Uno {
 
             // Prep for next turn
             if(playerCard.reverse) this.direction *= -1;
-            this.nextTurn(playerCard.skip, this);
+            this.nextTurn(playerCard.skip);
 
             // Next player
             const nextPlayerID = this.turn;
             if(playerCard.draw) repeat(() => this.moveCard("deck", nextPlayerID, false, undefined, false), playerCard.draw);
+
+            // Check for win state
+            if(this.players?.[pnum]?.cards?.length === 0) {
+                this.winner = socketID;
+            }
 
             // Update state
             // setGame(modifiedGame);
@@ -530,7 +560,16 @@ class Uno {
 
     get piletop() { return this.pile[this.pile.length-1]; }
 
+    /** Choose to end turn */
+    endTurn(socketID) {
+        const pnum = this.getPnumFromSocketID(socketID);
+        if(!this.isValidTurn(pnum)) return;
 
+        this.nextTurn();
+        this.updateClients();
+    }
+
+    /** Start next turn */
     nextTurn(skip=0) {
         const turnValue = ((1 + skip) * this.direction);
         this.turn = clamp(
@@ -716,8 +755,21 @@ io.on("connection", (socket) => {
         game.playCard(socket.id, cardID);
     })
 
+    socket.on("endTurn", () => {
+        const game = getGameByUser();
+        if(game === undefined) return;
+        game.endTurn(socket.id);
+    })
+
+    socket.on("requestRematch", () => {
+        const game = getGameByUser();
+        if(game === undefined) return;
+        game.requestRematch(socket.id);
+    })
+
     // Chat message
     socket.on("chat", (data) => {
+        // Invalid message
         if(typeof data.msg !== 'string' || data.msg.length < 1) return;
 
         // Info
@@ -726,7 +778,12 @@ io.on("connection", (socket) => {
         data.socketID = socket.id;
 
         const game = getGameByUser();
-        if(game === undefined || !game?.config?.enable_chat) return;
+
+        if(
+            game === undefined ||
+            !game?.config?.enable_chat || // Chat is turned off
+            game?.has_been_public // Game was set to public
+        ) return;
 
         // Ratelimit
         // const ratelimit = 100;
@@ -748,7 +805,7 @@ io.on("connection", (socket) => {
     socket.on("request_public_lobbies", () => {
         const publicLobbies =
             Object.values(allgames)
-                .filter(game => game?.config?.public_lobby === true)
+                .filter(game => game?.config?.public_lobby === true && game?.state === "lobby")
                 .map(game => game.publicClone());
         socket.emit("lobby_list", publicLobbies);
     })

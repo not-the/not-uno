@@ -3,10 +3,11 @@ import Card from "./Card.js"
 import { shuffle, repeat, clamp } from "../Util.js"
 // import { useEffect, useState } from "react";
 import { socket } from "../socket.js";
+import User from "./User.js";
 
 
 
-export default function Game({ game, setGame }) {
+export default function Game({ game, setGame, startGame }) {
 
     // State
     // let [dialog, setDialog] = useState(null);
@@ -42,9 +43,21 @@ export default function Game({ game, setGame }) {
         socket.emit("playCard", cardID);
     }
 
+    function endTurn() {
+        socket.emit("endTurn");
+    }
+
     function action(choice) {
         console.log(choice);
         socket.emit("action", choice);
+    }
+
+    function leaveGame() {
+        socket.emit("leave");
+    }
+
+    function requestRematch() {
+        socket.emit("requestRematch");
     }
 
 
@@ -53,41 +66,56 @@ export default function Game({ game, setGame }) {
         <>
         {/* Game container */}
         <main id="game">
+            {/* Center */}
             <div id="game_center">
-                <div id="deck">
-                    {/* Player {game.turn+1}'s turn<br/>
-                    Deck ({game.deck.length}) */}
-                    <Card data={game.deck[game.deck.length-1]} onClick={() => drawCard()} />
-                    <div className="card_stack" style={{ "height": `${game.deck.length/4}px` }} />
-                </div>
-
-                {/* Middle */}
-                <div className="middle border_shadowed">
-                    {/* Rotation */}
-                    <div id="rotation" style={{ "transform": `rotate(${game.turn_rotation_value*45}deg) scale(${game.direction}, 1)` }}>
-                        ↻
+                {/* Upper */}
+                <div className="upper">
+                    <div id="deck">
+                        {/* Player {game.turn+1}'s turn<br/>
+                        Deck ({game.deck.length}) */}
+                        <Card data={game.deck[game.deck.length-1]} onClick={() => drawCard()} />
+                        <div className="card_stack" style={{ "height": `${game.deck.length/4}px` }} />
                     </div>
 
-                    {/* Arrow */}
-                    <div className="arrow_container">
-                        <div id="arrow" style={{ "transform": `rotate(${arrowRotation}deg)` }}>
-                            <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 117 116">
-                                <path id="Arrow" d="M0,58,59,0V28h58V87H59v29Z" fill="#fff"/>
-                            </svg>
+                    {/* Middle */}
+                    <div className="middle border_shadowed">
+                        {/* Rotation */}
+                        <div id="rotation" style={{ "transform": `rotate(${game.turn_rotation_value*45}deg) scale(${game.direction}, 1)` }}>
+                            ↻
+                        </div>
+
+                        {/* Arrow */}
+                        <div className="arrow_container">
+                            <div id="arrow" style={{ "transform": `rotate(${arrowRotation}deg)` }}>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 117 116">
+                                    <path id="Arrow" d="M0,58,59,0V28h58V87H59v29Z" fill="#fff"/>
+                                </svg>
+                            </div>
+                        </div>
+
+                        {/* Extra */}
+                        <div className="turn">
+                            P{game.turn+1}
                         </div>
                     </div>
 
-                    {/* Extra */}
-                    <div className="turn">
-                        P{game.turn+1}
+                    {/* Pile */}
+                    <div id="pile">
+                        {/* <br/>
+                        Pile ({game.pile.length}) */}
+
+                        <Card data={game.pile[game.pile.length-1]} />
                     </div>
                 </div>
 
-                <div id="pile">
-                    {/* <br/>
-                    Pile ({game.pile.length}) */}
-
-                    <Card data={game.pile[game.pile.length-1]} />
+                {/* Lower */}
+                <div className="lower">
+                    <button class="button_primary button_secondary button_lightbg hover_border_shadowed">
+                        Last card
+                    </button>
+                    <button className="button_primary button_secondary button_lightbg hover_border_shadowed" onClick={endTurn}>
+                        End turn
+                    </button>
                 </div>
             </div>
 
@@ -153,6 +181,47 @@ export default function Game({ game, setGame }) {
             </div>
         : null
         }
+
+        {/* Win screen */}
+        {game?.winner !== undefined ?
+        <div id="win_screen">
+            <div className="inner">
+                <h2 class="border_shadowed">
+                    {game.winner === socket.id ?
+                        "You win! 🎉" :
+                        `${game.usersParsed[game.winner]?.name} won...`
+                    }
+                </h2>
+
+                <User user={game.usersParsed[game.winner]} />
+                <br/>
+
+                <p className="center">
+                    {game.players.filter(p => p.wants_rematch === true).length}/{game.players.length-1} players have requested a rematch
+                </p><br/>
+
+                {/* Buttons */}
+                <div className="flex media_flex col" style={{ "gap":"6px" }}>
+                    {/* Rematch */}
+                    {game.host === socket.id ?
+                        <button class="button_primary button_secondary hover_border_shadowed" onClick={startGame}>
+                            Play again
+                        </button>
+                        :
+                        <button class="button_primary button_secondary hover_border_shadowed" onClick={requestRematch} disabled={game.players[game.my_num].wants_rematch ? true : false}>
+                            Request rematch
+                        </button>
+                    }
+                    {/* Leave */}
+                    <button class="button_primary button_secondary button_transparent hover_border_shadowed" onClick={leaveGame}>
+                        Leave
+                    </button>
+                </div>
+            </div>
+        </div>
+        : null
+        }
+
         </>
     );
 }

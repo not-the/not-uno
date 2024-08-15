@@ -12,8 +12,11 @@
     /* --bg-darker: rgb(56, 73, 39); */
     /* --bg-main: #366839;
     --bg-darker: #21512B; */
-    --bg-main: #406836;
-    --bg-darker: #1f4928;
+
+    /* --bg-main: #406836; */
+    /* --bg-darker: #1f4928; */
+    --bg-main: #365f35;
+    --bg-darker: #173d2b;
     --bg-lighter: #629165;
 
     /* BG Complementary */
@@ -188,6 +191,7 @@ hr {
 .fullwidth { width: 100%; }
 .cursor_pointer { cursor: pointer; }
 .pointer_events_none { pointer-events: none; }
+.pointer_events_all { pointer-events: all; }
 .float_right { float: right; }
 .no_margin { margin: 0; }
 
@@ -352,6 +356,7 @@ a.button {
 }
 
 /* Colors */
+.button_transparent { background-color: transparent; }
 .button_green { background-color: rgb(155, 202, 79); }
 .button_mainbg { background-color: var(--bg-main); }
 .button_lightbg { background-color: var(--bg-lighter); }
@@ -687,14 +692,17 @@ button.share_button {
 }
 
 
-#game_center {
+#game_center > .upper,
+#game_center > .lower {
     display: flex;
     gap: 24px;
-
-    /* outline: 3px solid white; */
+}
+#game_center > .lower {
+    padding-top: 12px;
+    gap: 9px;
 }
 
-#game_center > .middle {
+#game_center .middle {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -703,7 +711,7 @@ button.share_button {
     --shadow-color: var(--warm-shadow);
     --shadow-distance: 6px;
 }
-.middle .turn {
+#game_center .middle .turn {
     margin-top: 6px;
     font-weight: 700;
     font-size: 24pt;
@@ -925,6 +933,7 @@ button.share_button {
 /* Toasts */
 #toasts {
     pointer-events: none;
+    z-index: 2;
 }
 .toast {
     background-color: rgb(61, 83, 68);
@@ -1058,6 +1067,7 @@ button.share_button {
     position: fixed;
     left: 0;
     bottom: 0;
+    z-index: 3;
 
     background-color: var(--bg-comp);
     border: 1px solid var(--bg-comp-lighter);
@@ -1165,6 +1175,7 @@ button.share_button {
     position: fixed;
     bottom: 48px;
     left: 24px;
+    z-index: 2;
 
     background-color: var(--bg-comp);
     padding: 12px;
@@ -1215,7 +1226,6 @@ button.share_button {
     width: max-content;
     max-width: 95vw;
     padding: 6px 12px;
-    /* border-radius: 5px; */
 
     background-color: white;
     color: black;
@@ -1271,6 +1281,7 @@ button.share_button {
     position: absolute;
     top: 50%; left: 50%;
     transform: translate(-50%, -50%);
+    z-index: 3;
 }
 .avatar_list {
     display: flex;
@@ -1299,7 +1310,8 @@ button.share_button {
     pointer-events: none;
     transition: opacity 0.1s ease;
 }
-body:has(#profile) .backdrop {
+body:has(#profile) .backdrop,
+body:has(#win_screen) .backdrop {
     opacity: 1;
     pointer-events: initial;
 }
@@ -1335,7 +1347,6 @@ body:has(#profile) .backdrop {
     border-radius: 100%;
 }
 .user > .right {
-    outline: 1px solid red;
     max-width: auto;
     flex-shrink: 1;
 }
@@ -1359,8 +1370,6 @@ body:has(#profile) .backdrop {
 }
 .user .tagline {
     width: 100%;
-    outline: 2px solid white;
-
     /* white-space: pre; */
     text-wrap: wrap;
     font-weight: 400;
@@ -1414,6 +1423,38 @@ body:has(#profile) .backdrop {
     display: flex;
     flex-direction: column;
     gap: 3px;
+}
+
+
+/* Win screen */
+#win_screen {
+    position: fixed;
+    inset: 0;
+    z-index: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+#win_screen > .inner {
+    width: 100%;
+    max-width: 600px;
+    background-color: #566355a6;
+    padding: 12px 24px;
+    border-radius: 9px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.35);
+    animation: lobby_in 1s cubic-bezier(0.075, 0.82, 0.165, 1) backwards;
+}
+
+
+/* Debug */
+.debug_panel {
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+    padding: 3px 6px;
+}
+.debug_panel table th {
+    text-align: left;
+    padding-right: 6px;
 }
 
 

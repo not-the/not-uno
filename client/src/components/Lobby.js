@@ -107,7 +107,7 @@ export default function Lobby({ game, startGame }) {
                 {/* Lobby */}
                 <section>
                     <h4 className="center fancy_title">
-                        <span>Game Config</span>
+                        <span>Room Options</span>
                     </h4>
                     <Config name="public_lobby" game={game} />
                     <Config name="enable_chat" game={game} />

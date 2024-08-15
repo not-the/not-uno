@@ -36,7 +36,7 @@ export default function App() {
     const [chatCache, setChatCache] = useState([]);
     const [chatBubble, setChatBubble] = useState(undefined);
     // const [chatBubbleTimeout, setChatBubbleTimeout] = useState(undefined);
-    function newChatMsg(data, open) {
+    function newChatMsg(data) {
         setChatCache(old => {
             let newArr = [data, ...old];
 
@@ -50,30 +50,27 @@ export default function App() {
             return newArr;
         }); // Push new message
 
-        console.log(open);
-
         // Bubble
-        if(!open) {
+        if(!chatOpen) {
             setChatBubble(data);
             setChatUnread(old => old+1);
-            
         }
     }
 
     const [chatOpen, setChatOpen] = useState(false);
     function toggleChat() {
+        // Clear bubble
+        setChatBubble(undefined);
+        setChatUnread(0);
+
         setChatOpen(old => {
             // Opening
             if(!old) {
                 document.getElementById("chat_input").focus();
             }
 
-            return !old
+            return !old;
         });
-
-        // Clear bubble
-        setChatBubble(undefined);
-        setChatUnread(0);
     }
 
     const sendChat = () => {
@@ -125,7 +122,7 @@ export default function App() {
     // Menu {String}
     const [menu, setMenu] = useState("null");
     const page =
-        menu === "game" ? <Game game={game} setGame={setGame} /> : // Game
+        menu === "game" ? <Game game={game} setGame={setGame} startGame={startGame} /> : // Game
         menu === "lobby" ? <Lobby game={game} setGame={setGame} startGame={startGame} /> : // Lobby
         menu === "joining" ? <Joining game={game} setMenu={setMenu} /> : // Lobby
     <Home joinRoom={joinRoom} />; // Home
@@ -149,7 +146,7 @@ export default function App() {
 
         // Receive MSG
         socket.on("chat_receive", data => {
-            newChatMsg(data, chatOpen);
+            newChatMsg(data);
         });
 
         // Joined to room
@@ -344,12 +341,24 @@ export default function App() {
 
                 {/* Debug tools */}
                 {!isProduction ? <>
-                    <div className="pointer_events_none">
-                        <strong>debug:</strong><br/>
-                        pnum: {game?.my_num}<br/>
-                        socketID: {socket?.id}
+                    <div className="debug_panel pointer_events_none">
+                        <strong>DEBUG</strong><br/>
+                        <table>
+                            <tr>
+                                <th>pnum</th>
+                                <td>{game?.my_num}</td>
+                            </tr>
+                            <tr>
+                                <th>socketID</th>
+                                <td>{socket?.id}</td>
+                            </tr>
+                            <tr>
+                                <th>draw_count</th>
+                                <td>{game.draw_count}</td>
+                            </tr>
+                        </table>
                     </div>
-                    {/* <button onClick={debugDataRequest}>Request server data</button> */}
+                    <button onClick={debugDataRequest} class="pointer_events_all">Request server data</button>
                 </> : null}
             </div>
         </>

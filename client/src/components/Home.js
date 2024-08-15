@@ -20,12 +20,15 @@ export default function Home({ joinRoom }) {
         // Request lobbies
         requestLobbies();
 
+        const loop = setInterval(() => requestLobbies(), 6000);
+
         // Recieve lobbies
         socket.on("lobby_list", list => setLobbies(list.length !== 0 ? list : false));
 
         // Unmount
         return () => {
             socket.off("lobby_list");
+            clearInterval(loop);
         }
     }, []);
 

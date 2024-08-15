@@ -43,7 +43,10 @@ export default function Config({ name, game, disabled }) {
             desc: "Makes your lobby public",
 
             icon: "/icons/Door.svg",
-            type: "boolean"
+            type: "boolean",
+            
+            condition: () => !game?.nameIsUUID,
+            condition_reason: "Room name must not be user-chosen"
         },
         "enable_chat": {
             title: "Chat",

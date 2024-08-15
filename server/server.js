@@ -805,7 +805,11 @@ io.on("connection", (socket) => {
     socket.on("request_public_lobbies", () => {
         const publicLobbies =
             Object.values(allgames)
-                .filter(game => game?.config?.public_lobby === true && game?.state === "lobby")
+                .filter(game => {
+                    return game?.config?.public_lobby === true &&
+                           game?.state === "lobby" &&
+                           game?.nameIsUUID
+                })
                 .map(game => game.publicClone());
         socket.emit("lobby_list", publicLobbies);
     })

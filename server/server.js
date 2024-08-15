@@ -562,6 +562,8 @@ class Uno {
 
     /** Choose to end turn */
     endTurn(socketID) {
+        if(this.draw_count === 0) return;
+
         const pnum = this.getPnumFromSocketID(socketID);
         if(!this.isValidTurn(pnum)) return;
 

@@ -30,6 +30,8 @@ export default function Game({ game, setGame, startGame }) {
     //     }
     // }, [])
 
+    const myTurn = game.turn === game.my_num;
+
     // Only works with 4 players
     const arrowRotation = (game.turn_rotation_value-1-game.my_num)*90;
 
@@ -78,15 +80,19 @@ export default function Game({ game, setGame, startGame }) {
                     </div>
 
                     {/* Middle */}
-                    <div className="middle border_shadowed">
+                    <div className="middle border_shadowed" data-my-turn={myTurn}>
                         {/* Rotation */}
-                        <div id="rotation" style={{ "transform": `rotate(${game.turn_rotation_value*45}deg) scale(${game.direction}, 1)` }}>
+                        <div id="rotation" style={{
+                            "transform": `rotate(${game.turn_rotation_value*45}deg) scale(${game.direction}, 1)`
+                        }}>
                             ↻
                         </div>
 
                         {/* Arrow */}
                         <div className="arrow_container">
-                            <div id="arrow" style={{ "transform": `rotate(${arrowRotation}deg)` }}>
+                            <div id="arrow" style={{
+                                "transform": `rotate(${arrowRotation}deg) scale(${myTurn ? "1.1" : "1"})`
+                            }}>
                                 <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 117 116">
                                     <path id="Arrow" d="M0,58,59,0V28h58V87H59v29Z" fill="#fff"/>
                                 </svg>
@@ -113,7 +119,7 @@ export default function Game({ game, setGame, startGame }) {
                     <button class="button_primary button_secondary button_lightbg hover_border_shadowed" disabled>
                         Last card
                     </button>
-                    <button className="button_primary button_secondary button_lightbg hover_border_shadowed" onClick={endTurn}>
+                    <button className="button_primary button_secondary button_lightbg hover_border_shadowed" onClick={endTurn} disabled={game.draw_count === 0 ? true : false}>
                         End turn
                     </button>
                 </div>

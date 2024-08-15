@@ -715,9 +715,11 @@ button.share_button {
     margin-top: 6px;
     font-weight: 700;
     font-size: 24pt;
+    transition: 0.5s scale ease;
 }
 
 #arrow {
+    --fill: rgb(255, 198, 9);
     font-size: 48pt;
 
     /* perspective-origin: 800px; */
@@ -725,8 +727,32 @@ button.share_button {
     transition: transform 0.6s ease;
 }
 #arrow > svg > path {
-    fill: rgb(255, 198, 9);
+    fill: var(--fill);
 }
+
+/* My turn */
+.middle[data-my-turn="true"] #arrow {
+    --fill: rgb(255, 235, 168);
+    animation: my_turn 0.6s ease forwards, my_turn_pulse 1.5s ease infinite alternate;
+}
+.middle[data-my-turn="true"] .turn {
+    animation: turn_shake 1s ease forwards;
+}
+@keyframes turn_shake {
+    0% { scale: 1.5; rotate: 12deg; }
+    25% { rotate: -12deg; }
+    50% { rotate: 6deg; }
+    80% { rotate: -4deg; }
+    100% { rotate: 0deg; }
+}
+@keyframes my_turn {
+    from { scale: 1.7; }
+}
+@keyframes my_turn_pulse {
+    0% { opacity: 0.7; }
+    100% { opacity: 1; }
+}
+
 #rotation {
     text-align: center;
     font-size: 32pt;

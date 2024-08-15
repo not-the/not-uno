@@ -145,7 +145,7 @@ hr {
 .small {
     font-size: 12pt;
     color: var(--secondary-text);
-    margin-left: 12px;
+    margin-left: 6px;
 }
 
 *[data-title] {
@@ -1449,6 +1449,20 @@ body:has(#win_screen) .backdrop {
 
 .profile_button {
     border-radius: 200px;
+}
+
+
+/* Title User */
+h3 > .user {
+    filter: none;
+}
+h3 > .user .name {
+    font-size: 20pt;
+    font-weight: 700;
+}
+h3 > .user .avatar {
+    height: 28px;
+    min-width: 28px;
 }
 
 

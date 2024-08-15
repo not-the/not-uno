@@ -9,6 +9,9 @@ export default function Card({ data=null, owner, game, rotation=0, onClick, styl
         <div className="card empty"></div>
     )
 
+    // Symbol amount
+    let amount = data?.skip ?? 1;
+
     // Card back
     // let visible = (data.hidden || (owner !== game?.my_num));
     let visible = data.hidden;
@@ -39,12 +42,13 @@ export default function Card({ data=null, owner, game, rotation=0, onClick, styl
     classes += ` ${data.type}`;
     if(owner === game?.my_num && onClick !== undefined) classes += " clickable";
     if(animated) classes += " animated";
+    if(data.style) classes += ` style_${data.style}`
 
     data.rotation ??= rotation;
 
     // Wild decorator
     let ovalInner;
-    if(data.type === 'wild') {
+    if(data.style === 'wild') {
         ovalInner =
         <div className="oval_inner">
             <div className="flex">
@@ -68,7 +72,7 @@ export default function Card({ data=null, owner, game, rotation=0, onClick, styl
             {/* {cornerSymbol} */}
 
             {/* Symbol */}
-            <Icon icon={data.type} />
+            <Icon icon={data.type} amount={amount} />
 
             {/* Bottom corner */}
             {/* {bottomCornerSymbol} */}

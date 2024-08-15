@@ -927,6 +927,33 @@ button.share_button {
     /* border: 2px solid rgb(73, 140, 241); */
 }
 
+.animation_container {
+    overflow: hidden;
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+}
+.card.animated {
+    position: absolute;
+    animation: card_animate 0.5s ease forwards;
+    /* animation: card_animate 2s ease forwards; */
+}
+@keyframes card_animate {
+    0% {
+        /* scale: 1; */
+        transform: translate(var(--start-x), var(--start-y));
+    }
+    /* 50% {
+        scale: 1.2;
+    } */
+    80% { opacity: 1; }
+    100% {
+        /* scale: 1; */
+        transform: translate(var(--end-x), var(--end-y));
+        opacity: 0;
+    }
+}
+
 /* Colors */
 .red { background-color: var(--red) !important; }
 .yellow { background-color: var(--yellow) !important; }

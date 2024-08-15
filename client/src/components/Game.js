@@ -63,6 +63,30 @@ export default function Game({ game, setGame, startGame }) {
     }
 
 
+    function getCardRect(name, index=(game?.players?.[game?.my_num]?.cards?.length-1)??1) {
+        let loc;
+
+        // Player
+        if(typeof name === 'number') loc = document.querySelector(`.position_${name} .card:nth-of-type(${index+1})`);
+        // Deck/pile
+        else loc = document.getElementById(name);
+        
+        return loc?.getBoundingClientRect() ?? new DOMRect();
+    }
+
+    const startRect = getCardRect(game.animation?.fromName, game.animation?.fromIndex-1);
+    const endRect = getCardRect(game.animation?.toName);
+    const cardAnimated = game.animation !== undefined ?
+        <Card key={game.animation_key} data={game.animation.card} animated={true} style={{
+            "--start-x": `${startRect.x}px`,
+            "--start-y": `${startRect.y}px`,
+            "--end-x": `${endRect.x}px`,
+            "--end-y": `${endRect.y}px`,
+        }} />
+        :
+        null
+
+
     // HTML
     return (
         <>
@@ -173,6 +197,11 @@ export default function Game({ game, setGame, startGame }) {
                 )
             })}
         </main>
+
+        {/* Animation overlay */}
+        <div className="animation_container">
+            {cardAnimated}
+        </div>
 
         {/* Dialog */}
         {game.turn === game.my_num && game.action === 'choose_color' ?

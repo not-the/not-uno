@@ -370,6 +370,8 @@ class Uno {
         this.players = [];
         this.winner = undefined;
 
+        this.animation_key = 0;
+
         hideAll(this.deck, false);
         shuffle(this.deck); // Shuffle
 
@@ -439,6 +441,11 @@ class Uno {
             shuffle(this.deck);
         }
 
+        // Animate
+        this.animation = { fromName, toName, fromIndex, card };
+        this.animation_key++;
+
+        // Update
         if(runUpdateClients) this.updateClients();
     }
 

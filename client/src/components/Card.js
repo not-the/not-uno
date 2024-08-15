@@ -2,7 +2,7 @@
 
 import Icon from "./Icon.js"
 
-export default function Card({ data=null, owner, game, rotation=0, onClick, style={} }) {
+export default function Card({ data=null, owner, game, rotation=0, onClick, style={}, animated }) {
 
     // Empty
     if(data === null) return (
@@ -35,9 +35,10 @@ export default function Card({ data=null, owner, game, rotation=0, onClick, styl
 
     // CSS
     let classes = `card${data.color === 'black' ? ' no_decorator' : ''}`;
-    if(visible && game?.config?.xray) classes += ' xrayed';
+    if(visible && game?.config?.xray) classes += " xrayed";
     classes += ` ${data.type}`;
     if(owner === game?.my_num && onClick !== undefined) classes += " clickable";
+    if(animated) classes += " animated";
 
     data.rotation ??= rotation;
 

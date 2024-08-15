@@ -110,7 +110,7 @@ export default function Game({ game, setGame, startGame }) {
 
                 {/* Lower */}
                 <div className="lower">
-                    <button class="button_primary button_secondary button_lightbg hover_border_shadowed">
+                    <button class="button_primary button_secondary button_lightbg hover_border_shadowed" disabled>
                         Last card
                     </button>
                     <button className="button_primary button_secondary button_lightbg hover_border_shadowed" onClick={endTurn}>

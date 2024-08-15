@@ -876,9 +876,6 @@ button.share_button {
     width: unset;
     font-family: 'Rubik', Arial, Helvetica, sans-serif;
     font-weight: 700;
-
-    /* transform-origin: top left;
-    rotate: -5deg; */
 }
 
 /* 2 symbols */
@@ -984,7 +981,7 @@ button.share_button {
     -webkit-text-fill-color: transparent;
 
     font-size: 26pt !important;
-    transform: translate(-50%, -50%) rotate(-8deg);
+    transform: translateY(-1px) rotate(-8deg);
 }
 
 

@@ -180,7 +180,9 @@ export default function Game({ game, setGame, startGame }) {
                 return (
                     <div className={classes} key={playerIndex} style={styles}>
                         <h3 className="border_shadowed">
-                            {<User user={game.usersParsed[player.socketID]} />}
+                            {<User user={game.usersParsed[player.socketID]} postName={
+                                <span className="small">(P{playerIndex+1})</span>
+                            } />}
                         </h3>
 
                         {/* Cards */}

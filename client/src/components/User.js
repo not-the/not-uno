@@ -1,6 +1,6 @@
 import { socket } from "../socket"
 
-export default function User({ user, game, tagline, title, classes="" }) {
+export default function User({ user, game, tagline, title, postName, classes="" }) {
     const isMe = user.socketID === socket.id;
 
     let className = `user${tagline?" has_tagline":""}`;
@@ -25,7 +25,7 @@ export default function User({ user, game, tagline, title, classes="" }) {
                 {/* Username */}
                 <div className="flex flex_center_vertically">
                     <span className={`name ${tagline ? " small_name" : null}`}>
-                        {user.name}
+                        {user.name} {postName}
                     </span>
                     {afterName}
                 </div>

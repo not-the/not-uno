@@ -9,4 +9,10 @@ const URL = isProduction ?
 
 const socket = io(URL, { secure:true });
 
-export { socket, isProduction }
+// Connection state
+let socketConnectionStatus = false; 
+socket.on('connect', () => socketConnectionStatus = true);
+socket.on('reconnect', () => socketConnectionStatus  = true); 
+socket.on('disconnect', () => socketConnectionStatus  = false); 
+
+export { socket, isProduction, socketConnectionStatus }

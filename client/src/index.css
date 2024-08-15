@@ -985,19 +985,52 @@ button.share_button {
 
 /* Toasts */
 #toasts {
-    pointer-events: none;
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
     z-index: 2;
+
+    width: 100%;
+    max-width: 240px;
+
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+
+    pointer-events: none;
 }
 .toast {
-    background-color: rgb(61, 83, 68);
     width: 100%;
-    border-radius: 32px 12px 32px 12px;
-    border: 3px solid white;
 
+    background-color: rgb(35, 59, 82);
+    border-radius: 9px;
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    overflow: hidden;
+    
     box-shadow: 0 2px 9px rgba(0, 0, 0, 0.6);
-
-    /* pointer-events: all; */
 }
+.toast_timed {
+    animation: toast-anim 6s forwards ease;
+}
+@keyframes toast-anim {
+    0% {
+        opacity: 0;
+        transform: translateY(6px);
+    }
+    5% {
+        opacity: 1;
+        transform: none;
+    }
+    95% {
+        opacity: 1;
+        transform: none;
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(-3px);
+    }
+}
+
 .toast > .inner {
     padding: 18px 24px;
 }
@@ -1005,6 +1038,16 @@ button.share_button {
     margin-bottom: 12px;
     font-weight: 800;
     font-size: 13.5pt;
+}
+/* Time bar */
+.toast .toast_time_bar {
+    width: 100%;
+    height: 3px;
+    background-color: white;
+    animation: toast_time_bar 6s forwards linear;
+}
+@keyframes toast_time_bar {
+    to { width: 0; }
 }
 
 /* Choose color */
@@ -1056,61 +1099,6 @@ button.share_button {
 .choose_color_container > .blue { transform-origin: top left; }
 
 
-
-
-
-
-/* Toasts */
-#toasts {
-    position: fixed;
-    bottom: 24px;
-    right: 24px;
-
-    width: 100%;
-    max-width: 240px;
-
-    display: flex;
-    flex-direction: column;
-    gap: 9px;
-
-    /* pointer-events: none; */
-}
-.toast {
-    background-color: rgb(35, 59, 82);
-    border-radius: 9px;
-    border: 1px solid rgba(255, 255, 255, 0.35);
-    overflow: hidden;
-    /* pointer-events: initial; */
-
-    animation: toast-anim 6s forwards ease;
-}
-@keyframes toast-anim {
-    0% {
-        opacity: 0;
-        transform: translateY(6px);
-    }
-    5% {
-        opacity: 1;
-        transform: none;
-    }
-    95% {
-        opacity: 1;
-        transform: none;
-    }
-    100% {
-        opacity: 0;
-        transform: translateY(-3px);
-    }
-}
-.toast .toast_time_bar {
-    width: 100%;
-    height: 3px;
-    background-color: white;
-    animation: toast_time_bar 6s forwards linear;
-}
-@keyframes toast_time_bar {
-    to { width: 0; }
-}
 
 
 
@@ -1510,6 +1498,30 @@ body:has(#win_screen) .backdrop {
     padding-right: 6px;
 }
 
+
+#connection_lost {
+    --warning-red: rgb(175, 52, 68);
+
+    --shadow-color: rgb(87, 19, 28);
+    --shadow-distance: 2px;
+
+    position: fixed;
+    bottom: 48px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    max-width: 320px;
+
+    padding: 12px 24px;
+    background-color: var(--warning-red);
+    border-radius: 6px;
+    border: 3px solid rgb(231, 97, 115);
+    font-weight: 600;
+    font-size: 13pt;
+    text-align: center;
+
+    color: white;
+}
 
 
 /* Media queries */

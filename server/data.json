@@ -379,7 +379,23 @@
             { "color": "black", "type": "skip", "skip": 2 },
             { "color": "black", "type": "skip", "skip": 2 },
             { "color": "black", "type": "skip", "skip": 2 },
-            { "color": "black", "type": "skip", "skip": 2 }
+            { "color": "black", "type": "skip", "skip": 2 },
+            { "color": "blue", "type": "reverse", "reverse": true },
+            { "color": "blue", "type": "reverse", "reverse": true },
+            { "color": "blue", "type": "reverse", "reverse": true },
+            { "color": "blue", "type": "reverse", "reverse": true },
+            { "color": "blue", "type": "reverse", "reverse": true },
+            { "color": "blue", "type": "reverse", "reverse": true },
+            { "color": "blue", "type": "reverse", "reverse": true },
+            { "color": "blue", "type": "reverse", "reverse": true },
+            { "color": "blue", "type": "0"  },
+            { "color": "blue", "type": "0"  },
+            { "color": "blue", "type": "0"  },
+            { "color": "blue", "type": "0"  },
+            { "color": "blue", "type": "0"  },
+            { "color": "blue", "type": "0"  },
+            { "color": "blue", "type": "0"  },
+            { "color": "blue", "type": "0"  }
         ]
     }
 },

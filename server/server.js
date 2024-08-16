@@ -535,6 +535,15 @@ class Uno {
 
             // Prep for next turn
             if(playerCard.reverse) this.direction *= -1;
+
+            // 2 player reverse
+            if(playerCard.reverse && this.players.length === 2) {
+                this.draw_count = 0;
+                if(updateClients) this.updateClients();
+                return;
+            }
+
+            // Next turn
             this.nextTurn(playerCard.skip);
 
             // Next player

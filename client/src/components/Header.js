@@ -7,12 +7,12 @@ export default function Header() {
             {/* Footer */}
             <footer id="footer_main">
                 <div className="inner">
-                    <a href="https://notkal.com/not-uno" target="_blank" rel="noreferrer"
+                    {/* <a href="https://notkal.com/not-uno" target="_blank" rel="noreferrer"
                         className="button button_primary button_secondary button_mainbg hover_border_shadowed button_border_bg_lighter flex flex_left"
                     >
                         <img src="" alt="" />
                         <span>About</span>
-                    </a>
+                    </a> */}
                     <a href="https://notkal.com" target="_blank" rel="noreferrer"
                         className="button button_primary button_secondary button_mainbg hover_border_shadowed button_border_bg_lighter flex flex_left"
                     >

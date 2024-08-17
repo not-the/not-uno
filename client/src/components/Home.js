@@ -37,7 +37,7 @@ export default function Home({ joinRoom }) {
             {/* Main */}
             <main id="home" className="container">
                 {/* Connection lost */}
-                {socketConnectionStatus ? null :
+                {/* {socketConnectionStatus ? null :
                 <>
                     <div id="connection_lost" className="border_shadowed">
                         <span className="border_shadowed">
@@ -45,7 +45,7 @@ export default function Home({ joinRoom }) {
                         </span>
                     </div>
                     <br/>
-                </>}
+                </>} */}
 
                 {/* Create */}
                 <h4 className="border_shadowed shadow_distance_0">Play with friends</h4>

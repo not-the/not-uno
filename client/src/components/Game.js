@@ -31,6 +31,10 @@ export default function Game({ game, setGame, startGame }) {
     // }, [])
 
     const myTurn = game.turn === game.my_num;
+    const hightlightEndTurn = 
+        game.draw_count !== 0 &&
+        myTurn
+            ? false : true;
 
     // Only works with 4 players
     const arrowRotation = (game.turn_rotation_value-1-game.my_num)*90;
@@ -143,7 +147,7 @@ export default function Game({ game, setGame, startGame }) {
                     <button class="button_primary button_secondary button_lightbg hover_border_shadowed" disabled>
                         Last card
                     </button>
-                    <button className="button_primary button_secondary button_lightbg hover_border_shadowed" onClick={endTurn} disabled={game.draw_count === 0 ? true : false}>
+                    <button className="button_primary button_secondary button_lightbg hover_border_shadowed" onClick={endTurn} disabled={hightlightEndTurn}>
                         End turn
                     </button>
                 </div>

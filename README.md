@@ -1,4 +1,4 @@
-![NOT UNO](https://github.com/not-the/not-uno/blob/main/client/public/banner_round_corners.png?raw=true)
+![NOT UNO](https://github.com/not-the/not-uno/blob/main/client/public/banner_rounded.png?raw=true)
 
 > ### Online multiplayer UNO made with React + Socket.io
 

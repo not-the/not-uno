@@ -1,5 +1,12 @@
-# Client
+![NOT UNO](https://github.com/not-the/not-uno/blob/main/client/public/banner_round_corners.png?raw=true)
 
+> ### Online multiplayer UNO made with React + Socket.io
+
+---
+
+# Development
+
+### Client
 Made with create-react-app. To run:
 ```bash
 cd ./client
@@ -7,8 +14,7 @@ npm start
 ```
 
 
-# Server
-
+### Server
 Run server:
 ```bash
 # Development server

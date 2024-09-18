@@ -891,9 +891,10 @@ io.on("connection", (socket) => {
         const publicLobbies =
             Object.values(allgames)
                 .filter(game => {
-                    return game?.config?.public_lobby === true &&
-                           game?.state === "lobby" &&
-                           game?.nameIsUUID
+                    return game?.config?.public_lobby === true &&   // Set to public
+                           game?.state === "lobby" &&               // Still in lobby
+                           game?.nameIsUUID &&                      // Game ID is not picked by user
+                           !game?.roomClosed                        // Game has not ended
                 })
                 .map(game => game.publicClone());
         socket.emit("lobby_list", publicLobbies);

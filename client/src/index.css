@@ -608,7 +608,7 @@ button.share_button {
     justify-content: center;
     align-items: center;
 
-    height: 100vh;
+    height: 100dvh;
 }
 
 /* Loader */
@@ -708,16 +708,16 @@ button.share_button {
     gap: 9px;
 }
 
-#game_center .middle {
+#game_center > .upper > .middle {
     display: flex;
     flex-direction: column;
     align-items: center;
-    /* justify-content: center; */
+    justify-content: center;
 
     --shadow-color: var(--warm-shadow);
     --shadow-distance: 6px;
 }
-#game_center .middle .turn {
+#game_center > .upper > .middle .turn {
     margin-top: 6px;
     font-weight: 700;
     font-size: 24pt;
@@ -999,7 +999,7 @@ button.share_button {
     top: 24px;
     left: 50%;
     transform: translateX(-50%);
-    z-index: 2;
+    z-index: 4;
 
     width: 100%;
     max-width: 300px;
@@ -1547,25 +1547,37 @@ h3 > .user .avatar {
 /* Media queries */
 @media only screen and (max-width: 1100px),
             screen and (max-height: 800px) {
-    .card {
-        font-size: 95px;
-    }
+
+    /* Card size */
+    .card { font-size: 95px; }
     .card_stack { width: 95px; }
 }
 @media only screen and (max-width: 720px) {
-    #game_center {
+    /* Game Center */
+    /* #game_center {
+        outline: 5px solid red;
+    } */
+    #game_center > .upper {
         flex-direction: column;
-        gap: 0;
+        align-items: center;
     }
-    .card {
-        font-size: 72px;
+    #game_center > .upper > .middle {
+        flex-direction: row;
+        gap: 12px;
     }
+    #game_center > .lower {
+        flex-direction: column;
+        padding: 0;
+        margin-top: -24px;
+    }
+
+    /* Card size */
+    .card { font-size: 72px; }
     .card_stack { width: 72px; }
 }
 @media only screen and (max-height: 600px) {
-    .card {
-        font-size: 72px;
-    }
+    /* Card size */
+    .card { font-size: 72px; }
     .card_stack { width: 72px; }
 }
 

@@ -403,8 +403,13 @@
 "NEEDS TO BE UPDATED IN 'clientData.json' TOO": 0,
 "avatars": [
     "balloon",
-    "stapler",
+    "carrot",
     "yellow",
-    "carrot"
+    "snake",
+    "stapler",
+    "bacon",
+    "gamer",
+    "tree",
+    "reverse"
 ]
 }

@@ -84,8 +84,13 @@
 "NEEDS TO BE UPDATED IN SERVER'S 'data.json' TOO": 0,
 "avatars": [
     "balloon",
-    "stapler",
+    "carrot",
     "yellow",
-    "carrot"
+    "snake",
+    "stapler",
+    "bacon",
+    "gamer",
+    "tree",
+    "reverse"
 ]
 }

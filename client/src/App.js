@@ -8,7 +8,7 @@ import User from './components/User.js'
 import { store, arrRandom, capitalizeFirstLetter } from './Util.js'
 
 // Socket.io
-import { socket, isProduction } from './socket.js'
+import { socket, isProduction, serverURL } from './socket.js'
 import Header from './components/Header.js'
 
 // Game

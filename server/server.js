@@ -241,7 +241,7 @@ class Uno {
         console.log('### ', this.players);
         if(this.players.length === 0) {
             // console.log(`Room [${roomID}] is empty, closing game...`);
-            return this.destroy();
+            return this.close();
         }
 
         // Transfer ownership to remaining player
@@ -250,6 +250,14 @@ class Uno {
         this.updateClients();
     }
 
+    // Marks game as closed, automatically gets deleted after 24-48 hours
+    close() {
+        this.roomClosed = true;
+        this.roomClosedTimestamp = Date.now();
+        this.emit("gameState", false);
+    }
+
+    // Completely destroys game object
     destroy() {
         this.destroyed = true;
         delete allgames[this.roomID]; // Delete self
@@ -739,9 +747,11 @@ io.on("connection", (socket) => {
             return;
         };
 
-        // Create/join game
+        // Check for existing
         let game = allgames[roomID];
         let toastTitle = "Joined game";
+
+        // Create new
         if(game === undefined) {
             game = new Uno({
                 roomID,
@@ -750,14 +760,26 @@ io.on("connection", (socket) => {
             });
             toastTitle = "Created lobby";
         }
-        // Game exists and is already started
-        else if(game.state !== "lobby") {
-            socket.emit("join_failed");
-            socket.emit("toast", {
-                title: "Can't join",
-                msg: `Game has already started (room ID: ${roomID})`
-            });
-            return;
+        else {
+            // Room exists but is closed
+            if(game.roomClosed) {
+                socket.emit("join_failed");
+                socket.emit("toast", {
+                    title: "Invite Expired",
+                    msg: `Game has ended (${roomID})`
+                });
+                return;
+            }
+
+            // Game exists and is already started
+            else if(game.state !== "lobby") {
+                socket.emit("join_failed");
+                socket.emit("toast", {
+                    title: "Whoops",
+                    msg: `Game has already started (${roomID})`
+                });
+                return;
+            }
         }
 
         // Leave all other rooms
@@ -774,8 +796,7 @@ io.on("connection", (socket) => {
 
         // Toast
         socket.emit("toast", {
-            title: toastTitle,
-            msg: `Room ID: "${roomID}"`
+            title: toastTitle
         });
 
         socket.to(roomID).emit("toast", {
@@ -905,11 +926,30 @@ io.on("connection", (socket) => {
     }
 })
 
+
+// Game cleanup
+// const maxGameAge = 30000; // 48 hours
+// const cleanupPeriod = 5000; // 12 hours
+const maxGameAge = 172800000; // 48 hours
+const cleanupPeriod = 43200000; // 12 hours
+const cleanupTimer = setInterval(performCleanup, cleanupPeriod);
+
+/** Loops all game object and removes closed games older than maxGameAge */
+function performCleanup() {
+    for(const [roomID, game] of Object.entries(allgames)) {
+        if(!game.roomClosed) continue;
+        if(game.roomClosedTimestamp + maxGameAge < Date.now()) game.destroy();
+    }
+}
+
+
 // API site confirmation
 app.get('/', (req, res) => {
     const responseJSON = {
-        online_users: Object.keys(allusers).length,
-        open_lobbies: Object.keys(allgames).length
+        online_users:   Object.keys(allusers).length,
+        games:          Object.keys(allgames).length,
+        games_active:   Object.entries(allgames).filter(i => !i[1].roomClosed).length,
+        games_closed:   Object.entries(allgames).filter(i => i[1].roomClosed).length
     };
 
     if(!isProduction) {
@@ -922,6 +962,12 @@ app.get('/', (req, res) => {
 
     res.send(responseJSON);
 })
+
+// avatars.json
+// app.get('/avatars.json', (req, res) => {
+//     const responseJSON = data.avatars;
+//     res.send(responseJSON);
+// })
 
 
 // Listen

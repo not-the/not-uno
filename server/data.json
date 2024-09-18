@@ -388,14 +388,14 @@
             { "color": "blue", "type": "reverse", "reverse": true },
             { "color": "blue", "type": "reverse", "reverse": true },
             { "color": "blue", "type": "reverse", "reverse": true },
-            { "color": "blue", "type": "0"  },
-            { "color": "blue", "type": "0"  },
-            { "color": "blue", "type": "0"  },
-            { "color": "blue", "type": "0"  },
-            { "color": "blue", "type": "0"  },
-            { "color": "blue", "type": "0"  },
-            { "color": "blue", "type": "0"  },
-            { "color": "blue", "type": "0"  }
+            { "color": "blue", "type": "0", "choose_swap": true  },
+            { "color": "blue", "type": "0", "choose_swap": true  },
+            { "color": "blue", "type": "0", "choose_swap": true  },
+            { "color": "blue", "type": "0", "choose_swap": true  },
+            { "color": "blue", "type": "0", "choose_swap": true  },
+            { "color": "blue", "type": "0", "choose_swap": true  },
+            { "color": "blue", "type": "0", "choose_swap": true  },
+            { "color": "blue", "type": "0", "choose_swap": true  }
         ]
     }
 },

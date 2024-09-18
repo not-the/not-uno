@@ -16,7 +16,7 @@ export default function Card({ data=null, owner, game, rotation=0, onClick, styl
     // let visible = (data.hidden || (owner !== game?.my_num));
     let visible = data.hidden;
     if(visible && !game?.config?.xray) return (
-            <div className="card back" onClick={onClick} tabIndex="0" role="button">
+            <div className={`card back${animated?" animated":""}`} onClick={onClick} tabIndex="0" role="button">
                 <div className="oval"/>
                 <Icon icon="NOPE" />
             </div>

@@ -8,6 +8,9 @@ const http = require("http");
 const https = require("https");
 const { Server } = require("socket.io");
 const data = require('./data.json');
+let word_blacklist;
+try { word_blacklist = require('./word_blacklist.json'); }
+catch (error) { }
 
 // CORS
 const cors = require("cors");
@@ -53,7 +56,7 @@ console.log(
 \x1b[47m\x1b[30m  Starting Not UNO server...  \x1b[0m
 > Environment: \x1b[33m${isProduction ? 'production' : 'dev'}\x1b[0m
 > Client origin: \x1b[33m${clientOrigin}\x1b[0m
-`);
+${word_blacklist === undefined ? "> No ./word_blacklist.json provided\n" : ""}`);
 
 /** Socket.io */
 const io = new Server(server, {
@@ -273,23 +276,36 @@ class Uno {
 
     /** Send game state to clients */
     updateClients() {
-        // Clone
+        // Clone game
         let clone = this.publicClone();
 
-        // Tailor data for each user
-        // Cards that aren't visible to users are stripped of their
-        // data before being sent to prevent cheating via devtools
+        /* Tailor data for each user
+        Cards that aren't visible to users are stripped of their
+        data before being sent to prevent cheating via devtools */
         const sockets = this.playersBySocket;
         for(const socketID of sockets) {
+            // Clone game for current player
             let tailoredGame = structuredClone(clone);
 
-            // User ID
+            // Get User ID
             tailoredGame.my_num = this.getPnumFromSocketID(socketID, tailoredGame.players);
 
             // Other player's cards
             if(!this.config.xray) {
+                // Hands
                 for(const pnum in tailoredGame.players) {
                     if(pnum != tailoredGame.my_num) hideAll(tailoredGame.players[pnum].cards, true);
+                }
+
+                // Animation data
+                const tailoredAnimTo = tailoredGame?.animation?.toName;
+                console.log('card ', tailoredGame.animation?.card);
+                if(
+                    tailoredGame.animation?.card !== undefined &&
+                    typeof tailoredAnimTo === 'number' &&
+                    tailoredAnimTo !== tailoredGame.my_num
+                ) {
+                    tailoredGame.animation.card = { hidden:true };
                 }
             }
 
@@ -329,6 +345,11 @@ class Uno {
         if(this.action === "choose_color") {
             this.playCard(...this.action_params, this.action, choice);
         }
+
+        // Cards swap
+        // else if(this.action === "choose_swap") {
+        //     this.swapCards(...this.action_params);
+        // }
     }
 
     getPnumFromSocketID(socketID, players=this.players) {
@@ -483,6 +504,18 @@ class Uno {
 
     isValidTurn(pnum) {
         return this.turn === pnum && this.winner === undefined;
+    }
+
+    swapCards(pnum1, pnum2) {
+        [
+            this.players[pnum1].cards,
+            this.players[pnum2].cards,
+        ] = [
+            this.players[pnum2].cards,
+            this.players[pnum1].cards,
+        ];
+
+        this.updateClients();
     }
 
     /** Player play card (attempt to put into discard pile)
@@ -645,12 +678,25 @@ io.on("connection", (socket) => {
     // Set user profile
     socket.on("setUser", data => setUser(data));
     function setUser(newUser, bypassRatelimit=false) {
+        // Errors
         if(typeof newUser === 'object') {
+            // Invalid data types
             if(newUser?.name === '' || typeof newUser?.name !== 'string') return;
-            if(newUser?.name.length > 32) return socket.emit("toast", {
+
+            const toastInvalidUsername = {
                 title: "Invalid username",
                 msg: `Maximum username length is 32 characters.`
-            })
+            };
+
+            // Length requirement
+            if(newUser?.name.length > 32) return socket.emit("toast", toastInvalidUsername);
+
+            // Word blacklist
+            if(word_blacklist !== undefined) {
+                if(word_blacklist.deny.some((word) => newUser.name.includes(word))) {
+                    return socket.emit("toast", toastInvalidUsername);
+                }
+            }
         }
 
         const existing = allusers?.[socket.id];
@@ -861,13 +907,20 @@ io.on("connection", (socket) => {
 
 // API site confirmation
 app.get('/', (req, res) => {
-    res.send(`
-    <h1>not uno</h1>
-    <p>
-    Users online: ${Object.keys(allusers).length}<br/>
-    Open lobbies: ${Object.keys(allgames).length}
-    </p>
-    `);
+    const responseJSON = {
+        online_users: Object.keys(allusers).length,
+        open_lobbies: Object.keys(allgames).length
+    };
+
+    if(!isProduction) {
+        responseJSON.debug = {
+            usersRooms,
+            allgames,
+            allusers
+        }
+    }
+
+    res.send(responseJSON);
 })
 
 

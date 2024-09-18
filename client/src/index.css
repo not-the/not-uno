@@ -1162,16 +1162,16 @@ button.share_button {
     pointer-events: none;
 }
 .chat_messages {
-    max-height: min(calc(100vh - 174px), 430px);
+    height: min(calc(100vh - 168px), 424px);
     padding-top: 18px;
     overflow-y: auto;
     display: flex;
+
     flex-direction: column-reverse;
-    gap: 2px;
+    gap: 3px;
 }
-.chat_messages > p {
-    border-top: 1px solid gray;
-    padding: 2px 0;
+.chat_messages > .msg {
+    align-self: flex-end;
 }
 
 /* Chat bar */

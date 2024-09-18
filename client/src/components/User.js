@@ -3,7 +3,7 @@ import { socket } from "../socket"
 export default function User({ user, game, tagline, title, postName, classes="" }) {
     const isMe = user.socketID === socket.id;
 
-    let className = `user${tagline?" has_tagline":""}`;
+    let className = `user ${tagline?"has_tagline":""}`;
     className += " " + classes;
 
     const afterName = isMe ?

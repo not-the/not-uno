@@ -179,6 +179,25 @@ hr {
     /* transform: none; */
 }
 
+/* Keybind */
+kbd {
+    display: inline-block;
+    background-color: white;
+    color: black;
+    padding: 0 5px;
+    border-radius: 3px;
+    border: 2px solid rgb(113, 136, 146);
+    border-bottom-width: 3px;
+
+    /* transform-style: preserve-3d; */
+    transform: perspective(3px) rotateX(1deg);
+}
+button kbd {
+    position: absolute;
+    bottom: 0; left: 0;
+    transform: translate(10%, 35%);
+}
+
 
 /* Shorthand */
 .flex { display: flex; }
@@ -290,6 +309,7 @@ a.button {
 .button_primary {
     --shadow-distance: 3px;
 
+    position: relative;
     display: flex;
     align-items: center;
     gap: 12px;
@@ -342,9 +362,14 @@ a.button {
     padding: 6px 24px;
     border-width: 2px;
 }
-.button_secondary:hover,
-.button_secondary:focus-visible {
+.button_secondary:not([disabled]):hover,
+.button_secondary:not([disabled]):focus-visible {
     color: black;
+}
+.button_secondary:not([disabled]):hover kbd,
+.button_secondary:not([disabled]):focus-visible kbd {
+    background-color: black;
+    color: white;
 }
 .flex_left { justify-content: start; }
 

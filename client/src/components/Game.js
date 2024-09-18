@@ -1,7 +1,7 @@
 // import Icon from "./Icon.js"
 import Card from "./Card.js"
 import { shuffle, repeat, clamp } from "../Util.js"
-// import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { socket } from "../socket.js";
 import User from "./User.js";
 
@@ -14,21 +14,28 @@ export default function Game({ game, setGame, startGame }) {
     // let [dialogAction, setDialogAction] = useState(null);
 
     // Setup
-    // useEffect(() => {
-    //     // Keybinds
-    //     const keyupHandler = (event) => {
-    //         const key = event.key.toUpperCase();
-            
-    //         if(!isNaN(Number(key))) {
-    //             playCard(game.my_num, Number(key)-1)
-    //         }
-    //     }
-    //     document.addEventListener('keyup', keyupHandler);
+    useEffect(() => {
+        // Keybinds
+        const keyupHandler = (event) => {
+            const key = event.key.toUpperCase();
 
-    //     return () => {
-    //         document.removeEventListener('keyup', keyupHandler);
-    //     }
-    // }, [])
+            console.log(key);
+
+            if(key === "E") {
+                endTurn();
+            }
+
+            // Play cards (1-9) - doesn't seem to work
+            // if(!isNaN(Number(key))) {
+            //     playCard(game.my_num, Number(key)-1)
+            // }
+        }
+        document.addEventListener('keyup', keyupHandler);
+
+        return () => {
+            document.removeEventListener('keyup', keyupHandler);
+        }
+    }, [])
 
     const myTurn = game.turn === game.my_num;
     const hightlightEndTurn = 
@@ -145,10 +152,12 @@ export default function Game({ game, setGame, startGame }) {
                 {/* Lower */}
                 <div className="lower">
                     <button class="button_primary button_secondary button_lightbg hover_border_shadowed" disabled>
-                        Last card
+                        <kbd>Q</kbd>
+                        <span>Last card</span>
                     </button>
                     <button className="button_primary button_secondary button_lightbg hover_border_shadowed" onClick={endTurn} disabled={hightlightEndTurn}>
-                        End turn
+                        <kbd>E</kbd>
+                        <span>End turn</span>
                     </button>
                 </div>
             </div>

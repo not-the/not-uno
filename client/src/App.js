@@ -106,7 +106,7 @@ export default function App() {
         setTimeout(() => {
             setToasts(old => {
                 let index = old.indexOf(data);
-                return old.splice(index, 1);
+                return old.toSpliced(index, 1);
             }); // Remove toast
         }, 6000);
 
@@ -337,30 +337,31 @@ export default function App() {
 
             {/* Toasts */}
             <div id="toasts">
+                {/* Notifications */}
                 {toasts.map((t, index) => <Toast data={t} key={index} />)}
-
-                {/* Debug tools */}
-                {!isProduction ? <>
-                    <div className="debug_panel pointer_events_none">
-                        <strong>DEBUG</strong><br/>
-                        <table>
-                            <tr>
-                                <th>pnum</th>
-                                <td>{game?.my_num}</td>
-                            </tr>
-                            <tr>
-                                <th>socketID</th>
-                                <td>{socket?.id}</td>
-                            </tr>
-                            <tr>
-                                <th>draw_count</th>
-                                <td>{game.draw_count}</td>
-                            </tr>
-                        </table>
-                    </div>
-                    <button onClick={debugDataRequest} class="pointer_events_all">Request server data</button>
-                </> : null}
             </div>
+
+            {/* Debug tools */}
+            {!isProduction ? <>
+                <div className="debug_panel pointer_events_none">
+                    <strong>DEBUG</strong><br/>
+                    <table>
+                        <tr>
+                            <th>pnum</th>
+                            <td>{game?.my_num}</td>
+                        </tr>
+                        <tr>
+                            <th>socketID</th>
+                            <td>{socket?.id}</td>
+                        </tr>
+                        <tr>
+                            <th>draw_count</th>
+                            <td>{game.draw_count}</td>
+                        </tr>
+                    </table>
+                    <button onClick={debugDataRequest} class="pointer_events_all">Request server data</button>
+                </div>
+            </> : null}
         </>
     );
 }

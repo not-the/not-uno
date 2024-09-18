@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { socket, socketConnectionStatus } from "../socket";
+import { socket } from "../socket";
 import { capitalizeFirstLetter } from "../Util";
 
 export default function Home({ joinRoom }) {
@@ -36,17 +36,6 @@ export default function Home({ joinRoom }) {
         <>
             {/* Main */}
             <main id="home" className="container">
-                {/* Connection lost */}
-                {/* {socketConnectionStatus ? null :
-                <>
-                    <div id="connection_lost" className="border_shadowed">
-                        <span className="border_shadowed">
-                            ⚠ Can't connect to server
-                        </span>
-                    </div>
-                    <br/>
-                </>} */}
-
                 {/* Create */}
                 <h4 className="border_shadowed shadow_distance_0">Play with friends</h4>
                 <button className="button_primary border_shadowed" onClick={() => joinRoom(undefined)}>

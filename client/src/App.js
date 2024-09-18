@@ -8,7 +8,7 @@ import User from './components/User.js'
 import { store, arrRandom, capitalizeFirstLetter } from './Util.js'
 
 // Socket.io
-import { socket, isProduction, serverURL } from './socket.js'
+import { socket, isProduction, socketConnectionStatus, serverURL } from './socket.js'
 import Header from './components/Header.js'
 
 // Game
@@ -337,8 +337,14 @@ export default function App() {
 
             {/* Toasts */}
             <div id="toasts">
+                {/* Connection lost */}
+                {
+                    socketConnectionStatus ? null :
+                    <Toast data={{ title:"⚠ Connection lost" } } timed={false} classes="connection_lost" />
+                }
+
                 {/* Notifications */}
-                {toasts.map((t, index) => <Toast data={t} key={index} />)}
+                {toasts.map((t, index) => <Toast data={t} key={index} timed={t.timed} />)}
             </div>
 
             {/* Debug tools */}
@@ -346,6 +352,10 @@ export default function App() {
                 <div className="debug_panel pointer_events_none">
                     <strong>DEBUG</strong><br/>
                     <table>
+                        <tr>
+                            <th>Server</th>
+                            <td>{JSON.stringify(socketConnectionStatus)}</td>
+                        </tr>
                         <tr>
                             <th>pnum</th>
                             <td>{game?.my_num}</td>
@@ -359,7 +369,7 @@ export default function App() {
                             <td>{game.draw_count}</td>
                         </tr>
                     </table>
-                    <button onClick={debugDataRequest} class="pointer_events_all">Request server data</button>
+                    <button onClick={debugDataRequest} className="pointer_events_all">Request server data</button>
                 </div>
             </> : null}
         </>

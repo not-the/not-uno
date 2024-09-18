@@ -1,10 +1,17 @@
-export default function Toast({ data, timed=true }) {
-    const classes = ["toast", timed?"toast_timed":""].join(" ");
+export default function Toast({ data, timed=true, classes="" }) {
+    const classesArray = [
+        "toast",
+        "border_shadowed",
+        timed ? "toast_timed" : "",
+        classes
+    ].join(" ");
     return (
-        <div className={classes}>
+        <div className={classesArray}>
             <div className="inner">
-                <h3>{data.title}</h3>
-                <p>{data?.msg}</p>
+                <h3 className="border_shadowed">{data.title}</h3>
+                {data.msg === undefined ? null :
+                    <p>{data?.msg}</p>
+                }
             </div>
 
             {

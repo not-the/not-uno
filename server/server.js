@@ -897,7 +897,11 @@ io.on("connection", (socket) => {
                            !game?.roomClosed                        // Game has not ended
                 })
                 .map(game => game.publicClone());
-        socket.emit("lobby_list", publicLobbies);
+        
+        // Delay makes it feel like it's doing more work than it is
+        setTimeout(() => {
+            socket.emit("lobby_list", publicLobbies);
+        }, 250);
     })
 
     // Disconnect

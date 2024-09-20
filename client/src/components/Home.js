@@ -5,15 +5,18 @@ import lang from "../lang";
 
 export default function Home({ joinRoom }) {
     const [lobbies, setLobbies] = useState(undefined);
+    const [lobbyListFetched, setLobbyListFetched] = useState(false);
 
-    const refreshButton = lobbies === undefined ?
-        // Loader
-        <img src="/icons/Loader.svg" alt="Waiting..." className="loader_spin margin_left_auto" />
-        // Button
-        : <button className="margin_left_auto button_primary button_secondary button_mini button_mainbg button_border_bg_lighter hover_border_shadowed" onClick={requestLobbies}>Refresh</button>
+    const refreshButton = <div className="refresh_container margin_left_auto" data-list-fetched={lobbyListFetched}>
+        {/* // Loader */}
+        <img src="/icons/Loader.svg" alt="Waiting..." className="loader_spin" />
+
+        {/* // Button */}
+        <button className="button_primary button_secondary button_mini button_mainbg button_border_bg_lighter hover_border_shadowed" onClick={requestLobbies}>Refresh</button>
+    </div>
 
     function requestLobbies() {
-        setLobbies(undefined);
+        setLobbyListFetched(false);
         socket.emit("request_public_lobbies");
     }
 
@@ -21,15 +24,22 @@ export default function Home({ joinRoom }) {
         // Request lobbies
         requestLobbies();
 
-        const loop = setInterval(() => requestLobbies(), 6000);
+        let refreshLoop = setInterval(requestLobbies, 6000);
 
         // Recieve lobbies
-        socket.on("lobby_list", list => setLobbies(list.length !== 0 ? list : false));
+        socket.on("lobby_list", list => {
+            setLobbies(list.length !== 0 ? list : false);
+            setLobbyListFetched(true);
+
+            // Restart loop
+            clearInterval(refreshLoop);
+            refreshLoop = setInterval(requestLobbies, 6000);
+        });
 
         // Unmount
         return () => {
             socket.off("lobby_list");
-            clearInterval(loop);
+            clearInterval(refreshLoop);
         }
     }, []);
 

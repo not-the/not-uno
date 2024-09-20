@@ -274,7 +274,7 @@ export default function App() {
                     <h3 className="border_shadowed">Profile</h3>
     
                     {/* Preview */}
-                    <User user={profile} />
+                    <User user={profile} classes="big_user" />
                     <br/><hr/><br/>
     
                     {/* Name */}
@@ -314,6 +314,7 @@ export default function App() {
                             return (
                                 <button data-title={capitalizeFirstLetter(name)} key={index}
                                     onClick={() => setUser(undefined, name)}
+                                    className={name === profile.avatar ? "active" : null}
                                 >
                                     <img src={`/avatars/${name}.png`} alt={name} className="avatar_preview" />
                                 </button>
@@ -357,12 +358,12 @@ export default function App() {
                             <td>{JSON.stringify(socketConnectionStatus)}</td>
                         </tr>
                         <tr>
-                            <th>pnum</th>
-                            <td>{game?.my_num}</td>
-                        </tr>
-                        <tr>
                             <th>socketID</th>
                             <td>{socket?.id}</td>
+                        </tr>
+                        <tr>
+                            <th>pnum</th>
+                            <td>{game?.my_num}</td>
                         </tr>
                         <tr>
                             <th>draw_count</th>

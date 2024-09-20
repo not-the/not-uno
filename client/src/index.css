@@ -1541,6 +1541,14 @@ h3 > .user .avatar {
     box-shadow: 0 2px 12px rgba(0, 0, 0, 0.35);
     animation: lobby_in 1s cubic-bezier(0.075, 0.82, 0.165, 1) backwards;
 }
+.bounce { animation: bounce 0.75s ease; }
+@keyframes bounce {
+    0%   { transform: translateY(-12px); }
+    20%  { transform: translateY(3px);   }
+    40%  { transform: translateY(-6px);  }
+    70%  { transform: translateY(-1px);  }
+    100% { transform: translateY(0px);   }
+}
 
 
 /* Debug */

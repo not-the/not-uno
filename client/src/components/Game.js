@@ -46,6 +46,9 @@ export default function Game({ game, setGame, startGame }) {
     // Only works with 4 players
     const arrowRotation = (game.turn_rotation_value-1-game.my_num)*90;
 
+    // Rematch count
+    const playersWantRematch = game.players.filter(p => p.wants_rematch === true).length;
+
     // Player functions
     function drawCard() {
         socket.emit("drawCard");
@@ -96,6 +99,7 @@ export default function Game({ game, setGame, startGame }) {
         }} />
         :
         null
+
 
 
     // HTML
@@ -248,8 +252,8 @@ export default function Game({ game, setGame, startGame }) {
                 <User user={game.usersParsed[game.winner]} />
                 <br/>
 
-                <p className="secondary_text center">
-                    {game.players.filter(p => p.wants_rematch === true).length}/{game.players.length-1} players have requested a rematch
+                <p className={`${playersWantRematch === 0 ? "secondary_text" : "bounce"} center`}>
+                    {playersWantRematch}/{game.players.length-1} players have requested a rematch
                 </p><br/>
 
                 {/* Buttons */}

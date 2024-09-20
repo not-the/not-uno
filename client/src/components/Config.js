@@ -1,6 +1,8 @@
 
-import { useState } from "react";
-import { socket } from "../socket";
+import { useState } from "react"
+import { socket } from "../socket"
+
+import lang from "../lang"
 
 /** Config item */
 export default function Config({ name, game, disabled }) {
@@ -159,7 +161,7 @@ function Input({ id, option, configValue, updateConfig, disabled }) {
         return (
             <select name={id} id={id} value={configValue} onChange={event => set(event.target.value)} disabled={disabled}>
                 {option.dropdown.map((item, index) => {
-                    return <option value={item}>{option?.dropdown_english?.[index] ?? item}</option>
+                    return <option value={item}>{lang.en?.[item] ?? item}</option>
                 })}
             </select>
         )

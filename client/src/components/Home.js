@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react"
 import { socket } from "../socket";
 import { capitalizeFirstLetter } from "../Util";
+import lang from "../lang";
 
 export default function Home({ joinRoom }) {
     const [lobbies, setLobbies] = useState(undefined);
@@ -61,11 +62,11 @@ export default function Home({ joinRoom }) {
                         </p>
                             :
                         lobbies.map(lobby => {
-                            let modeInfo = capitalizeFirstLetter(lobby?.config?.starting_deck);
+                            let modeInfo = lang.en?.[lobby?.config?.starting_deck] ?? lobby?.config?.starting_deck;
 
                             if(lobby?.config?.xray) {
                                 if(modeInfo === "Normal") modeInfo = "Hands Down";
-                                else modeInfo += " / Hands Down";
+                                else modeInfo += ", Hands Down";
                             }
 
                             return (

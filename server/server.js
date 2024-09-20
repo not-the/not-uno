@@ -238,7 +238,7 @@ class Uno {
         });
 
         // All players have left
-        console.log('### ', this.players);
+        // console.log('### ', this.players);
         if(this.players.length === 0) {
             // console.log(`Room [${roomID}] is empty, closing game...`);
             return this.close();
@@ -307,7 +307,7 @@ class Uno {
 
                 // Animation data
                 const tailoredAnimTo = tailoredGame?.animation?.toName;
-                console.log('card ', tailoredGame.animation?.card);
+                // console.log('card ', tailoredGame.animation?.card);
                 if(
                     tailoredGame.animation?.card !== undefined &&
                     typeof tailoredAnimTo === 'number' &&
@@ -346,18 +346,18 @@ class Uno {
         this.updateClients();
     }
 
+    /** Reruns playCard with the player's action of choice */
     performAction(socket, choice) {
-        if(this.turn !== this.getPnumFromSocketID(socket.id)) return; // Not your turn
+        const pnum = this.getPnumFromSocketID(socket.id);
+        if(this.turn !== pnum) return; // Not your turn
 
         // Chose a color
-        if(this.action === "choose_color") {
+        if(
+            this.action === "choose_color" ||
+            this.action === "choose_swap"
+        ) {
             this.playCard(...this.action_params, this.action, choice);
         }
-
-        // Cards swap
-        // else if(this.action === "choose_swap") {
-        //     this.swapCards(...this.action_params);
-        // }
     }
 
     getPnumFromSocketID(socketID, players=this.players) {
@@ -546,12 +546,24 @@ class Uno {
         };
 
         // Pre-move action prompt
-        if(playerCard.choose_color === true && actionChoice === undefined) {
-            this.action = "choose_color";
-            this.action_params = [socketID, cardID];
-            this.updateClients();
-            return;
+        if(actionChoice === undefined) {
+            // Choose color
+            if(playerCard.choose_color === true) {
+                this.action = "choose_color";
+                this.action_params = [socketID, cardID];
+                this.updateClients();
+                return;
+            }
+
+            // Choose Swap
+            else if(playerCard.choose_swap === true) {
+                this.action = "choose_swap";
+                this.action_params = [socketID, cardID];
+                this.updateClients();
+                return;
+            }
         }
+
 
         // Test discard pile for valid move
         if(!testCards(playerCard, this.piletop)) {
@@ -566,8 +578,11 @@ class Uno {
 
             // Enact Action
             if(actionChoice !== undefined) {
-                // Chose a color
+                // User chose a color
                 if(actionName === "choose_color") this.piletop.color = actionChoice;
+
+                // Swap cards
+                if(actionName === "choose_swap") this.swapCards(pnum, actionChoice);
             }
 
             // End action prompt

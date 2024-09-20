@@ -341,7 +341,7 @@ export default function App() {
                 {/* Connection lost */}
                 {
                     socketConnectionStatus ? null :
-                    <Toast data={{ title:"⚠ Can't connect" } } timed={false} classes="connection_lost" />
+                    <Toast data={{ title:"⚠ Disconnected" } } timed={false} classes="connection_lost" />
                 }
 
                 {/* Notifications */}
@@ -350,8 +350,8 @@ export default function App() {
 
             {/* Debug tools */}
             {!isProduction ? <>
-                <div className="debug_panel pointer_events_none">
-                    <strong>DEBUG</strong><br/>
+                <div className="debug_panel">
+                    <strong>DEBUG</strong><br/><br/>
                     <table>
                         <tr>
                             <th>Server</th>

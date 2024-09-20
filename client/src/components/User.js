@@ -1,7 +1,7 @@
 import { socket } from "../socket"
 
-export default function User({ user, game, tagline, title, postName, classes="" }) {
-    const isMe = user.socketID === socket.id;
+export default function User({ user, game, tagline, title, postName, classes="", onClick }) {
+    const isMe = user?.socketID === socket.id;
 
     let className = `user ${tagline?"has_tagline":""}`;
     className += " " + classes;
@@ -12,13 +12,13 @@ export default function User({ user, game, tagline, title, postName, classes="" 
         : null;
 
     return (
-        <div className={className} data-title={title}>
+        <div className={className} data-title={title} onClick={onClick}>
             {/* Avatar */}
             <img src={`/avatars/${user.avatar}.png`} alt="" className="avatar" />
 
             {/* Crown */}
             <span className="crown">
-                {(game !== undefined && user.socketID === game?.host) ? "👑" : ""}
+                {(game !== undefined && user?.socketID === game?.host) ? "👑" : ""}
             </span>
 
             <div className="right">

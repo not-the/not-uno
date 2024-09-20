@@ -225,16 +225,36 @@ export default function Game({ game, setGame, startGame }) {
         </div>
 
         {/* Dialog */}
-        {game.turn === game.my_num && game.action === 'choose_color' ?
-            <div className="choose_color">
-                <h3>CHOOSE A COLOR</h3>
-                <div className="choose_color_container">
-                    <div className="red hover_border_shadowed" role="button" tabIndex="0" onClick={() => action("red")} />
-                    <div className="yellow hover_border_shadowed" role="button" tabIndex="0" onClick={() => action("yellow")} />
-                    <div className="green hover_border_shadowed" role="button" tabIndex="0" onClick={() => action("green")} />
-                    <div className="blue hover_border_shadowed" role="button" tabIndex="0" onClick={() => action("blue")} />
+        {myTurn ?
+            (
+                // Choose color
+                game.action === 'choose_color' ?
+                <div className="choice_popup choose_color">
+                    <h3>CHOOSE A COLOR</h3>
+                    <div className="choose_color_container">
+                        <div className="red hover_border_shadowed" role="button" tabIndex="0" onClick={() => action("red")} />
+                        <div className="yellow hover_border_shadowed" role="button" tabIndex="0" onClick={() => action("yellow")} />
+                        <div className="green hover_border_shadowed" role="button" tabIndex="0" onClick={() => action("green")} />
+                        <div className="blue hover_border_shadowed" role="button" tabIndex="0" onClick={() => action("blue")} />
+                    </div>
                 </div>
-            </div>
+                :
+
+                // Choose swap
+                game.action === 'choose_swap' ?
+                <div className="choice_popup choose_swap">
+                    <h3>Swap hands:</h3>
+                    <div className="users_list">
+                        {Object.entries(game.usersParsed).map(([socketID, user], index) => {
+                            // Exclude self
+                            return socketID === socket.id ? null
+                            :
+                            <User key={index} user={user} game={game} tagline={`P${index+1}`} onClick={() => action(index)} classes="cursor_pointer" />
+                        })}
+                    </div>
+                </div>
+                : null
+            )
         : null
         }
 

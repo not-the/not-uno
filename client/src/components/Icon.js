@@ -4,6 +4,7 @@ const icons = {
     "draw2": <img src="/icons/draw2.png" alt="Draw 2" />,
     "draw4": <img src="/icons/draw4.png" alt="Draw 4" />,
     "wild": <img src="" alt="WILD" style={{ "display":"none" }} />,
+    "choose_swap": <img src="/icons/Force Swap.svg" alt="Force Swap" />,
 }
 
 

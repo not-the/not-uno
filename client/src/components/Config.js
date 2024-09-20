@@ -11,12 +11,13 @@ export default function Config({ name, game, disabled }) {
             icon: "/icons/play.svg",
 
             type: "dropdown",
-            dropdown: ["normal", "all_wilds", "stupid", "debug"]
+            dropdown: ["normal", "all_wilds", "stupid", "debug"],
+            dropdown_english: ["Normal", "All Wilds!", "Stupid", "Debug"],
         },
         "starting_cards": {
             title: "Starting cards",
             desc: "Number of cards each player starts with",
-            icon: "/icons/play.svg",
+            icon: "/icons/Three Cards.svg",
 
             type: "number",
             min: 3, max: 12
@@ -31,7 +32,7 @@ export default function Config({ name, game, disabled }) {
             dropdown_english: ["No", "Same value cards stack", "Yes"]
         },
         "continue": {
-            title: "Everyone's a Winner",
+            title: "Continues",
             desc: "Continue the game after a winner is decided",
             icon: "/icons/Continue.svg",
 
@@ -62,7 +63,7 @@ export default function Config({ name, game, disabled }) {
             title: "Hands Down",
             desc: "Everyone's cards are visible",
 
-            icon: "/icons/play.svg",
+            icon: "/icons/Magnify.svg",
             type: "boolean"
         }
     }

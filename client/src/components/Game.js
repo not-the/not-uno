@@ -248,7 +248,7 @@ export default function Game({ game, setGame, startGame }) {
                 <User user={game.usersParsed[game.winner]} />
                 <br/>
 
-                <p className="center">
+                <p className="secondary_text center">
                     {game.players.filter(p => p.wants_rematch === true).length}/{game.players.length-1} players have requested a rematch
                 </p><br/>
 

@@ -1387,7 +1387,7 @@ button.share_button {
     position: fixed;
     inset: 0;
     background-color: rgba(0, 0, 0, 0.5);
-    backdrop-filter: blur(6px);
+    backdrop-filter: blur(9px);
 
     opacity: 0;
     pointer-events: none;

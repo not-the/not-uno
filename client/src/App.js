@@ -340,7 +340,7 @@ export default function App() {
                 {/* Connection lost */}
                 {
                     socketConnectionStatus ? null :
-                    <Toast data={{ title:"⚠ Connection lost" } } timed={false} classes="connection_lost" />
+                    <Toast data={{ title:"⚠ Can't connect" } } timed={false} classes="connection_lost" />
                 }
 
                 {/* Notifications */}

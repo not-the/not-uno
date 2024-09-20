@@ -1566,6 +1566,14 @@ h3 > .user .avatar {
     border-radius: 6px;
     border-color: rgb(231, 97, 115);
     text-align: center;
+    
+    animation: toast 0.3s ease 5s backwards;
+}
+@keyframes toast {
+    from {
+        opacity: 0;
+        transform: translateY(-6px) scale(0.98);
+    }
 }
 
 
@@ -1612,6 +1620,16 @@ h3 > .user .avatar {
     .media_flex {
         flex-direction: column;
     }
+
+    /* Lobby */
+    #config .item .inner {
+        align-items: start;
+    }
+    #config .item .inner:has(input[type="checkbox"]) {
+        flex-direction: row;
+    }
+
+
     .players_col {
         max-width: unset;
     }
@@ -1621,6 +1639,8 @@ h3 > .user .avatar {
         row-gap: 12px;
         grid-template-columns: auto auto;
     }
+
+    /* Footer */
     #footer_main {
         margin-left: initial;
         width: 100%;

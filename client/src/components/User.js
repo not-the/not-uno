@@ -24,7 +24,7 @@ export default function User({ user, game, tagline, title, postName, classes="",
     return (
         <div className={className} data-title={title} onClick={onClick}>
             {/* Avatar */}
-            <img src={`/avatars/${userData.avatar}.png`} alt="" className="avatar" />
+            <img src={`/avatars/${userData?.avatar ?? "balloon"}.png`} alt="" className="avatar" />
 
             {/* Crown */}
             <span className="crown">
@@ -35,7 +35,7 @@ export default function User({ user, game, tagline, title, postName, classes="",
                 {/* Username */}
                 <div className="flex flex_center_vertically">
                     <span className={`name ${tagline ? " small_name" : null}`}>
-                        {userData.name} {postName}
+                        {userData?.name ?? "Player"} {postName}
                     </span>
                     {afterName}
                 </div>

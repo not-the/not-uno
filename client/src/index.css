@@ -747,6 +747,22 @@ button.share_button {
     gap: 9px;
 }
 
+/* Debt indicator */
+.debt_indicator {
+    position: absolute;
+    right: 0;
+    top: 0;
+    transform: translate(30%, -4px) rotate(8deg);
+
+    background-color: #c83636;
+    border: 2px solid white;
+    border-radius: 5px;
+    color: white;
+    padding: 8px 3px;
+    font-size: 14pt;
+    font-weight: 700;
+}
+
 #game_center > .upper > .middle {
     display: flex;
     flex-direction: column;

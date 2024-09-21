@@ -39,9 +39,12 @@ export default function Game({ game, setGame, startGame }) {
 
     const myTurn = game.turn === game.my_num;
     const hightlightEndTurn = 
-        game.draw_count !== 0 &&
-        myTurn
-            ? false : true;
+        (
+            (
+                game.draw_count !== 0 || game.draw_debt > 0
+            )
+            && myTurn
+        ) ? false : true;
 
     // Only works with 4 players
     const arrowRotation = (game.turn_rotation_value-1-game.my_num)*90;
@@ -162,6 +165,11 @@ export default function Game({ game, setGame, startGame }) {
                     <button className="button_primary button_secondary button_lightbg hover_border_shadowed" onClick={endTurn} disabled={hightlightEndTurn}>
                         <kbd>E</kbd>
                         <span>End turn</span>
+                        {/*!myTurn || */game.draw_debt === 0 ? null :
+                            <div className="debt_indicator">
+                                +{game.draw_debt}
+                            </div>
+                        }
                     </button>
                 </div>
             </div>
@@ -253,6 +261,21 @@ export default function Game({ game, setGame, startGame }) {
                         })}
                     </div>
                 </div>
+                :
+
+                // Target draw
+                game.action === 'target_draw' ?
+                <div className="choice_popup choose_swap">
+                    <h3>Give +{2} to:</h3>
+                    <div className="users_list">
+                        {Object.entries(game.usersParsed).map(([socketID, user], index) => {
+                            // Exclude self
+                            return socketID === socket.id ? null
+                            :
+                            <User key={index} user={user} game={game} tagline={`P${index+1}`} onClick={() => action(index)} classes="cursor_pointer" />
+                        })}
+                    </div>
+                </div>
                 : null
             )
         : null
@@ -273,7 +296,11 @@ export default function Game({ game, setGame, startGame }) {
                 <br/>
 
                 <p className={`${playersWantRematch === 0 ? "secondary_text" : "bounce"} center`}>
-                    {playersWantRematch}/{game.players.length-1} players have requested a rematch
+                    {
+                        game.players.length !== 1 ?
+                        `${playersWantRematch}/${game.players.length-1} players have requested a rematch` :
+                        "Very impressive"
+                    }
                 </p><br/>
 
                 {/* Buttons */}

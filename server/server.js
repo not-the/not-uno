@@ -170,7 +170,7 @@ class Uno {
             // call_penalty: 'draw',
             // call_penalty_draw_amount: 2,
         
-            draw_until_match: false,
+            infinite_draw: false,
             draw_stacking: "off",
 
             public_lobby: false,
@@ -192,6 +192,8 @@ class Uno {
         this.winner = undefined;
 
         this.players = [];
+
+        this.draw_debt = 0;
 
         // Dev tools
         this.control_everyone = true; // Currently does nothing
@@ -354,7 +356,8 @@ class Uno {
         // Chose a color
         if(
             this.action === "choose_color" ||
-            this.action === "choose_swap"
+            this.action === "choose_swap" ||
+            this.action === "target_draw"
         ) {
             this.playCard(...this.action_params, this.action, choice);
         }
@@ -487,8 +490,13 @@ class Uno {
 
         if(!this.isValidTurn(pnum)) return;
 
+        // In debt
+        if(this.draw_debt > 0) {
+            return io.to(socketID).emit("toast", { title: "Must stack +2 or end turn" })
+        }
+
         // 1 draw limit
-        if(!this.config.draw_until_match && this.draw_count > 0) {
+        if(!this.config.infinite_draw && this.draw_count > 0) {
             // Test if last drawn card is valid. If not, end turn
             // const deckTop = this.deck[this.deck.length-1];
             // const playerCards = this.players[pnum].cards;
@@ -545,6 +553,17 @@ class Uno {
             return false;
         };
 
+        // Test discard pile for valid move
+        if(!testCards(playerCard, this.piletop)) {
+            // console.warn(`[Player ${pnum}] Invalid card`);
+            return false;
+        }
+
+        // Card does not deflect debt
+        if(this.draw_debt > 0 && !playerCard.draw) {
+            return io.to(socketID).emit("toast", { title: "Must stack +2 or end turn" });
+        }
+
         // Pre-move action prompt
         if(actionChoice === undefined) {
             // Choose color
@@ -555,9 +574,17 @@ class Uno {
                 return;
             }
 
-            // Choose Swap
+            // Choose swap
             else if(playerCard.choose_swap === true) {
                 this.action = "choose_swap";
+                this.action_params = [socketID, cardID];
+                this.updateClients();
+                return;
+            }
+
+            // Target draw
+            else if(playerCard.target_draw) {
+                this.action = "target_draw";
                 this.action_params = [socketID, cardID];
                 this.updateClients();
                 return;
@@ -565,76 +592,62 @@ class Uno {
         }
 
 
-        // Test discard pile for valid move
-        if(!testCards(playerCard, this.piletop)) {
-            // console.warn(`[Player ${pnum}] Invalid card`);
-            return false;
-        }
+
+        // ----- END MOVE ----- //
 
         /** Moves the card and ends turn */
-        const endMove = () => {
-            // Play card
-            this.moveCard(pnum, "pile", false, cardID);
+        // Play card
+        this.moveCard(pnum, "pile", false, cardID);
 
-            // Enact Action
-            if(actionChoice !== undefined) {
-                // User chose a color
-                if(actionName === "choose_color") this.piletop.color = actionChoice;
+        // Enact Action
+        if(actionChoice !== undefined) {
+            // User chose a color
+            if(actionName === "choose_color") this.piletop.color = actionChoice;
 
-                // Swap cards
-                if(actionName === "choose_swap") this.swapCards(pnum, actionChoice);
-            }
+            // Swap cards
+            else if(actionName === "choose_swap") this.swapCards(pnum, actionChoice);
 
-            // End action prompt
-            delete this.action;
-            delete this.action_params;
-
-            // Prep for next turn
-            if(playerCard.reverse) this.direction *= -1;
-
-            // 2 player reverse
-            if(playerCard.reverse && this.players.length === 2) {
-                this.draw_count = 0;
-                if(updateClients) this.updateClients();
-                return;
-            }
-
-            // Next turn
-            this.nextTurn(playerCard.skip);
-
-            // Next player
-            const nextPlayerID = this.turn;
-            if(playerCard.draw) repeat(() => this.moveCard("deck", nextPlayerID, false, undefined, false), playerCard.draw);
-
-            // Check for win state
-            if(this.players?.[pnum]?.cards?.length === 0) {
-                this.winner = socketID;
-            }
-
-            // Update state
-            // setGame(modifiedGame);
-            if(updateClients) this.updateClients();
+            else if(actionName === "target_draw") this.drawMultipleCards(actionChoice, playerCard.target_draw);
         }
 
+        // End action prompt
+        delete this.action;
+        delete this.action_params;
 
-        // Choose color
-        // if(playerCard.choose_color) {
-        //     setDialog('choose_color');
-        //     setDialogAction(function(value) {
-        //         playerCard.color = value;
-        //         endMove();
-        //     });
-        // }
+        // Prep for next turn
+        if(playerCard.reverse) this.direction *= -1;
 
-        // else
-        endMove();
+        // 2 player reverse
+        if(playerCard.reverse && this.players.length === 2) {
+            this.draw_count = 0;
+            if(updateClients) this.updateClients();
+            return;
+        }
+
+        // Draw card debt
+        if(playerCard.draw) {
+            this.draw_debt += playerCard.draw;
+        }
+
+        // Next turn
+        this.nextTurn(playerCard.skip, playerCard);
+
+        // Update state
+        // setGame(modifiedGame);
+        if(updateClients) this.updateClients();
+    }
+
+
+    drawMultipleCards(pnum, amount) {
+        if(pnum === undefined || amount === undefined) console.warn("drawMultipleCards: undefined parameter(s)");
+        repeat(() => this.moveCard("deck", pnum, false, undefined, false), amount);
     }
 
     get piletop() { return this.pile[this.pile.length-1]; }
 
     /** Choose to end turn */
     endTurn(socketID) {
-        if(this.draw_count === 0) return;
+        if(this.draw_count === 0 && this.draw_debt === 0) return;
 
         const pnum = this.getPnumFromSocketID(socketID);
         if(!this.isValidTurn(pnum)) return;
@@ -644,15 +657,31 @@ class Uno {
     }
 
     /** Start next turn */
-    nextTurn(skip=0) {
+    nextTurn(skip=0, playerCard={}) {
+        const lastPlayerID = this.turn;
         const turnValue = ((1 + skip) * this.direction);
         this.turn = clamp(
             this.turn + turnValue,
             this.players.length
         );
         this.turn_rotation_value += turnValue;
-
         this.draw_count = 0;
+
+        // Draw cards
+        if(this.draw_debt > 0) {
+            if(!playerCard.draw) {
+                this.drawMultipleCards(lastPlayerID, this.draw_debt);
+                this.draw_debt = 0;
+            }
+        }
+
+        // Check for win state
+        for(const player of this.players) {
+            if(player?.cards?.length === 0) {
+                this.winner = player.socketID;
+                break;
+            }
+        }
     }
 }
 

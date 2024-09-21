@@ -120,8 +120,9 @@ export default function Lobby({ game, startGame }) {
                     </h4>
                     <Config name="starting_deck" game={game} />
                     <Config name="starting_cards" game={game} />
-                    {/* <Config name="draw_stacking" game={game} disabled={true} /> */}
+                    <Config name="draw_stacking" game={game} />
                     <Config name="xray" game={game} />
+                    <Config name="infinite_draw" game={game} />
                     {/* <Config name="continue" game={game} disabled={true} /> */}
                 </section>
             </div>

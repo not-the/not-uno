@@ -30,8 +30,7 @@ export default function Config({ name, game, disabled }) {
             icon: "/icons/Draw stacking.svg",
 
             type: "dropdown",
-            dropdown: ["no", "same_value", "yes"],
-            dropdown_english: ["No", "Same value cards stack", "Yes"]
+            dropdown: ["off", "same_value", "any"]
         },
         "continue": {
             title: "Continues",
@@ -59,13 +58,20 @@ export default function Config({ name, game, disabled }) {
             type: "boolean",
 
             condition: () => game?.has_been_public,
-            condition_reason: "Disabled for public games"
+            condition_reason: "Private games only"
         },
         "xray": {
             title: "Hands Down",
             desc: "Everyone's cards are visible",
 
             icon: "/icons/Magnify.svg",
+            type: "boolean"
+        },
+        "infinite_draw": {
+            title: "Infinite Draw",
+            desc: "You can continue to draw cards until you get a match",
+
+            icon: "/icons/Play.svg",
             type: "boolean"
         }
     }

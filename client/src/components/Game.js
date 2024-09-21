@@ -82,9 +82,13 @@ export default function Game({ game, setGame, startGame }) {
         let loc;
 
         // Player
-        if(typeof name === 'number') loc = document.querySelector(`.position_${name} .card:nth-of-type(${index+1})`);
-        // Deck/pile
-        else loc = document.getElementById(name);
+        try {
+            if(typeof name === 'number') loc = document.querySelector(`.position_${name} .card:nth-of-type(${index+1})`);
+            // Deck/pile
+            else loc = document.getElementById(name);
+        } catch (error) {
+            console.error(error);
+        }
         
         return loc?.getBoundingClientRect() ?? new DOMRect();
     }

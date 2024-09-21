@@ -30,7 +30,7 @@ export default function Config({ name, game, disabled }) {
             icon: "/icons/Draw stacking.svg",
 
             type: "dropdown",
-            dropdown: ["off", "matching", "any"]
+            dropdown: ["off", /*"matching",*/ "any"]
         },
         "continue": {
             title: "Continues",

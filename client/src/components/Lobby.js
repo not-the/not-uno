@@ -3,6 +3,7 @@ import { useState } from "react";
 import { socket } from "../socket.js";
 import User from "./User.js"
 import Config from "./Config.js"
+import lang from "../lang.js";
 
 export default function Lobby({ game, startGame }) {
 

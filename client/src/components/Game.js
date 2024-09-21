@@ -19,8 +19,6 @@ export default function Game({ game, setGame, startGame }) {
         const keyupHandler = (event) => {
             const key = event.key.toUpperCase();
 
-            console.log(key);
-
             if(key === "E") {
                 endTurn();
             }
@@ -292,7 +290,7 @@ export default function Game({ game, setGame, startGame }) {
                     }
                 </h2>
 
-                <User user={game.usersParsed[game.winner]} />
+                <User user={game.usersParsed[game.winner]} classes="big_user" />
                 <br/>
 
                 <p className={`${playersWantRematch === 0 ? "secondary_text" : "bounce"} center`}>

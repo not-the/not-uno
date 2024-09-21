@@ -583,6 +583,9 @@ a.button {
 
     display: flex;
     gap: 2px;
+
+    user-select: none;
+    touch-action: manipulation;
 }
 .input_container:has(input[type="checkbox"]) { background-color: var(--bg-lighter); }
 
@@ -1397,6 +1400,15 @@ button.share_button {
     top: 50%; left: 50%;
     transform: translate(-50%, -50%);
     z-index: 3;
+
+    animation: profile_in 0.25s ease;
+}
+@keyframes profile_in {
+    from {
+        transform: translate(-50%, calc(-50% + 24px)) scale(0.98);
+        opacity: 0;
+        filter: blur(12px);
+    }
 }
 .avatar_list {
     display: flex;
@@ -1508,6 +1520,9 @@ body:has(#win_screen) .backdrop {
 /* User message clumping */
 .user.msg:not(.clump) {
     margin-top: 8px;
+}
+.msg.old_msg {
+    opacity: 0.6;
 }
 .msg.clump .name,
 .msg.clump .you {

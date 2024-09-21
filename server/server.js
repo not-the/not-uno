@@ -575,7 +575,7 @@ class Uno {
             }
 
             // Choose swap
-            else if(playerCard.choose_swap === true) {
+            else if(playerCard.choose_swap === true && this.players.length !== 1) {
                 this.action = "choose_swap";
                 this.action_params = [socketID, cardID];
                 this.updateClients();
@@ -583,7 +583,7 @@ class Uno {
             }
 
             // Target draw
-            else if(playerCard.target_draw) {
+            else if(playerCard.target_draw && this.players.length !== 1) {
                 this.action = "target_draw";
                 this.action_params = [socketID, cardID];
                 this.updateClients();

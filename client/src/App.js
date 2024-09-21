@@ -91,6 +91,12 @@ export default function App() {
 
         socket.emit("join", roomID);
         setMenu("joining");
+
+        // Mark existing chatCache as old
+        setChatCache(old => old.map(c => {
+            c.old_msg = true;
+            return c;
+        }));
     }
 
     function debugDataRequest() {

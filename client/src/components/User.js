@@ -1,7 +1,17 @@
 import { socket } from "../socket"
 
 export default function User({ user, game, tagline, title, postName, classes="", onClick }) {
-    const isMe = user?.socketID === socket.id;
+
+    let userData = user;
+    const isMe = userData?.socketID === socket.id;
+
+    // System message
+    if(user === "system") {
+        userData = {
+            name: "System",
+            avatar: "none",
+        }
+    }
 
     let className = `user ${tagline?"has_tagline":""}`;
     className += " " + classes;
@@ -14,18 +24,18 @@ export default function User({ user, game, tagline, title, postName, classes="",
     return (
         <div className={className} data-title={title} onClick={onClick}>
             {/* Avatar */}
-            <img src={`/avatars/${user.avatar}.png`} alt="" className="avatar" />
+            <img src={`/avatars/${userData.avatar}.png`} alt="" className="avatar" />
 
             {/* Crown */}
             <span className="crown">
-                {(game !== undefined && user?.socketID === game?.host) ? "👑" : ""}
+                {(game !== undefined && userData?.socketID === game?.host) ? "👑" : ""}
             </span>
 
             <div className="right">
                 {/* Username */}
                 <div className="flex flex_center_vertically">
                     <span className={`name ${tagline ? " small_name" : null}`}>
-                        {user.name} {postName}
+                        {userData.name} {postName}
                     </span>
                     {afterName}
                 </div>

@@ -44,9 +44,16 @@ export default function Chat({
                     // Messages
                     chatCache.map((data, index) => 
                         <User
-                            user={game.usersParsed[data.socketID]}
+                            user={
+                                data.user === "system" ? "system" : game.usersParsed[data.socketID]
+                            }
                             tagline={data.msg}
-                            classes={"msg" + (data.clump ? " clump" : "")} key={index}
+                            classes={
+                                "msg" +
+                                (data.clump ? " clump" : "") +
+                                (data.old_msg ? " old_msg" : "")
+                            }
+                            key={index}
                         />)
                 }
             </div>

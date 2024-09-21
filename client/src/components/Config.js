@@ -30,7 +30,7 @@ export default function Config({ name, game, disabled }) {
             icon: "/icons/Draw stacking.svg",
 
             type: "dropdown",
-            dropdown: ["off", "same_value", "any"]
+            dropdown: ["off", "matching", "any"]
         },
         "continue": {
             title: "Continues",
@@ -48,7 +48,7 @@ export default function Config({ name, game, disabled }) {
             type: "boolean",
             
             condition: () => !game?.nameIsUUID,
-            condition_reason: "Room name must not be user-chosen"
+            condition_reason: "Room ID must not be user-defined"
         },
         "enable_chat": {
             title: "Chat",

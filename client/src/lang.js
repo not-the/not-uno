@@ -6,7 +6,7 @@ const lang = {
         "debug": "Debug",
 
         "off": "Off",
-        "same_value": "Same value",
+        "matching": "Matching",
         "any": "Any"
     }
 }

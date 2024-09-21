@@ -171,7 +171,7 @@ class Uno {
             // call_penalty_draw_amount: 2,
         
             infinite_draw: false,
-            draw_stacking: "off",
+            draw_stacking: "any",
 
             public_lobby: false,
             enable_chat: true,
@@ -492,7 +492,7 @@ class Uno {
 
         // In debt
         if(this.draw_debt > 0) {
-            return io.to(socketID).emit("toast", { title: "Must stack +2 or end turn" })
+            return this.debtToast(socketID);
         }
 
         // 1 draw limit
@@ -516,6 +516,24 @@ class Uno {
         this.draw_count++;
 
         this.updateClients();
+    }
+
+    debtToast(socketID) {
+        let message = "";
+
+        switch (this.config.draw_stacking) {
+            case "off":
+                message = "Must end turn";
+                break;
+            case "matching":
+                message = `Must stack +${this.piletop.draw} or end turn`;
+                break;
+            case "any":
+                message = "Must stack a draw card or end turn";
+                break;
+        }
+
+        io.to(socketID).emit("toast", { title: message });
     }
 
     isValidTurn(pnum) {
@@ -561,7 +579,7 @@ class Uno {
 
         // Card does not deflect debt
         if(this.draw_debt > 0 && !playerCard.draw) {
-            return io.to(socketID).emit("toast", { title: "Must stack +2 or end turn" });
+            return this.debtToast(socketID);
         }
 
         // Pre-move action prompt
@@ -624,7 +642,7 @@ class Uno {
             return;
         }
 
-        // Draw card debt
+        // Add draw card debt
         if(playerCard.draw) {
             this.draw_debt += playerCard.draw;
         }
@@ -681,7 +699,10 @@ class Uno {
                 this.winner = player.socketID;
                 break;
             }
-        }
+        };
+
+        // Auto end turn if draw stacking is off and you must draw cards
+        if(this.config.draw_stacking === "off" && this.draw_debt > 0) this.endTurn(this.players[this.turn].socketID);
     }
 }
 

@@ -27,7 +27,7 @@ export default function Config({ name, game, disabled }) {
         "draw_stacking": {
             title: "Draw Stacking",
             desc: "Playing a +2 or +4 card allows you to avoid drawing cards yourself",
-            icon: "/icons/Draw stacking.svg",
+            icon: "/icons/Draw Stacking.svg",
 
             type: "dropdown",
             dropdown: ["off", /*"matching",*/ "any"]

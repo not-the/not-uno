@@ -357,7 +357,7 @@ export default function App() {
             {/* Debug tools */}
             {!isProduction ? <>
                 <div className="debug_panel">
-                    <strong>DEBUG</strong><br/><br/>
+                    <h4>Debug</h4>
                     <table>
                         <tr>
                             <th>Server</th>

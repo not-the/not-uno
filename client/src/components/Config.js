@@ -13,8 +13,7 @@ export default function Config({ name, game, disabled }) {
             icon: "/icons/play.svg",
 
             type: "dropdown",
-            dropdown: ["normal", "all_wilds", "stupid", "debug"],
-            dropdown_english: ["Normal", "All Wilds!", "Stupid", "Debug"],
+            dropdown: ["normal", "all_wilds", "debug"]
         },
         "starting_cards": {
             title: "Starting cards",

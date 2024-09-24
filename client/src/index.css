@@ -1634,6 +1634,19 @@ h3 > .user .avatar {
     transition: transform 0.3s ease;
     transform: translateX(calc(100% - 36px));
 }
+.debug_panel::after {
+    content: "🠜";
+    position: absolute;
+    top: 50%;
+    left: 6px;
+    transform: translateY(-50%);
+    color: var(--secondary-text);
+    font-size: 18pt;
+}
+.debug_panel:hover::after,
+.debug_panel:focus-within::after {
+    opacity: 0;
+}
 .debug_panel:hover,
 .debug_panel:focus-within {
     transform: unset;

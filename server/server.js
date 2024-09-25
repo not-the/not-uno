@@ -22,6 +22,17 @@ const clientOrigin = isProduction ?
     "https://uno.notkal.com" :  // Production website
     'http://localhost:3000';    // Development
 
+/** Server statistics since process was started. Resets when server is closed */
+const serverStats = {
+    startup_time: Date.now(),
+    total_connections: 0,
+    total_games: 0,
+
+    get uptime_ms() {
+        return Date.now() - this.startup_time;
+    }
+}
+
 
 // SSL
 var privateKey, certificate;
@@ -160,6 +171,9 @@ const allusers = {};
 /** Game class */
 class Uno {
     constructor({ roomID, host, nameIsUUID }) {
+        // Statistics
+        serverStats.total_games++;
+
         // Default Config
         this.config = {
             starting_deck: "normal",
@@ -519,6 +533,7 @@ class Uno {
         this.updateClients();
     }
 
+    /** Sends toast to a given socket explaining draw stacking */
     debtToast(socketID) {
         let message = "";
 
@@ -541,6 +556,10 @@ class Uno {
         return this.turn === pnum && this.winner === undefined;
     }
 
+    /** Swaps 2 player's hands
+     * @param {Number} pnum1 First player's ID
+     * @param {Number} pnum2 Second player's ID
+     */
     swapCards(pnum1, pnum2) {
         [
             this.players[pnum1].cards,
@@ -549,8 +568,6 @@ class Uno {
             this.players[pnum2].cards,
             this.players[pnum1].cards,
         ];
-
-        this.updateClients();
     }
 
     /** Player play card (attempt to put into discard pile)
@@ -719,6 +736,9 @@ function capitalizeFirstLetter(string) {
 
 // Listeners
 io.on("connection", (socket) => {
+    // Stats
+    serverStats.total_connections++;
+
     // Set random username/avatar
     setUser(undefined, true);
     
@@ -1018,10 +1038,15 @@ function performCleanup() {
 // API site confirmation
 app.get('/', (req, res) => {
     const responseJSON = {
+        // Status
         online_users:   Object.keys(allusers).length,
         games:          Object.keys(allgames).length,
         games_active:   Object.entries(allgames).filter(i => !i[1].roomClosed).length,
-        games_closed:   Object.entries(allgames).filter(i => i[1].roomClosed).length
+        games_closed:   Object.entries(allgames).filter(i => i[1].roomClosed).length,
+
+        // Statistics
+        uptime: getUptime(),
+        serverStats,
     };
 
     if(!isProduction) {
@@ -1033,6 +1058,14 @@ app.get('/', (req, res) => {
     }
 
     res.send(responseJSON);
+
+    function getUptime() {
+        const minutes = serverStats.uptime_ms / 60000;
+        const hours = minutes / 60;
+
+        if(minutes >= 60) return `${hours.toFixed(1)} hours`; // Hours
+        return `${minutes.toFixed(1)} minutes`; // Minutes
+    }
 })
 
 // avatars.json

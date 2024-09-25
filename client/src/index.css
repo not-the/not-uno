@@ -664,11 +664,17 @@ button.share_button {
 /* Pile */
 #pile {
     position: relative;
-    height: 168px;
+    /* height: 168px; */
 }
 /* #pile > .card {
     position: absolute;
 } */
+
+#pile, #deck {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
 
 
 
@@ -706,16 +712,16 @@ button.share_button {
 }
 
 /* Compact all cards except current player's */
-.player:not(.position_0) .card:not(:first-of-type) {
+.player:not(.position_bottom) .card:not(:first-of-type) {
     margin-left: -50px;
 }
 
-.position_0 {
+.position_bottom {
     position: absolute;
     align-self: flex-end;
     transform-origin: bottom center;
 }
-.position_1 {
+.position_left {
     position: absolute;
     left: 0;
     max-width: 95vh;
@@ -723,14 +729,18 @@ button.share_button {
     transform-origin: bottom left;
     transform: rotate(90deg) scale(0.8) translateX(-80%);
 }
-.position_2 {
+.position_top {
     position: absolute;
     align-self: flex-start;
+
+    display: flex;
+    flex-direction: column-reverse;
+    gap: 9px;
 
     transform-origin: top center;
     transform: scale(0.8);
 }
-.position_3 {
+.position_right {
     position: absolute;
     right: 0;
     max-width: 95vh;
@@ -1634,19 +1644,6 @@ h3 > .user .avatar {
     transition: transform 0.3s ease;
     transform: translateX(calc(100% - 36px));
 }
-.debug_panel::after {
-    content: "🠜";
-    position: absolute;
-    top: 50%;
-    left: 6px;
-    transform: translateY(-50%);
-    color: var(--secondary-text);
-    font-size: 18pt;
-}
-.debug_panel:hover::after,
-.debug_panel:focus-within::after {
-    opacity: 0;
-}
 .debug_panel:hover,
 .debug_panel:focus-within {
     transform: unset;
@@ -1662,6 +1659,19 @@ h3 > .user .avatar {
 .debug_panel table th {
     text-align: left;
     padding-right: 6px;
+}
+.debug_panel::after {
+    content: "🠜";
+    position: absolute;
+    top: 50%;
+    left: 6px;
+    transform: translateY(-50%);
+    color: var(--secondary-text);
+    font-size: 18pt;
+}
+.debug_panel:hover::after,
+.debug_panel:focus-within::after {
+    opacity: 0;
 }
 
 
@@ -1700,6 +1710,7 @@ h3 > .user .avatar {
     #game_center > .upper {
         flex-direction: column;
         align-items: center;
+        gap: 9px;
     }
     #game_center > .upper > .middle {
         flex-direction: row;
@@ -1708,17 +1719,29 @@ h3 > .user .avatar {
     #game_center > .lower {
         flex-direction: column;
         padding: 0;
-        margin-top: -24px;
+    }
+    #pile {
+        margin-bottom: 12px;
     }
 
     /* Card size */
     .card { font-size: 72px; }
     .card_stack { width: 72px; }
 }
+@media only screen and (max-height: 775px) and (max-width: 720px) {
+    /* Card size */
+    .card { font-size: 64px; }
+    .card_stack { width: 64px; }
+}
 @media only screen and (max-height: 600px) {
     /* Card size */
     .card { font-size: 72px; }
     .card_stack { width: 72px; }
+}
+@media only screen and (max-height: 510px) {
+    /* Card size */
+    .card { font-size: 64px; }
+    .card_stack { width: 64px; }
 }
 
 

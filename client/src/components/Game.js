@@ -19,6 +19,7 @@ export default function Game({ game, setGame, startGame }) {
         const keyupHandler = (event) => {
             const key = event.key.toUpperCase();
 
+            // End turn
             if(key === "E") {
                 endTurn();
             }
@@ -35,6 +36,8 @@ export default function Game({ game, setGame, startGame }) {
         }
     }, [])
 
+
+    // Variables
     const myTurn = game.turn === game.my_num;
     const hightlightEndTurn = 
         (
@@ -45,45 +48,79 @@ export default function Game({ game, setGame, startGame }) {
         ) ? false : true;
 
     // Only works with 4 players
-    const arrowRotation = (game.turn_rotation_value-1-game.my_num)*90;
+    // const arrowRotation = (game.turn_rotation_value-1-game.my_num)*90;
+
+    // Points in correct direction but arrow does not rotate in correct direction
+    const arrowPosString = getPlayerOnscreenPosition(game.turn);
+    let arrowRotation = 0;
+    if(arrowPosString === "top") arrowRotation = 90;
+    else if(arrowPosString === "right") arrowRotation = 180;
+    else arrowRotation = 270;
 
     // Rematch count
     const playersWantRematch = game.players.filter(p => p.wants_rematch === true).length;
 
-    // Player functions
+    
+    /** Returns a string (bottom, left, right, or top) based on a player ID
+     * @param {Number} playerIndex Player ID
+     * @param {Object} game Game object
+     * @returns {String} bottom/left/right/top
+     */
+    function getPlayerOnscreenPosition(playerIndex) {
+        const playerPositions = {
+            1: ["bottom"],
+            2: ["bottom", "top"],
+            3: ["bottom", "left", "top"],
+            4: ["bottom", "left", "top", "right"]
+        }
+
+        return playerPositions
+            ?.[game.players.length]
+            ?.[clamp(playerIndex-game.my_num, game.players.length)] ?? "overlimit";
+    }
+
+    // --- Game functions --- //
+
+    /** Signals the server to draw a card */
     function drawCard() {
         socket.emit("drawCard");
     }
 
-    // Place card in pile and enact its effects
+    /** Signals the server to place one of your cards in the pile */
     function playCard(cardID) {
         socket.emit("playCard", cardID);
     }
 
+    /** Requests the server to end your turn */
     function endTurn() {
         socket.emit("endTurn");
     }
 
+    /** Signals the server the action the player would like to take after using an action card
+     * @param {*} choice Player choice data
+     */
     function action(choice) {
         console.log(choice);
         socket.emit("action", choice);
     }
 
+    /** Asks the server to leave the current game */
     function leaveGame() {
         socket.emit("leave");
     }
 
+    /** Request a rematch */
     function requestRematch() {
         socket.emit("requestRematch");
     }
 
-
+    /** Takes in a string ("deck" or "pile") or a player ID & card ID and returns the relevant DOM object */
     function getCardRect(name, index=(game?.players?.[game?.my_num]?.cards?.length-1)??1) {
         let loc;
 
         // Player
         try {
-            if(typeof name === 'number') loc = document.querySelector(`.position_${name} .card:nth-of-type(${index+1})`);
+            if(typeof name === 'number') loc = document.querySelector(`.player_${name} .card:nth-of-type(${index+1})`);
             // Deck/pile
             else loc = document.getElementById(name);
         } catch (error) {
@@ -178,14 +215,20 @@ export default function Game({ game, setGame, startGame }) {
 
             {/* Players */}
             {game.players.map((player, playerIndex) => {
+
+                // Positioning
+                const playerPosition = getPlayerOnscreenPosition(playerIndex);
+                    
+
                 // Classes
                 const classes = `
                 player
-                position_${clamp(playerIndex-game.my_num, game.players.length)}
+                player_${playerIndex}
+                position_${playerPosition}
                 ${playerIndex === game.my_num ? "me" : ""}
                 `;
 
-                // POSITIONING
+                // CIRCULAR POSITIONING
                 // const angle = clamp(
                 //     (360 / (game.players.length)) + (playerIndex*90) - 90,
                 //     360
@@ -201,8 +244,6 @@ export default function Game({ game, setGame, startGame }) {
                 // console.log(angle);
 
                 const styles = undefined;
-
-
 
                 return (
                     <div className={classes} key={playerIndex} style={styles}>

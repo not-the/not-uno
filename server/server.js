@@ -397,6 +397,7 @@ class Uno {
 
         this.turn = 0;
         this.turn_rotation_value = 0;
+        // this.last_turn_rotation_value = 0;
         this.direction = 1; // 1 is clockwise
         this.draw_count = 0; // This turns number of drawn cards
         this.players = [];
@@ -682,6 +683,7 @@ class Uno {
             this.turn + turnValue,
             this.players.length
         );
+        // this.last_turn_rotation_value = this.turn_rotation_value;
         this.turn_rotation_value += turnValue;
         this.draw_count = 0;
 

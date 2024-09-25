@@ -9,6 +9,8 @@ export default function Lobby({ game, startGame }) {
 
     const playerMax = 4;
     const playerCount = Object.keys(game.usersParsed).length;
+    const startButtonTooltip = socket?.id !== game?.host ? "Ask the host to start the game" : null;
+
 
     function shareRoom() {
         // URL PLACEHOLDER
@@ -38,7 +40,7 @@ export default function Lobby({ game, startGame }) {
                         <button className="button_primary button_green border_shadowed"
                             onClick={startGame}
                             disabled={socket?.id !== game?.host}
-                            data-title={socket?.id !== game?.host ? "Ask the host to start the game" : null}
+                            data-title={startButtonTooltip}
                         >
                             <img src="/icons/play.svg" alt="" className="border_shadowed" />
                             <span className="border_shadowed">

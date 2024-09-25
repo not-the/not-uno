@@ -93,12 +93,12 @@ export default function Home({ joinRoom }) {
                                             Mode: <b>{modeInfo}</b>
                                         </div>
                                     </div>
-                                    <div className="flex">
-                                        <p className="secondary_text">
-                                            Players: {Object.keys(lobby?.usersParsed??{}).length}/4
+                                    <div className="flex secondary_text">
+                                        <p>
+                                            Host: <b>{lobby?.usersParsed[lobby?.host]?.name}</b>
                                         </p>
-                                        <p className="margin_left_auto secondary_text">
-                                            Hosted by <b>{lobby?.usersParsed[lobby?.host]?.name}</b>
+                                        <p className="margin_left_auto">
+                                            Players: {Object.keys(lobby?.usersParsed??{}).length}/4
                                         </p>
                                     </div>
                                 </div>

@@ -244,7 +244,7 @@ class Uno {
 
         // Tell room someone left
         socket.to(roomID).emit("toast", {
-            msg: `User [${socket.id}] left!`
+            msg: `"${allusers[socket.id]?.name ?? "User"}" left!`
         })
 
         // Tell user they left
@@ -798,8 +798,8 @@ io.on("connection", (socket) => {
 
         // Ratelimit
         const ratelimit = (existing?.changes??0) > 100 ?
-            30000 : // 30 seconds (if user has updated themselves 100+ times)
-            500; // 0.5 seconds
+            15000 : // 15 seconds (if user has updated themselves 100+ times)
+            250; // 0.25 seconds
         if(
             !bypassRatelimit &&
             existing?.changes >= 5 &&
@@ -808,6 +808,7 @@ io.on("connection", (socket) => {
             title: "Wait before trying again"
         })
 
+        // Update user
         allusers[socket.id] = {
             name: newUser?.name ?? existing?.name ?? "Player",
             avatar: newUser?.avatar ?? existing?.avatar ?? arrRandom(data.avatars),
@@ -887,7 +888,7 @@ io.on("connection", (socket) => {
         });
 
         socket.to(roomID).emit("toast", {
-            msg: `User "${allusers[socket.id].name}" joined!\n[${socket.id}]`
+            msg: `"${allusers[socket.id].name}" joined!`
         });
 
         game.updateClients();

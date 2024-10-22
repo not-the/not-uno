@@ -106,6 +106,10 @@ export default function Home({ joinRoom }) {
                         })}
                     </div>
                 </div>
+                <br/>
+                <br/>
+                <p className="secondary_text center">Play UNO online with friends!</p>
+
             </main>
         </>
     )

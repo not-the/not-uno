@@ -70,7 +70,7 @@ export default function Config({ name, game, disabled }) {
             title: "Infinite Draw",
             desc: "You can continue to draw cards until you get a match",
 
-            icon: "/icons/missing.svg",
+            icon: "/icons/Infinity.svg",
             type: "boolean"
         }
     }

@@ -31,7 +31,8 @@
 
     --accent-blue: #508ddc;
     --accent-blue-light: #85baff;
-    --warm-shadow: rgb(65, 26, 0);
+    --accent-green: #9bca4f;
+    --warm-shadow: #411a00;
 
     /* Cards */
     --red: #c83636;
@@ -383,7 +384,7 @@ a.button {
 
 /* Colors */
 .button_transparent { background-color: transparent; }
-.button_green { background-color: rgb(155, 202, 79); }
+.button_green { background-color: var(--accent-green); }
 .button_mainbg { background-color: var(--bg-main); }
 .button_lightbg { background-color: var(--bg-lighter); }
 .button_comp { background-color: var(--bg-comp-light); }
@@ -551,6 +552,7 @@ a.button {
     left: 24px;
 
     width: 40px;
+    height: 40px;
 }
 #config .item h4 {
     margin-bottom: 9px;

@@ -265,7 +265,7 @@ class Uno {
         else if(socket.id === this.host) {
             const newHostID = this.playersBySocket[0];
             this.host = newHostID;
-            this.emit("toast", `${allusers[newHostID].name} is now the host`);
+            this.emit("toast", { title: `"${allusers[newHostID].name}" is now host` });
         }
 
         this.updateClients();

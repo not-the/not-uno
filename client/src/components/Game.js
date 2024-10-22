@@ -197,7 +197,7 @@ export default function Game({ game, setGame, startGame }) {
 
                 {/* Lower */}
                 <div className="lower">
-                    <button class="button_primary button_secondary button_lightbg hover_border_shadowed position_relative" disabled>
+                    <button className="button_primary button_secondary button_lightbg hover_border_shadowed position_relative" disabled>
                         <kbd>Q</kbd>
                         <span>Last card</span>
                     </button>
@@ -328,7 +328,7 @@ export default function Game({ game, setGame, startGame }) {
         {game?.winner !== undefined ?
         <div id="win_screen">
             <div className="inner">
-                <h2 class="border_shadowed">
+                <h2 className="border_shadowed">
                     {game.winner === socket.id ?
                         "You win! 🎉" :
                         `${game.usersParsed[game.winner]?.name} won...`
@@ -350,16 +350,16 @@ export default function Game({ game, setGame, startGame }) {
                 <div className="flex media_flex col" style={{ "gap":"6px" }}>
                     {/* Rematch */}
                     {game.host === socket.id ?
-                        <button class="button_primary button_secondary hover_border_shadowed" onClick={startGame}>
+                        <button className="button_primary button_secondary hover_border_shadowed" onClick={startGame}>
                             Play again
                         </button>
                         :
-                        <button class="button_primary button_secondary hover_border_shadowed" onClick={requestRematch} disabled={game.players[game.my_num].wants_rematch ? true : false}>
+                        <button className="button_primary button_secondary hover_border_shadowed" onClick={requestRematch} disabled={game.players[game.my_num].wants_rematch ? true : false}>
                             Request rematch
                         </button>
                     }
                     {/* Leave */}
-                    <button class="button_primary button_secondary button_transparent hover_border_shadowed" onClick={leaveGame}>
+                    <button className="button_primary button_secondary button_transparent hover_border_shadowed" onClick={leaveGame}>
                         Leave
                     </button>
                 </div>

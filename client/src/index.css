@@ -689,7 +689,7 @@ button.share_button {
 .player {
     /* position: absolute; */
 
-    max-width: 100vw;
+    max-width: 85vw;
 }
 .player > .inner {
     display: flex;
@@ -1735,6 +1735,16 @@ h3 > .user .avatar {
     .card_stack { width: 95px; }
 }
 @media only screen and (max-width: 720px) {
+    /* Chat */
+    #chat_button {
+        left: 12px;
+        bottom: 200px;
+    }
+
+    .player {
+        max-width: 100vw;
+    }
+
     /* Game Center */
     /* #game_center {
         outline: 5px solid red;

@@ -179,20 +179,16 @@ export default function App() {
         });
 
         socket.on("gameState", data => {
-            console.log(data);
+            // console.log(data);
+
+            // let old = {};
 
             // State
-            setGame(data);
-
-            // // User ID
-            // data.my_num = getPnumFromSocketID(data.players, socket.id);
-
-            // console.log(data.players, socket.id);
-
-            // /** this also exists serverside? */
-            // function getPnumFromSocketID(players, socketID) {
-            //     return players.findIndex(p => p.socketID === socketID);
-            // }
+            setGame(o => {
+                // console.log(o);
+                // old = structuredClone(o);
+                return data;
+            });
 
             // Set menu
             if(data === false) {
@@ -201,6 +197,12 @@ export default function App() {
             }
             else if(data.state === 'lobby') setMenu("lobby");
             else setMenu("game");
+
+
+            // Drew a card
+            // if(old?.players?.[data?.my_num]?.cards?.length < data?.players?.[data?.my_num]?.cards?.length) {
+            //     console.log("DREW A CARD");
+            // }
         })
 
         socket.on("assignedUserData", data => {
@@ -264,7 +266,6 @@ export default function App() {
                         : null
                     }
 
-                    
                 </button>
             </div>
 

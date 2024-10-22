@@ -159,6 +159,7 @@ hr {
     left: 50%;
     /* z-index: 1; */
 
+    width: max-content;
     background-color: white;
     color: black;
     border: 3px solid var(--warm-shadow);
@@ -202,8 +203,10 @@ button kbd {
 
 /* Shorthand */
 .flex { display: flex; }
+.flex_column { flex-direction: column; }
 .flex_important { display: flex !important; }
 .flex_center_vertically { align-items: center; }
+.position_relative { position: relative; }
 
 .underline {
     border-bottom: 5px solid white;
@@ -310,7 +313,6 @@ a.button {
 .button_primary {
     --shadow-distance: 3px;
 
-    position: relative;
     display: flex;
     align-items: center;
     gap: 12px;

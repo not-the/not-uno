@@ -197,11 +197,11 @@ export default function Game({ game, setGame, startGame }) {
 
                 {/* Lower */}
                 <div className="lower">
-                    <button class="button_primary button_secondary button_lightbg hover_border_shadowed" disabled>
+                    <button class="button_primary button_secondary button_lightbg hover_border_shadowed position_relative" disabled>
                         <kbd>Q</kbd>
                         <span>Last card</span>
                     </button>
-                    <button className="button_primary button_secondary button_lightbg hover_border_shadowed" onClick={endTurn} disabled={hightlightEndTurn}>
+                    <button className="button_primary button_secondary button_lightbg hover_border_shadowed position_relative" onClick={endTurn} disabled={hightlightEndTurn}>
                         <kbd>E</kbd>
                         <span>End turn</span>
                         {/*!myTurn || */game.draw_debt === 0 ? null :

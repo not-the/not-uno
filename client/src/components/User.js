@@ -42,6 +42,11 @@ export default function User({ user, game, tagline, title, postName, classes="",
 
                 <p className="tagline">{tagline}</p>
             </div>
+
+            {/* Options */}
+            {/* <button className="user_options">
+                <img src="/icons/Three Dots.svg" alt="Options" />
+            </button> */}
         </div>
     )
 }

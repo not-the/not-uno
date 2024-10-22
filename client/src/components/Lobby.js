@@ -1,11 +1,11 @@
 // import { config } from "./App"
-import { useState } from "react";
+// import { useState } from "react";
 import { socket } from "../socket.js";
 import User from "./User.js"
 import Config from "./Config.js"
-import lang from "../lang.js";
+// import lang from "../lang.js";
 
-export default function Lobby({ game, startGame }) {
+export default function Lobby({ game, startGame, toast }) {
 
     const playerMax = 4;
     const playerCount = Object.keys(game.usersParsed).length;
@@ -18,6 +18,15 @@ export default function Lobby({ game, startGame }) {
             url: `${window.location.origin}/#${game.roomID}`,
             text: "Play NOT UNO with me!"
         });
+    }
+
+    // Copies URL to clipboard
+    function copyRoom() {
+        navigator.clipboard.writeText(`${window.location.origin}/#${game.roomID}`);
+        toast({
+            title: "Copied URL to clipboard!",
+            msg: "Share it to invite your friends"
+        })
     }
 
     function leaveGame() {
@@ -50,20 +59,33 @@ export default function Lobby({ game, startGame }) {
                         <br/>
 
                         {/* Share */}
-                        <div className="button_primary button_lightbg border_shadowed no_interact">
+                        <div className="button_primary button_lightbg no_interact">
                             <img src="/icons/person.svg" alt="" className="border_shadowed" />
                             <span>
                                 <span className="border_shadowed">
                                     Invite your friends
                                 </span>
 
-                                <button className="button_primary button_secondary share_button button_lightbg hover_border_shadowed"
-                                    onClick={shareRoom}
-                                >
-                                    <span>{game.roomID}</span>
+                                {/* Buttons */}
+                                <div className="flex gap_12px">
+                                    {/* Share sheet */}
+                                    <button className="button_primary button_secondary share_button button_lightbg hover_border_shadowed"
+                                        onClick={shareRoom}
+                                    >
+                                        <span>{game.roomID}</span>
 
-                                    <img src="/icons/Share.svg" alt="" className="float_right parent_invert" />
-                                </button>
+                                        <img src="/icons/Share.svg" alt="" className="float_right parent_invert" />
+                                    </button>
+
+                                    {/* Copy to clipboard */}
+                                    <button
+                                        className="button_primary button_secondary share_button button_lightbg button_micro"
+                                        data-title="Copy link to clipboard"
+                                        onClick={copyRoom}
+                                    >
+                                        <img src="/icons/content_copy_20dp_FFFFFF_FILL0_wght600_GRAD200_opsz20.svg" alt="Copy link to clipboard" className="parent_invert" />
+                                    </button>
+                                </div>
                             </span>
                         </div>
                         <br/>

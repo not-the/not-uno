@@ -129,7 +129,7 @@ export default function App() {
     const [menu, setMenu] = useState("null");
     const page =
         menu === "game" ? <Game game={game} setGame={setGame} startGame={startGame} /> : // Game
-        menu === "lobby" ? <Lobby game={game} setGame={setGame} startGame={startGame} /> : // Lobby
+        menu === "lobby" ? <Lobby game={game} setGame={setGame} startGame={startGame} toast={toast} /> : // Lobby
         menu === "joining" ? <Joining game={game} setMenu={setMenu} /> : // Lobby
     <Home joinRoom={joinRoom} />; // Home
 
@@ -299,7 +299,7 @@ export default function App() {
                                 onClick={() => document.getElementById("username_input").value = randomName()}
                                 data-title="Random"
                             >
-                                <img src="/icons/casino_24dp_E8EAED_FILL1_wght400_GRAD200_opsz20.svg" alt="Random" />
+                                <img src="/icons/casino_24dp_E8EAED_FILL1_wght400_GRAD200_opsz20.svg" alt="Random" className="parent_invert" />
                             </button>
 
                             {/* Set */}

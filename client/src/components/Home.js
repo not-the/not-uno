@@ -12,7 +12,7 @@ export default function Home({ joinRoom }) {
         <img src="/icons/Loader.svg" alt="Waiting..." className="loader_spin" />
 
         {/* // Button */}
-        <button className="button_primary button_secondary button_mini button_mainbg button_border_bg_lighter hover_border_shadowed" onClick={requestLobbies}>Refresh</button>
+        <button className="button_primary button_secondary button_mini button_mainbg button_border_bg_lighter hover_border_shadowed position_relative" onClick={requestLobbies}>Refresh</button>
     </div>
 
     function requestLobbies() {

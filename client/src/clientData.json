@@ -43,7 +43,10 @@
         "happy",
         "tense",
         "active",
+        "stopped",
+        "ready",
 
+        "the",
         "every",
         "real",
         "fake",
@@ -64,16 +67,22 @@
         "Wolf",
         "Camel",
         "Llama",
+        "Panther",
+        "Puffin",
 
         "Apple",
         "Tangerine",
         "Carrot",
+        "Banana",
+        "Bacon",
 
         "Stapler",
         "Balloon",
         "Clock",
+        "Robot",
 
         "Gamer",
+        "Comedian",
         "Bill",
         "Belle",
         "Greg"

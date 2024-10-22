@@ -1408,7 +1408,7 @@ button.share_button {
     border-radius: 5px;
 }
 #profile {
-    position: absolute;
+    position: fixed;
     top: 50%; left: 50%;
     transform: translate(-50%, -50%);
     z-index: 3;
@@ -1554,6 +1554,34 @@ body:has(#win_screen) .backdrop {
 .user.big_user .name {
     font-size: 18pt;
 }
+
+.user_options {
+    border: 2px solid transparent;
+    padding: 3px 9px 0 9px;
+    border-radius: 6px;
+
+    position: absolute;
+    /* top: -50%; */
+    right: 9px;
+
+    /* opacity: 0; */
+    transition: opacity 0.2s ease;
+}
+.user_options:hover,
+.user_options:focus-visible {
+    background-color: var(--bg-lighter);
+    border-color: var(--border-color);
+}
+.user_options img {
+    width: 24px;
+    height: 24px;
+}
+
+.user:hover .user_options,
+.user:focus-visible .user_options {
+    opacity: 1;
+}
+
 
 /* Profile menu avatar selection */
 button.active::before {
@@ -1765,12 +1793,12 @@ h3 > .user .avatar {
     .players_col {
         max-width: unset;
     }
-    #lobby .users_list {
+    /* #lobby .users_list {
         display: grid;
         column-gap: 6px;
         row-gap: 12px;
         grid-template-columns: auto auto;
-    }
+    } */
 
     /* Footer */
     #footer_main {

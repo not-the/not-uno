@@ -255,13 +255,18 @@ class Uno {
 
         // All players have left
         // console.log('### ', this.players);
-        if(this.players.length === 0) {
+        console.log(`Someone left. this.playersBySocket.length = ${this.playersBySocket.length}`)
+        if(this.playersBySocket.length === 0) {
             // console.log(`Room [${roomID}] is empty, closing game...`);
             return this.close();
         }
 
         // Transfer ownership to remaining player
-        // else if(socket.id === this.host) this.host = this.playersBySocket[0];
+        else if(socket.id === this.host) {
+            const newHostID = this.playersBySocket[0];
+            this.host = newHostID;
+            this.emit("toast", `${allusers[newHostID].name} is now the host`);
+        }
 
         this.updateClients();
     }

@@ -13,12 +13,15 @@ export default function Game({ game, setGame, startGame }) {
     // State
     // let [dialog, setDialog] = useState(null);
     // let [dialogAction, setDialogAction] = useState(null);
-    const [menuOpen, setMenuOpen] = useState(false);
+    const [optionsOpen, setOptionsOpen] = useState(false);
 
     // Setup
     useEffect(() => {
         // Keybinds
         const keyupHandler = (event) => {
+            // Chat box is focused
+            if(document.activeElement.tagName === "INPUT") return;
+
             const key = event.key.toUpperCase();
 
             // End turn
@@ -85,7 +88,7 @@ export default function Game({ game, setGame, startGame }) {
     }
 
     function toggleMenu() {
-        setMenuOpen(old => !old);
+        setOptionsOpen(old => !old);
     }
 
     // --- Game functions --- //
@@ -385,7 +388,7 @@ export default function Game({ game, setGame, startGame }) {
 
 
         {/* Menu */}
-        {menuOpen ?
+        {optionsOpen ?
         <div id="menu" className="overlay">
             <div className="inner">
                 <h2 className="border_shadowed">Menu</h2>

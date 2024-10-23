@@ -8,7 +8,6 @@ import lang from "../lang"
 export default function Config({ name, game, disabled }) {
     const options = {
         "starting_deck": {
-            title: "Deck",
             desc: "Game version",
             icon: "/icons/play.svg",
 
@@ -16,7 +15,6 @@ export default function Config({ name, game, disabled }) {
             dropdown: ["normal", "all_wilds", "debug"]
         },
         "starting_cards": {
-            title: "Starting cards",
             desc: "Number of cards each player starts with",
             icon: "/icons/Three Cards.svg",
 
@@ -24,7 +22,6 @@ export default function Config({ name, game, disabled }) {
             min: 3, max: 12
         },
         "draw_stacking": {
-            title: "Draw Stacking",
             desc: "Playing a +2 or +4 card allows you to avoid drawing cards yourself",
             icon: "/icons/Draw Stacking.svg",
 
@@ -32,7 +29,6 @@ export default function Config({ name, game, disabled }) {
             dropdown: ["off", /*"matching",*/ "any"]
         },
         "continue": {
-            title: "Continues",
             desc: "Continue the game after a winner is decided",
             icon: "/icons/Continue.svg",
 
@@ -40,7 +36,6 @@ export default function Config({ name, game, disabled }) {
         },
 
         "public_lobby": {
-            title: "Public",
             desc: "Makes your lobby public",
 
             icon: "/icons/Door.svg",
@@ -50,7 +45,6 @@ export default function Config({ name, game, disabled }) {
             condition_reason: "Room ID must not be user-defined"
         },
         "enable_chat": {
-            title: "Chat",
             desc: "Enables the chat menu",
 
             icon: "/icons/chat.svg",
@@ -60,14 +54,12 @@ export default function Config({ name, game, disabled }) {
             condition_reason: "Private games only"
         },
         "xray": {
-            title: "Hands Down",
             desc: "Everyone's cards are visible",
 
             icon: "/icons/Magnify.svg",
             type: "boolean"
         },
         "infinite_draw": {
-            title: "Infinite Draw",
             desc: "You can continue to draw cards until you get a match",
 
             icon: "/icons/Infinity.svg",
@@ -91,7 +83,7 @@ export default function Config({ name, game, disabled }) {
                     {/* About */}
                     <div>
                         <h4 className="border_shadowed">
-                            {option.title}
+                            {lang.en[name]}
                             {condition ? <span className="small">({disabled_reason})</span> : null}
                         </h4>
                         <p className="desc">{option.desc}</p>
@@ -165,7 +157,7 @@ function Input({ id, option, configValue, updateConfig, disabled }) {
     else if(type === "dropdown") {
         return (
             <select name={id} id={id} value={configValue} onChange={event => set(event.target.value)} disabled={disabled}>
-                {option.dropdown.map((item, index) => {
+                {option.dropdown.map(item => {
                     return <option value={item}>{lang.en?.[item] ?? item}</option>
                 })}
             </select>

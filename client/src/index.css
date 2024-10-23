@@ -206,6 +206,8 @@ button kbd {
 .flex_column { flex-direction: column; }
 .flex_important { display: flex !important; }
 .flex_center_vertically { align-items: center; }
+.gap_6px { gap: 6px; }
+.gap_12px { gap: 12px; }
 .position_relative { position: relative; }
 
 .underline {
@@ -218,6 +220,8 @@ button kbd {
 .pointer_events_all { pointer-events: all; }
 .float_right { float: right; }
 .no_margin { margin: 0; }
+.margin_left_auto { margin-left: auto; }
+.text_align_right { text-align: right; }
 
 /* Small */
 .small_text {
@@ -237,9 +241,6 @@ button kbd {
 }
 .cols_container > .col {
     width: 100%;
-}
-.gap_12px {
-    gap: 12px;
 }
 section {
     margin-bottom: 36px;
@@ -266,6 +267,21 @@ section {
     width: 100%;
     padding: 12px;
     margin: 0 auto;
+}
+
+/* Table */
+table tr { position: relative;; }
+table tr::after {
+    content: "";
+    position: absolute;
+    left:0; bottom:0px; right:0;
+    width: 100%;
+    height: 1px;
+    background-color: rgba(255, 255, 255, 0.2);
+}
+table th {
+    text-align: left;
+    padding-right: 24px;
 }
 
 /* Inputs */
@@ -311,6 +327,8 @@ a.button {
 }
 
 .button_primary {
+    --button-bg: var(--accent-blue);
+    --button-border: white;
     --shadow-distance: 3px;
 
     display: flex;
@@ -322,11 +340,11 @@ a.button {
 
     width: 100%;
     padding: 11px 24px;
-    border: 3px solid white;
+    border: 3px solid var(--button-border);
     border-radius: 6px;
 
     color: white;
-    background-color: var(--accent-blue);
+    background-color: var(--button-bg);
 
     transition: filter 0.2s ease, transform 0.2s ease, background-color 0.2s ease;
 }
@@ -625,8 +643,6 @@ a.button {
   -moz-appearance: textfield;
 }
 
-.margin_left_auto { margin-left: auto; }
-
 button.share_button {
     font-size: 14pt;
     font-weight: 550;
@@ -655,6 +671,14 @@ button.share_button {
     align-items: center;
 
     height: 100dvh;
+}
+
+#menu_button {
+    --button-border: var(--bg-lighter);
+
+    position: fixed;
+    top: 18px;
+    left: 24px;
 }
 
 /* Loader */
@@ -1144,14 +1168,15 @@ button.share_button {
     position: fixed;
     bottom: 24px;
     right: 24px;
+    z-index: 3;
 
     width: 100%;
-    max-width: 240px;
-    padding: 12px 18px;
+    max-width: 290px;
+    padding: 18px 24px;
     
     background-color: var(--bg-comp);
     border: 1px solid var(--bg-comp-lighter);
-    border-radius: 5px;
+    border-radius: 10px;
 }
 
 /* Choose color */
@@ -1452,7 +1477,7 @@ button.share_button {
     transition: opacity 0.1s ease;
 }
 body:has(#profile) .backdrop,
-body:has(#win_screen) .backdrop {
+body:has(.overlay) .backdrop {
     opacity: 1;
     pointer-events: initial;
 }
@@ -1634,7 +1659,7 @@ h3 > .user .avatar {
 
 
 /* Win screen */
-#win_screen {
+.overlay {
     position: fixed;
     inset: 0;
     z-index: 1;
@@ -1642,9 +1667,12 @@ h3 > .user .avatar {
     justify-content: center;
     align-items: center;
 }
-#win_screen > .inner {
+.overlay > .inner {
     width: 100%;
     max-width: 600px;
+    max-height: 95vh;
+    overflow-y: auto;
+
     background-color: #566355a6;
     padding: 12px 24px;
     border-radius: 9px;
@@ -1665,6 +1693,7 @@ h3 > .user .avatar {
 .debug_panel {
     position: fixed;
     bottom: 24px; right: 0;
+    z-index: 10;
 
     background-color: rgba(19, 19, 19, 0.7);
     backdrop-filter: blur(9px);
@@ -1687,10 +1716,6 @@ h3 > .user .avatar {
 .debug_panel:hover > *,
 .debug_panel:focus-within > * {
     opacity: 1;
-}
-.debug_panel table th {
-    text-align: left;
-    padding-right: 6px;
 }
 .debug_panel::after {
     content: "🠜";

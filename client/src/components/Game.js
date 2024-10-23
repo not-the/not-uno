@@ -1,9 +1,10 @@
 // import Icon from "./Icon.js"
 import Card from "./Card.js"
 import { shuffle, repeat, clamp } from "../Util.js"
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { socket } from "../socket.js";
 import User from "./User.js";
+import lang from "../lang.js";
 
 
 
@@ -12,6 +13,7 @@ export default function Game({ game, setGame, startGame }) {
     // State
     // let [dialog, setDialog] = useState(null);
     // let [dialogAction, setDialogAction] = useState(null);
+    const [menuOpen, setMenuOpen] = useState(false);
 
     // Setup
     useEffect(() => {
@@ -28,6 +30,9 @@ export default function Game({ game, setGame, startGame }) {
             // if(!isNaN(Number(key))) {
             //     playCard(game.my_num, Number(key)-1)
             // }
+
+            // Close menu
+            if(key === "ESCAPE") toggleMenu();
         }
         document.addEventListener('keyup', keyupHandler);
 
@@ -77,6 +82,10 @@ export default function Game({ game, setGame, startGame }) {
         return playerPositions
             ?.[game.players.length]
             ?.[clamp(playerIndex-game.my_num, game.players.length)] ?? "overlimit";
+    }
+
+    function toggleMenu() {
+        setMenuOpen(old => !old);
     }
 
     // --- Game functions --- //
@@ -149,6 +158,12 @@ export default function Game({ game, setGame, startGame }) {
         <>
         {/* Game container */}
         <main id="game">
+            {/* Menu */}
+            <button className="button_primary button_secondary button_micro button_mainbg hover_border_shadowed" id="menu_button" onClick={toggleMenu}>
+                <span>Menu</span>
+                {/* <kbd>ESC</kbd> */}
+            </button>
+
             {/* Center */}
             <div id="game_center">
                 {/* Upper */}
@@ -281,7 +296,7 @@ export default function Game({ game, setGame, startGame }) {
                 // Choose color
                 game.action === 'choose_color' ?
                 <div className="choice_popup choose_color">
-                    <h3>CHOOSE A COLOR</h3>
+                    <h3 className="border_shadowed">CHOOSE A COLOR</h3>
                     <div className="choose_color_container">
                         <div className="red hover_border_shadowed" role="button" tabIndex="0" onClick={() => action("red")} />
                         <div className="yellow hover_border_shadowed" role="button" tabIndex="0" onClick={() => action("yellow")} />
@@ -326,7 +341,7 @@ export default function Game({ game, setGame, startGame }) {
 
         {/* Win screen */}
         {game?.winner !== undefined ?
-        <div id="win_screen">
+        <div id="win_screen" class="overlay">
             <div className="inner">
                 <h2 className="border_shadowed">
                     {game.winner === socket.id ?
@@ -347,7 +362,7 @@ export default function Game({ game, setGame, startGame }) {
                 </p><br/>
 
                 {/* Buttons */}
-                <div className="flex media_flex col" style={{ "gap":"6px" }}>
+                <div className="flex media_flex col gap_6px">
                     {/* Rematch */}
                     {game.host === socket.id ?
                         <button className="button_primary button_secondary hover_border_shadowed" onClick={startGame}>
@@ -366,6 +381,68 @@ export default function Game({ game, setGame, startGame }) {
             </div>
         </div>
         : null
+        }
+
+
+        {/* Menu */}
+        {menuOpen ?
+        <div id="menu" className="overlay">
+            <div className="inner">
+                <h2 className="border_shadowed">Menu</h2>
+
+
+                {/* Info */}
+                <div className="flex">
+                    {/* Players */}
+                    {/* <div className="users_list">
+                        {Object.entries(game.usersParsed).map(([, user], index) => {
+                            return <User
+                                key={index} user={user} game={game}
+                                title={`ID: ${user.socketID}
+                                ${user.socketID === game.host ? " (Host)":""}`}
+                            />
+                        })}
+                    </div> */}
+
+                    {/* Config */}
+                    <div className="fullwidth">
+                        {/* <h4>Config</h4> */}
+                        <table className="fullwidth">
+                            {Object.entries(game.config).map(([key, value]) => {
+                                // Skip
+                                if(value === false || key === "chat" || key === "public_lobby") return null;
+
+                                // Row
+                                return (
+                                    <tr>
+                                        <th>{lang.en[key]}</th>
+                                        <td class="text_align_right">{lang.en[String(value)] ?? String(value)}</td>
+                                    </tr>
+                                )
+                            })}
+                        </table>
+                    </div>
+                </div>
+                <br/>
+                <br/>
+                
+                {/* Buttons */}
+                <div className="flex media_flex col gap_6px">
+                    {/* Leave */}
+                    <button className="button_primary button_secondary button_lightbg hover_border_shadowed position_relative" onClick={toggleMenu}>
+                        <span>Return to game</span>
+                        <kbd>ESC</kbd>
+                    </button>
+
+                    {/* Leave */}
+                    <button className="button_primary button_secondary button_transparent hover_border_shadowed" onClick={leaveGame}>
+                        <span>Quit game</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+        :
+        null
         }
 
         </>

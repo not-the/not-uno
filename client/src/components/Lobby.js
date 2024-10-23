@@ -26,7 +26,8 @@ export default function Lobby({ game, startGame, toast }) {
         toast({
             title: "Copied URL to clipboard!",
             msg: "Share it to invite your friends"
-        })
+        });
+
     }
 
     function leaveGame() {
@@ -59,15 +60,15 @@ export default function Lobby({ game, startGame, toast }) {
                         <br/>
 
                         {/* Share */}
-                        <div className="button_primary button_lightbg no_interact">
+                        <div className="button_primary button_lightbg no_interact" style={{  "padding-right": "0px" }}>
                             <img src="/icons/person.svg" alt="" className="border_shadowed" />
-                            <span>
+                            <div>
                                 <span className="border_shadowed">
                                     Invite your friends
                                 </span>
 
                                 {/* Buttons */}
-                                <div className="flex gap_12px">
+                                <div className="flex gap_6px">
                                     {/* Share sheet */}
                                     <button className="button_primary button_secondary share_button button_lightbg hover_border_shadowed"
                                         onClick={shareRoom}
@@ -86,7 +87,7 @@ export default function Lobby({ game, startGame, toast }) {
                                         <img src="/icons/content_copy_20dp_FFFFFF_FILL0_wght600_GRAD200_opsz20.svg" alt="Copy link to clipboard" className="parent_invert" />
                                     </button>
                                 </div>
-                            </span>
+                            </div>
                         </div>
                         <br/>
 

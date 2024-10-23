@@ -206,8 +206,8 @@ button kbd {
 .flex_column { flex-direction: column; }
 .flex_important { display: flex !important; }
 .flex_center_vertically { align-items: center; }
-.gap_6px { gap: 6px; }
-.gap_12px { gap: 12px; }
+.gap_6px { gap: 6px !important; }
+.gap_12px { gap: 12px !important; }
 .position_relative { position: relative; }
 
 .underline {

@@ -10,6 +10,7 @@ import { store, arrRandom, capitalizeFirstLetter } from './Util.js'
 // Socket.io
 import { socket, isProduction, socketConnectionStatus, serverURL } from './socket.js'
 import Header from './components/Header.js'
+import DeckEditor from './components/DeckEditor.js'
 
 // Game
 const clientData = require('./clientData.json');
@@ -128,10 +129,16 @@ export default function App() {
     // Menu {String}
     const [menu, setMenu] = useState("null");
     const page =
-        menu === "game" ? <Game game={game} setGame={setGame} startGame={startGame} /> : // Game
-        menu === "lobby" ? <Lobby game={game} setGame={setGame} startGame={startGame} toast={toast} /> : // Lobby
-        menu === "joining" ? <Joining game={game} setMenu={setMenu} /> : // Lobby
-    <Home joinRoom={joinRoom} />; // Home
+        // Game
+        menu === "game" ? <Game game={game} setGame={setGame} startGame={startGame} /> :
+        // Lobby
+        menu === "lobby" ? <Lobby game={game} setGame={setGame} startGame={startGame} toast={toast} /> :
+        // Joining...
+        menu === "joining" ? <Joining game={game} setMenu={setMenu} /> :
+        // Deck editor
+        menu === "deck_editor" ? <DeckEditor setMenu={setMenu} /> :
+        // Home
+        <Home setMenu={setMenu} joinRoom={joinRoom} />; // Home
 
     const [profileOpen, setProfileOpen] = useState(false);
 
@@ -234,7 +241,7 @@ export default function App() {
     return (
         <>
             {/* Header */}
-            {menu !== "game" ?
+            {menu !== "game" /*&& menu !== "deck_editor"*/ ?
                 <Header />
                 : null
             }
@@ -260,8 +267,10 @@ export default function App() {
                     {/* Bubble */}
                     {chatBubble ?
                         <div className="bubble">
-                            <strong>{chatBubble.user.name}</strong>
-                            <span>{chatBubble.msg}</span>
+                            <div className="inner">
+                                <strong>{chatBubble.user.name}</strong>
+                                <span>{chatBubble.msg}</span>
+                            </div>
                         </div>
                         : null
                     }

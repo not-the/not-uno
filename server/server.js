@@ -244,7 +244,7 @@ class Uno {
 
         // Tell room someone left
         socket.to(roomID).emit("toast", {
-            msg: `"${allusers[socket.id]?.name ?? "User"}" left!`
+            title: `"${allusers[socket.id]?.name ?? "User"}" left!`
         })
 
         // Tell user they left
@@ -348,7 +348,7 @@ class Uno {
 
     setConfigOption(socket, option, value) {
         if(this.host !== socket.id) return socket.emit("Toast", {
-            msg: "Must be hosting to change game config"
+            msg: "Must be the host to change game config"
         })
 
         if(!this.config.hasOwnProperty(option)) return; // Config property doesn't exist
@@ -433,6 +433,18 @@ class Uno {
         // if(this.players.length < 2) return console.warn("Not enough players");
         this.state = "ingame";
 
+        this.updateClients();
+    }
+
+    /** Sets game state to lobby */
+    returnToLobby(socket) {
+        // Host
+        if(socket.id !== this.host) {
+            socket.emit("toast", { msg: "Only the host can manage the game" });
+            return;
+        };
+
+        this.state = "lobby";
         this.updateClients();
     }
 
@@ -875,6 +887,8 @@ io.on("connection", (socket) => {
             }
         }
 
+        // Join existing room
+
         // Leave all other rooms
         for(const r of socket.rooms) allgames[r]?.leave(socket, false);
         
@@ -912,6 +926,12 @@ io.on("connection", (socket) => {
             return;
         }
         game.start(socket);
+    })
+
+    socket.on("returnToLobby", () => {
+        const game = getGameByUser();
+        if(game === undefined) return;
+        game.returnToLobby(socket);
     })
 
     socket.on("update_config", ({ option, value }) => {

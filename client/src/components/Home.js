@@ -3,7 +3,7 @@ import { socket } from "../socket";
 import { capitalizeFirstLetter } from "../Util";
 import lang from "../lang";
 
-export default function Home({ joinRoom }) {
+export default function Home({ setMenu, joinRoom }) {
     const [lobbies, setLobbies] = useState(undefined);
     const [lobbyListFetched, setLobbyListFetched] = useState(false);
 
@@ -79,33 +79,53 @@ export default function Home({ joinRoom }) {
                                 else modeInfo += ", Hands Down";
                             }
 
+                            const host = lobby?.usersParsed[lobby?.host];
+
                             return (
                                 <div
-                                    className="lobby hover_border_shadowed"
+                                    className="lobby flex gap_12px hover_border_shadowed"
                                     role="button" tabIndex="0"
                                     onClick={() => joinRoom(lobby.roomID)}
                                 >
-                                    <div className="flex">
-                                        <strong>
-                                            {lobby.roomID}
-                                        </strong>
-                                        <div className="margin_left_auto">
-                                            Mode: <b>{modeInfo}</b>
+                                    {/* Icon */}
+                                    <img src={`/avatars/${host?.avatar}.png`} alt="" className="avatar" />
+
+                                    {/* Right */}
+                                    <div className="fullwidth">
+                                        <div className="flex">
+                                            <strong>
+                                                {lobby.roomID}
+                                            </strong>
+                                            <div className="margin_left_auto">
+                                                Mode: <b>{modeInfo}</b>
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div className="flex secondary_text">
-                                        <p>
-                                            Host: <b>{lobby?.usersParsed[lobby?.host]?.name}</b>
-                                        </p>
-                                        <p className="margin_left_auto">
-                                            Players: {Object.keys(lobby?.usersParsed??{}).length}/4
-                                        </p>
+                                        <div className="flex secondary_text">
+                                            <p>
+                                                Host: <b>{host?.name}</b>
+                                            </p>
+                                            <p className="margin_left_auto">
+                                                Players: {Object.keys(lobby?.usersParsed??{}).length}/4
+                                            </p>
+                                        </div>
                                     </div>
                                 </div>
                             )
                         })}
                     </div>
                 </div>
+                <br/>
+                
+                {/* More */}
+                <div className="flex media_flex gap_12px">
+                    {/* <button className="button_primary button_secondary button_mainbg button_border_bg_lighter hover_border_shadowed" onClick={() => setMenu("deck_editor")}>
+                        Custom deck editor
+                    </button> */}
+                    {/* <button className="button_primary button_secondary button_mainbg button_border_bg_lighter hover_border_shadowed">
+                        Placeholder
+                    </button> */}
+                </div>
+
                 <br/>
                 <br/>
                 <p className="secondary_text center">Play UNO online with friends!</p>

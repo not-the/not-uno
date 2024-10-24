@@ -674,8 +674,6 @@ button.share_button {
 }
 
 #menu_button {
-    --button-border: var(--bg-lighter);
-
     position: fixed;
     top: 18px;
     left: 24px;
@@ -1059,6 +1057,7 @@ button.share_button {
 }
 
 /* Colors */
+.black { background-color: black !important; }
 .red { background-color: var(--red) !important; }
 .yellow { background-color: var(--yellow) !important; }
 .green { background-color: var(--green) !important; }
@@ -1271,6 +1270,9 @@ button.share_button {
 }
 .chat_messages > .msg {
     align-self: flex-end;
+    align-items: flex-start;
+
+    border-radius: 10px;
 }
 
 /* Chat bar */
@@ -1373,6 +1375,8 @@ button.share_button {
     transform: translateY(-4px) rotate(-12deg);
 }
 .bubble {
+    display: block;
+
     position: absolute;
     left: 0;
     bottom: calc(100% + 32px);
@@ -1381,13 +1385,26 @@ button.share_button {
     font-size: 11pt;
 
     width: max-content;
-    max-width: 95vw;
+    max-width: min(95vw, 240px);
+    /* max-height: 3.2em; */
     padding: 6px 12px;
 
     background-color: white;
     color: black;
 
     animation: bubble 0.3s ease;
+}
+.bubble > .inner {
+    position: relative;
+    word-wrap: break-word;
+    max-height: 1.75lh;
+    overflow: hidden;
+    text-overflow: ellipsis;
+
+    color: rgb(170, 170, 170);
+}
+.bubble > .inner::first-line {
+    color: black;
 }
 @keyframes bubble {
     from {
@@ -1507,7 +1524,7 @@ body:has(.overlay) .backdrop {
     background-color: rgba(255, 255, 255, 0.15);
     /* backdrop-filter: saturate(150%); */
 }
-.user .avatar {
+.avatar {
     --size: 36px;
 
     min-width: var(--size);
@@ -1515,7 +1532,7 @@ body:has(.overlay) .backdrop {
     border-radius: 100%;
 }
 .user > .right {
-    max-width: auto;
+    /* max-width: auto; */
     flex-shrink: 1;
 }
 .user .name {
@@ -1537,11 +1554,15 @@ body:has(.overlay) .backdrop {
     font-size: 16pt;
 }
 .user .tagline {
+    display: inline-block;
+
     width: 100%;
     /* white-space: pre; */
-    text-wrap: wrap;
     font-weight: 400;
     color: var(--secondary-text);
+
+    word-break:break-word;
+    /* max-width: 100%; */
 }
 /* .user .after_name {
     font-size: 11pt;
@@ -1687,6 +1708,134 @@ h3 > .user .avatar {
     70%  { transform: translateY(-1px);  }
     100% { transform: translateY(0px);   }
 }
+
+
+
+/* Custom Deck editor */
+#deck_editor {
+    --container-width: 900px;
+
+    width: 100%;
+    padding: 9px 9px 350px 9px;
+}
+.deck_list {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+}
+.deck_list > .item {
+    background-color: var(--bg-darker);
+    padding: 6px;
+    border-radius: 15px;
+    /* margin-bottom: 18px; */
+    gap: 15px;
+}
+.deck_list .item .right {
+    display: flex;
+    flex-direction: column;
+}
+.deck_list .item .right .symbol img {
+    width: unset;
+    height: unset;
+    max-width: 20px !important;
+
+    /* outline: 2px solid red; */
+
+}
+.deck_list .item .row {
+    gap: 3px;
+    margin-top: auto;
+    margin-bottom: 3px;
+}
+.picker,
+.picker_value {
+    --size: 24px;
+
+    position: relative;
+
+    min-width: var(--size);
+    height: var(--size);
+    padding: 0 6px;
+    border: 2px solid var(--bg-main);
+    border-radius: 100px;
+
+    font-size: 14pt;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.picker_value {
+    --size: 40px;
+}
+
+.picker:hover,
+.picker:focus-visible,
+.picker:focus,
+.picker:focus-within,
+.picker_value:hover,
+.picker_value:focus-visible,
+.picker_value.active {
+    background-color: var(--bg-lighter);
+    border-color: white;
+}
+.picker > .content {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 50%;
+
+    width: max-content;
+    max-width: 260px;
+    background-color: var(--bg-main);
+    padding: 6px 12px;
+    border: 2px solid var(--bg-lighter);
+    border-radius: 35px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
+
+    pointer-events: none;
+    transform: translateX(-50%) scale(0.9);
+    transform-origin: top;
+    opacity: 0;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+}
+.picker > .content > .inner {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 5px;
+}
+.picker > .content strong {
+    display: block;
+    text-align: center;
+    margin-top: 6px;
+    color: var(--secondary-text);
+    font-weight: 500;
+    font-size: 10pt;
+}
+.picker:focus,
+.picker:focus-within {
+    z-index: 1;
+}
+.picker:focus .content,
+.picker:focus-within .content {
+    transform: translateX(-50%);
+    pointer-events: initial;
+    opacity: 1;
+}
+.color_square {
+    display: inline-block;
+    width: 48px;
+    height: 48px;
+    border: 2px solid white;
+    border-radius: 5px;
+}
+
+/* Right */
+#deck_editor .card {
+    font-size: 54pt;
+}
+
 
 
 /* Debug */

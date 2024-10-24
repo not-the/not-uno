@@ -116,6 +116,11 @@ export default function Game({ game, setGame, startGame }) {
         socket.emit("action", choice);
     }
 
+    /** Asks the server to return to lobby */
+    function returnToLobby() {
+        socket.emit("returnToLobby");
+    }
+
     /** Asks the server to leave the current game */
     function leaveGame() {
         socket.emit("leave");
@@ -162,7 +167,7 @@ export default function Game({ game, setGame, startGame }) {
         {/* Game container */}
         <main id="game">
             {/* Menu */}
-            <button className="button_primary button_secondary button_micro button_mainbg hover_border_shadowed" id="menu_button" onClick={toggleMenu}>
+            <button className="button_primary button_secondary button_micro button_mainbg button_border_bg_lighter hover_border_shadowed" id="menu_button" onClick={toggleMenu}>
                 <span>Menu</span>
                 {/* <kbd>ESC</kbd> */}
             </button>
@@ -377,9 +382,15 @@ export default function Game({ game, setGame, startGame }) {
                         </button>
                     }
                     {/* Leave */}
+                    {game.host === socket.id ?
+                    <button className="button_primary button_secondary button_transparent hover_border_shadowed position_relative" onClick={returnToLobby}>
+                        <span>Back to lobby</span>
+                    </button>
+                    :
                     <button className="button_primary button_secondary button_transparent hover_border_shadowed" onClick={leaveGame}>
                         Leave
                     </button>
+                    }
                 </div>
             </div>
         </div>
@@ -413,7 +424,7 @@ export default function Game({ game, setGame, startGame }) {
                         <table className="fullwidth">
                             {Object.entries(game.config).map(([key, value]) => {
                                 // Skip
-                                if(value === false || key === "chat" || key === "public_lobby") return null;
+                                if(value === false || key === "enable_chat" || key === "public_lobby") return null;
 
                                 // Row
                                 return (
@@ -428,11 +439,17 @@ export default function Game({ game, setGame, startGame }) {
                 </div>
                 <br/>
                 <br/>
+
+                {/* Return to lobby */}
+                {/* <button className="button_primary button_secondary button_lightbg hover_border_shadowed position_relative" onClick={returnToLobby}>
+                        <span>Back to lobby</span>
+                </button>
+                <br/> */}
                 
                 {/* Buttons */}
                 <div className="flex media_flex col gap_6px">
                     {/* Leave */}
-                    <button className="button_primary button_secondary button_lightbg hover_border_shadowed position_relative" onClick={toggleMenu}>
+                    <button className="button_primary button_secondary hover_border_shadowed position_relative" onClick={toggleMenu}>
                         <span>Return to game</span>
                         <kbd>ESC</kbd>
                     </button>

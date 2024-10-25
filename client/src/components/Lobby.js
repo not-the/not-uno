@@ -63,7 +63,7 @@ export default function Lobby({ game, startGame, toast }) {
                         <div className="button_primary button_lightbg no_interact" style={{  "padding-right": "0px" }}>
                             <img src="/icons/person.svg" alt="" className="border_shadowed" />
                             <div>
-                                <span className="border_shadowed">
+                                <span className="border_shadowed" style={{ "text-wrap": "nowrap" }}>
                                     Invite your friends
                                 </span>
 

@@ -29,6 +29,7 @@ export default function App() {
     }
 
     // Chat
+    const [chatOpen, setChatOpen] = useState(false);
     const [chatInput, setChatInput] = useState("");
 
 
@@ -36,7 +37,9 @@ export default function App() {
 
     const [chatCache, setChatCache] = useState([]);
     const [chatBubble, setChatBubble] = useState(undefined);
-    // const [chatBubbleTimeout, setChatBubbleTimeout] = useState(undefined);
+
+    let chatBubbleTimeout;
+    let removeChatBubbleTimeout;
     function newChatMsg(data) {
         setChatCache(old => {
             let newArr = [data, ...old];
@@ -52,13 +55,23 @@ export default function App() {
         }); // Push new message
 
         // Bubble
-        if(!chatOpen) {
+        const isChatOpenByClass = document.querySelector(".chat_container").classList.contains("open");
+        if(!isChatOpenByClass) {
             setChatBubble(data);
             setChatUnread(old => old+1);
+
+            // Timer
+            clearTimeout(chatBubbleTimeout);
+            clearTimeout(removeChatBubbleTimeout);
+            chatBubbleTimeout = setTimeout(() => {
+                setChatBubble(old => ({...old, bubble_timed_out:true}));
+            }, 6000);
+            removeChatBubbleTimeout = setTimeout(() => {
+                setChatBubble(undefined);
+            }, 6300);
         }
     }
 
-    const [chatOpen, setChatOpen] = useState(false);
     function toggleChat() {
         // Clear bubble
         setChatBubble(undefined);
@@ -266,7 +279,7 @@ export default function App() {
 
                     {/* Bubble */}
                     {chatBubble ?
-                        <div className="bubble">
+                        <div className="bubble" data-expired={chatBubble.bubble_timed_out}>
                             <div className="inner">
                                 <strong>{chatBubble.user.name}</strong>
                                 <span>{chatBubble.msg}</span>

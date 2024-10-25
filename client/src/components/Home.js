@@ -118,9 +118,9 @@ export default function Home({ setMenu, joinRoom }) {
                 
                 {/* More */}
                 <div className="flex media_flex gap_12px">
-                    {/* <button className="button_primary button_secondary button_mainbg button_border_bg_lighter hover_border_shadowed" onClick={() => setMenu("deck_editor")}>
-                        Custom deck editor
-                    </button> */}
+                    <button className="button_primary button_secondary button_mainbg button_border_bg_lighter hover_border_shadowed" onClick={() => setMenu("deck_editor")}>
+                        Custom Deck Builder
+                    </button>
                     {/* <button className="button_primary button_secondary button_mainbg button_border_bg_lighter hover_border_shadowed">
                         Placeholder
                     </button> */}

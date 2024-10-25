@@ -149,7 +149,7 @@ export default function App() {
         // Joining...
         menu === "joining" ? <Joining game={game} setMenu={setMenu} /> :
         // Deck editor
-        menu === "deck_editor" ? <DeckEditor setMenu={setMenu} /> :
+        menu === "deck_editor" ? <DeckEditor setMenu={setMenu} toast={toast} /> :
         // Home
         <Home setMenu={setMenu} joinRoom={joinRoom} />; // Home
 
@@ -238,6 +238,13 @@ export default function App() {
             }
         })
 
+        socket.on("request_custom_deck", () => {
+            let custom0 = localStorage.getItem("nu_custom_0");
+            if(custom0 !== undefined) {
+                socket.emit("custom_deck", JSON.parse(custom0));
+            }
+        })
+
         // Unmount
         return () => {
             socket.off("chat_receive");
@@ -246,7 +253,10 @@ export default function App() {
             socket.off("toast");
             socket.off("gameState");
             socket.off("assignedUserData");
+
             socket.off("debug");
+            socket.off("request_custom_deck");
+
             window.location.hash = '';
         }
     }, []);

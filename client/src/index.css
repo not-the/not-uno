@@ -45,6 +45,7 @@
     --purple: #7143c7;
     --orange: #dd7616;
     --cyan: #00bbab;
+    --pink: #f05c95;
 
     /* Misc */
     --container-width: 640px;
@@ -96,16 +97,19 @@ h1, h2, h3, h4, h5, h6 {
     position: relative;
 }
 .fancy_title > span {
-    background-color: #406836;
+    background-color: var(--bg-main);
     padding: 3px 12px;
-    border-radius: 5px;
+    border-radius: 100px;
+
+    position: relative;
+    z-index: 2;
 }
 .fancy_title::before {
     content: "";
     position: absolute;
     left: 0; right: 0;
     top: 0.5lh;
-    z-index: -1;
+    z-index: 1;
 
     background-color: var(--bg-lighter);
     height: 3px;
@@ -203,9 +207,11 @@ button kbd {
 
 /* Shorthand */
 .flex { display: flex; }
+.flex_wrap { flex-wrap: wrap; }
 .flex_column { flex-direction: column; }
 .flex_important { display: flex !important; }
 .flex_center_vertically { align-items: center; }
+.flex_center_horizontally { justify-content: center; }
 .gap_6px { gap: 6px !important; }
 .gap_12px { gap: 12px !important; }
 .position_relative { position: relative; }
@@ -259,6 +265,13 @@ section {
 }
 .shadow_distance_0 {
     --shadow-distance: 2px !important;
+}
+
+.icon_inline {
+    display: inline-block;
+    height: 0.75lh;
+    vertical-align: -11%;
+    margin: 0 0.3em;
 }
 
 /* Logo */
@@ -410,6 +423,7 @@ a.button {
 .button_comp { background-color: var(--bg-comp-light); }
 
 .button_border_bg_lighter { border-color: var(--bg-lighter); }
+.button_border_bg_main { border-color: var(--bg-main); }
 
 
 /* Toggle switch */
@@ -598,10 +612,12 @@ a.button {
 }
 
 .input_container {
+    --input-bg: var(--bg-lighter);
+
     border-radius: 5px;
     overflow: hidden;
     background-color: var(--bg-main);
-    border: 6px solid var(--bg-lighter);
+    border: 6px solid var(--input-bg);
 
     display: flex;
     gap: 2px;
@@ -611,36 +627,37 @@ a.button {
 }
 .input_container:has(input[type="checkbox"]) { background-color: var(--bg-lighter); }
 
-#config .item input,
-#config .item button,
-#config .item select {
+.input_container input,
+.input_container button,
+.input_container select {
     width: 100%;
     max-width: 36px;
+
+    background-color: var(--input-bg);
+    color: white;
+    border: none;
 
     font-size: 14pt;
     font-weight: 600;
     text-align: center;
-
-    background-color: var(--bg-lighter);
-    color: white;
-    border: none;
 }
-#config .item button { min-width: 36px; }
-#config .item input {
+.input_container button { min-width: 36px; }
+.input_container input {
     min-width: 64px;
 }
-#config .item select { font-size: 13pt; text-align: left; max-width: 140px; }
+.input_container select { font-size: 13pt; text-align: left; max-width: 140px; }
 
 /* REMOVE INPUT ARROWS */
 /* Chrome, Safari, Edge, Opera */
-#config .item input::-webkit-outer-spin-button,
-#config .item input::-webkit-inner-spin-button {
+.input_container::-webkit-outer-spin-button,
+.input_container::-webkit-inner-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
 /* Firefox */
-#config .item input[type=number] {
+.input_container input[type="number"] {
   -moz-appearance: textfield;
+  /* appearance: textfield; */
 }
 
 button.share_button {
@@ -1067,6 +1084,7 @@ button.share_button {
 .purple { background-color: var(--purple) !important; }
 .orange { background-color: var(--orange) !important; }
 .cyan { background-color: var(--cyan) !important; }
+.pink { background-color: var(--pink) !important; }
 
 
 /* Card back */
@@ -1557,8 +1575,6 @@ body:has(.overlay) .backdrop {
     font-size: 16pt;
 }
 .user .tagline {
-    display: inline-block;
-
     width: 100%;
     /* white-space: pre; */
     font-weight: 400;
@@ -1716,26 +1732,64 @@ h3 > .user .avatar {
 
 /* Custom Deck editor */
 #deck_editor {
-    --container-width: 900px;
+    --container-width: 1125px;
 
     width: 100%;
     padding: 9px 9px 350px 9px;
 }
+#deck_editor [contentEditable] {
+    display: inline-block;
+    min-width: 100px;
+}
 .deck_list {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(5, 1fr);
     gap: 12px;
 }
 .deck_list > .item {
+    position: relative;
+
     background-color: var(--bg-darker);
     padding: 6px;
     border-radius: 15px;
     /* margin-bottom: 18px; */
     gap: 15px;
+
+    border: 2px solid transparent;
 }
-.deck_list .item .right {
-    display: flex;
-    flex-direction: column;
+.deck_list > .item:hover,
+.deck_list > .item:focus-visible,
+.deck_list > .item:focus,
+.deck_list > .item:focus-within {
+    z-index: 1;
+}
+.deck_list .item table {
+    --shadow-distance: 6px;
+
+    width: 100%;
+    position: absolute;
+    top: calc(100% + 6px); left: 0;
+    padding: 6px 12px;
+    border-radius: 10px;
+
+    background-color: var(--bg-main);
+    border: 2px solid var(--bg-lighter);
+    pointer-events: none;
+
+    opacity: 0;
+    transform: translateY(-4px) scale(0.95);
+    transform-origin: bottom;
+    transition: 0.15s ease;
+}
+.deck_list > .item:hover table,
+.deck_list > .item:focus-visible table,
+.deck_list > .item:focus table,
+.deck_list > .item:focus-within table {
+    transform: unset;
+    opacity: 1;
+}
+.deck_list .item .upper {
+    margin-bottom: 6px;
 }
 .deck_list .item .right .symbol img {
     width: unset;
@@ -1745,10 +1799,10 @@ h3 > .user .avatar {
     /* outline: 2px solid red; */
 
 }
-.deck_list .item .row {
+.deck_list .item .properties {
     gap: 3px;
-    margin-top: auto;
-    margin-bottom: 3px;
+    margin-left: 6px;
+    flex-direction: column;
 }
 .picker,
 .picker_value {
@@ -1767,6 +1821,9 @@ h3 > .user .avatar {
     display: flex;
     justify-content: center;
     align-items: center;
+}
+.picker {
+    --size: 32px;
 }
 .picker_value {
     --size: 40px;
@@ -1832,6 +1889,29 @@ h3 > .user .avatar {
     height: 48px;
     border: 2px solid white;
     border-radius: 5px;
+}
+.deck_list .custom_add_card {
+    padding: 18px 0;
+    font-size: 36pt;
+    font-weight: bolder;
+    color: var(--secondary-text);
+    margin: 12px 18px;
+
+    transition: border-color 0.2s ease;
+}
+.deck_list .custom_add_card:hover {
+    border-color: var(--bg-lighter);
+}
+
+.deck_list {
+    --shadow-color: rgba(0, 0, 0, 0.3);
+    --shadow-distance: 4px;
+}
+.deck_list .input_container {
+    --input-bg: var(--bg-main);
+
+    background-color: var(--bg-lighter);
+    border-color: var(--bg-main);
 }
 
 /* Right */

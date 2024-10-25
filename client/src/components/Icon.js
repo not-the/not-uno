@@ -6,6 +6,8 @@ const icons = {
     "wild": <img src="" alt="WILD" style={{ "display":"none" }} />,
     "choose_swap": <img src="/icons/Force Swap.svg" alt="Force Swap" />,
     "target_draw2": <img src="/icons/Target Draw.svg" alt="Target +2" />,
+    "true": "✓",
+    "false": "x"
 }
 
 

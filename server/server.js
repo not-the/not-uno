@@ -841,7 +841,11 @@ io.on("connection", (socket) => {
     }
 
     // Join room handler
-    function joinRoom(roomID, nameIsUUID) {
+    function joinRoom(rawRoomID, nameIsUUID) {
+        // Replace non-breaking hyphens
+        const roomID = rawRoomID.replaceAll("‑", "-").replaceAll("%E2%80%91", "-");
+        console.log(rawRoomID, roomID);
+
         // ID is not a string or too long
         if(typeof roomID !== 'string' || roomID.length < 4 || roomID.length > 32) {
             console.warn(`Failed trying to join room: User ID ${socket.id}`);

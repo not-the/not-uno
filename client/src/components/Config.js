@@ -67,6 +67,15 @@ export default function Config({ name, game, disabled }) {
         }
     }
 
+
+    // Custom deck experiment
+    // let custom0 = localStorage.getItem("nu_custom_0");
+    // if(custom0 !== undefined) {
+    //     options.starting_deck.dropdown.push("custom 0");
+    // }
+
+
+    
     const option = options[name];
     const condition = disabled || option?.condition?.();
     const disabled_reason = option.condition_reason ?? "Not implemented";

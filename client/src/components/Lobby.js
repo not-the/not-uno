@@ -73,7 +73,8 @@ export default function Lobby({ game, startGame, toast }) {
                                     <button className="button_primary button_secondary share_button button_lightbg hover_border_shadowed"
                                         onClick={shareRoom}
                                     >
-                                        <span>{game.roomID}</span>
+                                        {/* Replace with non-breaking hyphens */}
+                                        <span>{game.roomID.replaceAll("-", "‑")}</span>
 
                                         <img src="/icons/Share.svg" alt="" className="float_right parent_invert" />
                                     </button>

@@ -4,10 +4,10 @@ import { capitalizeFirstLetter } from "../Util";
 import lang from "../lang";
 
 export default function Home({ setMenu, joinRoom }) {
-    const [lobbies, setLobbies] = useState(undefined);
-    const [lobbyListFetched, setLobbyListFetched] = useState(false);
+    const [serverInfo, setServerInfo] = useState(undefined);
+    const [isLobbyListFetched, setIsLobbyListFetched] = useState(false);
 
-    const refreshButton = <div className="refresh_container margin_left_auto" data-list-fetched={lobbyListFetched}>
+    const refreshButton = <div className="refresh_container margin_left_auto" data-list-fetched={isLobbyListFetched}>
         {/* // Loader */}
         <img src="/icons/Loader.svg" alt="Waiting..." className="loader_spin" />
 
@@ -16,7 +16,7 @@ export default function Home({ setMenu, joinRoom }) {
     </div>
 
     function requestLobbies() {
-        setLobbyListFetched(false);
+        setIsLobbyListFetched(false);
         socket.emit("request_public_lobbies");
     }
 
@@ -27,9 +27,9 @@ export default function Home({ setMenu, joinRoom }) {
         let refreshLoop = setInterval(requestLobbies, 6000);
 
         // Recieve lobbies
-        socket.on("lobby_list", list => {
-            setLobbies(list.length !== 0 ? list : false);
-            setLobbyListFetched(true);
+        socket.on("lobby_list", response => {
+            setServerInfo(response.publicLobbies.length !== 0 ? response : false);
+            setIsLobbyListFetched(true);
 
             // Restart loop
             clearInterval(refreshLoop);
@@ -66,12 +66,12 @@ export default function Home({ setMenu, joinRoom }) {
 
                     {/* List */}
                     <div className="lobbies_list">
-                        {!lobbies ?
+                        {!serverInfo ?
                         <p className="center secondary_text">
                             No public lobbies open
                         </p>
                             :
-                        lobbies.map(lobby => {
+                        serverInfo.publicLobbies.map(lobby => {
                             let modeInfo = lang.en?.[lobby?.config?.starting_deck] ?? lobby?.config?.starting_deck;
 
                             if(lobby?.config?.xray) {
@@ -113,6 +113,11 @@ export default function Home({ setMenu, joinRoom }) {
                             )
                         })}
                     </div>
+
+                    {/* Bottom */}
+                    {/* <div className="bottom_bar secondary_text">
+                        {serverInfo?.online_users ?? 0} player{serverInfo?.online_users !== 1 ? "s" : ""} online
+                    </div> */}
                 </div>
                 <br/>
                 

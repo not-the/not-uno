@@ -479,6 +479,8 @@ a.button {
 
 /* Home */
 .lobbies_container {
+    position: relative;
+
     background-color: var(--bg-darker);
     margin-top: 6px;
     padding: 9px;
@@ -486,6 +488,14 @@ a.button {
 
     height: 400px;
     overflow-y: auto;
+}
+.lobbies_container .bottom_bar {
+    position: absolute;
+    bottom: 12px;
+    left: 15px;
+    right: 12px;
+
+    font-size: 11pt;
 }
 .lobbies_header {
     padding: 0 6px 12px;

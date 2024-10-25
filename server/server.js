@@ -1017,7 +1017,10 @@ io.on("connection", (socket) => {
         
         // Delay makes it feel like it's doing more work than it is
         setTimeout(() => {
-            socket.emit("lobby_list", publicLobbies);
+            socket.emit("lobby_list", {
+                online_users: Object.keys(allusers).length,
+                publicLobbies: publicLobbies,
+            });
         }, 250);
     })
 

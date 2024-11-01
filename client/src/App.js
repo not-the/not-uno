@@ -25,6 +25,9 @@ export default function App() {
 
     /** Emits start_game event */
     function startGame() {
+        if(isProduction && Object.keys(game.usersParsed).length === 1) {
+            if(!window.confirm("You are the only player in the lobby. Start anyway?")) return;
+        }
         socket.emit("start_game");
     }
 
@@ -409,7 +412,10 @@ export default function App() {
                             <td>{game.draw_count}</td>
                         </tr>
                     </table>
-                    <button onClick={debugDataRequest} className="pointer_events_all">Request server data</button>
+                    <br/>
+
+                    <button onClick={debugDataRequest} className="pointer_events_all">Request server data (console)</button><br/>
+                    <button onClick={() => console.log(game)} className="pointer_events_all">Game object (console)</button>
                 </div>
             </> : null}
         </>

@@ -102,7 +102,7 @@ h1, h2, h3, h4, h5, h6 {
     border-radius: 100px;
 
     position: relative;
-    z-index: 2;
+    z-index: 1;
 }
 .fancy_title::before {
     content: "";
@@ -368,13 +368,15 @@ a.button {
     cursor: unset;
 }
 .button_primary:not([disabled]):not(.no_interact):hover,
-.button_primary:not([disabled]):not(.no_interact):focus-visible {
+.button_primary:not([disabled]):not(.no_interact):focus-visible,
+.button_primary:not([disabled]):not(.no_interact):active {
     --shadow-distance: 5px;
     transform: translate(-1px, -1px);
     background-color: rgb(243, 251, 255);
 }
 .button_primary:not([disabled]):not(.no_interact):hover .parent_invert,
-.button_primary:not([disabled]):not(.no_interact):focus-visible .parent_invert {
+.button_primary:not([disabled]):not(.no_interact):focus-visible .parent_invert,
+.button_primary:not([disabled]):not(.no_interact):active .parent_invert {
     filter: invert();
 }
 .button_primary:not([disabled]):not(.no_interact):active {
@@ -448,7 +450,7 @@ a.button {
 .toggle > input { opacity:0; width:0; height:0; }
 .toggle > span {
     position: absolute;
-    top:0; left:0; right:0; bottom:0;
+    inset: 0;
     background-color: var(--bg-main);
     border: 2px solid transparent;
     transition: 0.1s ease-out, border-color 0.6s ease;
@@ -457,18 +459,28 @@ a.button {
     --shadow-color: transparent;
 }
 .toggle > span::before {
+    content: "-";
     position: absolute;
-    content: "";
     z-index: 2;
-    height: 22px;
-    width: 22px;
     left: 3px;
     bottom: 3px;
+
+    font-size: 18pt;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    height: 22px;
+    width: 22px;
+    border-radius: 5px;
+
+    color: var(--bg-lighter);
     background-color: var(--secondary-text);
     transition: 0.35s cubic-bezier(0.075, 0.82, 0.165, 1);
-    border-radius: 5px;
 }
 .toggle:not([aria-disabled="true"]):active > span::before {
+    /* content: "-"; */
     width: 28px;
 }
 .toggle:not([aria-disabled="true"]):active > input:checked + span:before { transform: translateX(15px); }
@@ -477,6 +489,9 @@ a.button {
     background-color: var(--accent-blue);
 }
 .toggle > input:checked + span:before {
+    content: "✔";
+    font-size: 12pt;
+    color: var(--accent-blue);
     transform: translateX(21px);
     background-color: var(--text);
 }
@@ -629,7 +644,7 @@ a.button {
 .input_container {
     --input-bg: var(--bg-lighter);
 
-    border-radius: 5px;
+    border-radius: 7px;
     overflow: hidden;
     background-color: var(--bg-main);
     border: 6px solid var(--input-bg);
@@ -640,7 +655,10 @@ a.button {
     user-select: none;
     touch-action: manipulation;
 }
-.input_container:has(input[type="checkbox"]) { background-color: var(--bg-lighter); }
+.input_container:has(input[type="checkbox"]) {
+    background-color: var(--input-bg);
+    border-width: 3px;
+}
 
 .input_container input,
 .input_container button,
@@ -1522,6 +1540,8 @@ button.share_button {
 .backdrop {
     position: fixed;
     inset: 0;
+    z-index: 2;
+
     background-color: rgba(0, 0, 0, 0.5);
     backdrop-filter: blur(9px);
 

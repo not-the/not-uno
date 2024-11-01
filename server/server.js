@@ -186,6 +186,7 @@ class Uno {
         
             infinite_draw: false,
             draw_stacking: "any",
+            always_play: false,
 
             public_lobby: false,
             enable_chat: true,
@@ -698,28 +699,38 @@ class Uno {
 
     get piletop() { return this.pile[this.pile.length-1]; }
 
-    /** Choose to end turn */
+    /** Player action - Choose to end turn */
     endTurn(socketID) {
         if(this.draw_count === 0 && this.draw_debt === 0) return;
 
         const pnum = this.getPnumFromSocketID(socketID);
         if(!this.isValidTurn(pnum)) return;
 
-        this.nextTurn();
+        // End turn, unless drawing with "Always Play" enabled
+        const continueturn = (this.config.always_play && this.draw_debt !== 0);
+        this.nextTurn(undefined, undefined, continueturn);
         this.updateClients();
     }
 
-    /** Start next turn */
-    nextTurn(skip=0, playerCard={}) {
+    /** Start next turn
+     * @param {Number} skip Number of players to skip
+     * @param {*} playerCard 
+     * @param {Boolean} keepTurn Does not end current player's turn but still enacts draw cards, etc
+     */
+    nextTurn(skip=0, playerCard={}, keepTurn) {
         const lastPlayerID = this.turn;
         const turnValue = ((1 + skip) * this.direction);
-        this.turn = clamp(
-            this.turn + turnValue,
-            this.players.length
-        );
-        // this.last_turn_rotation_value = this.turn_rotation_value;
-        this.turn_rotation_value += turnValue;
-        this.draw_count = 0;
+
+        // Update turn
+        if(!keepTurn) {
+            this.turn = clamp(
+                this.turn + turnValue,
+                this.players.length
+            );
+            // this.last_turn_rotation_value = this.turn_rotation_value;
+            this.turn_rotation_value += turnValue;
+            this.draw_count = 0;
+        }
 
         // Draw cards
         if(this.draw_debt > 0) {

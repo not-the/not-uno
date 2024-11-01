@@ -377,6 +377,11 @@ a.button {
 .button_primary:not([disabled]):not(.no_interact):focus-visible .parent_invert {
     filter: invert();
 }
+.button_primary:not([disabled]):not(.no_interact):active {
+    --shadow-distance: 1px;
+    transform: translate(1px, 1px);
+    background-color: rgb(243, 251, 255);
+}
 .button_primary > * {
     --shadow-color: rgba(0, 0, 0, 0.5);
     transition: filter 0.2s ease;

@@ -34,6 +34,12 @@ export default function Config({ name, game, disabled }) {
 
             type: "boolean"
         },
+        "always_play": {
+            desc: "Play your turn even after being forced to draw cards",
+            icon: "/icons/Continue.svg",
+
+            type: "boolean"
+        },
 
         "public_lobby": {
             desc: "Makes your lobby public",
@@ -92,7 +98,7 @@ export default function Config({ name, game, disabled }) {
                     {/* About */}
                     <div>
                         <h4 className="border_shadowed">
-                            {lang.en[name]}
+                            {lang.en[name] ?? name}
                             {condition ? <span className="small">({disabled_reason})</span> : null}
                         </h4>
                         <p className="desc">{option.desc}</p>

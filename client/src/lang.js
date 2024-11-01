@@ -8,6 +8,7 @@ const lang = {
         "enable_chat": "Chat",
         "xray": "Hands Down",
         "infinite_draw": "Infinite Draw",
+        "always_play": "Always Play",
 
         "normal": "Normal",
         "all_wilds": "All Wilds!",

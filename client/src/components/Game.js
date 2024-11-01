@@ -226,7 +226,13 @@ export default function Game({ game, setGame, startGame }) {
                     </button>
                     <button className="button_primary button_secondary button_lightbg hover_border_shadowed position_relative" onClick={endTurn} disabled={hightlightEndTurn}>
                         <kbd>E</kbd>
-                        <span>End turn</span>
+                        <span>
+                            {
+                                game.config.always_play && game.draw_debt !== 0 ?
+                                "Draw cards" :
+                                "End turn"
+                            }
+                        </span>
                         {/*!myTurn || */game.draw_debt === 0 ? null :
                             <div className="debt_indicator">
                                 +{game.draw_debt}

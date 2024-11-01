@@ -150,6 +150,7 @@ export default function Lobby({ game, startGame, toast }) {
                     <Config name="draw_stacking" game={game} />
                     <Config name="xray" game={game} />
                     <Config name="infinite_draw" game={game} />
+                    <Config name="always_play" game={game} />
                     {/* <Config name="continue" game={game} disabled={true} /> */}
                 </section>
             </div>

@@ -485,7 +485,7 @@ a.button {
 }
 .toggle:not([aria-disabled="true"]):active > input:checked + span:before { transform: translateX(15px); }
 .toggle > input:checked + span {
-    border-color: var(--accent-blue-light);
+    border-color: var(--accent-blue);
     background-color: var(--accent-blue);
 }
 .toggle > input:checked + span:before {
@@ -1274,7 +1274,7 @@ button.share_button {
     position: fixed;
     left: 0;
     bottom: 0;
-    z-index: 3;
+    z-index: 4;
 
     background-color: var(--bg-comp);
     border: 1px solid var(--bg-comp-lighter);
@@ -1385,7 +1385,7 @@ button.share_button {
     position: fixed;
     bottom: 48px;
     left: 24px;
-    z-index: 2;
+    z-index: 3;
 
     background-color: var(--bg-comp);
     padding: 12px;
@@ -1509,7 +1509,7 @@ button.share_button {
     position: fixed;
     top: 50%; left: 50%;
     transform: translate(-50%, -50%);
-    z-index: 3;
+    z-index: 5;
 
     animation: profile_in 0.25s ease;
 }
@@ -1737,7 +1737,7 @@ h3 > .user .avatar {
 .overlay {
     position: fixed;
     inset: 0;
-    z-index: 1;
+    z-index: 3;
     display: flex;
     justify-content: center;
     align-items: center;

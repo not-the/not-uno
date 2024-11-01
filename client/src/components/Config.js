@@ -26,7 +26,7 @@ export default function Config({ name, game, disabled }) {
             icon: "/icons/Draw Stacking.svg",
 
             type: "dropdown",
-            dropdown: ["off", /*"matching",*/ "any"]
+            dropdown: ["off", "matching", "any"]
         },
         "continue": {
             desc: "Continue the game after a winner is decided",

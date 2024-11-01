@@ -185,7 +185,7 @@ class Uno {
             // call_penalty_draw_amount: 2,
         
             infinite_draw: false,
-            draw_stacking: "any",
+            draw_stacking: "matching",
             always_play: false,
 
             public_lobby: false,
@@ -607,15 +607,17 @@ class Uno {
             return false;
         };
 
+        // Card does not deflect debt
+        const needsMatching = this.config.draw_stacking === "matching";
+        const isMatching = playerCard.draw === this.piletop.draw;
+        if(this.draw_debt > 0 && (!playerCard.draw || (needsMatching && !isMatching))) {
+            return this.debtToast(socketID);
+        }
+
         // Test discard pile for valid move
         if(!testCards(playerCard, this.piletop)) {
             // console.warn(`[Player ${pnum}] Invalid card`);
             return false;
-        }
-
-        // Card does not deflect debt
-        if(this.draw_debt > 0 && !playerCard.draw) {
-            return this.debtToast(socketID);
         }
 
         // Pre-move action prompt

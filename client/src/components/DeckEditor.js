@@ -4,15 +4,16 @@ import Card from "./Card"
 import Icon from "./Icon"
 import { capitalizeFirstLetter } from "../Util"
 import { isProduction } from "../socket"
+import lang from "../lang";
 
 const cardProperties = {
     "type": [
-        0, 1, 2, 3, 4, 5, 6, 7, 8, 9,
-        10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
-        "skip", "reverse", "wild", "draw2", "draw4",
+        "0", "1", "2", "3", "4", "5", "6", "7", "8", "9",
+        "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20",
+        "reverse", "skip", "2_skip", "wild", "draw2", "draw4",
         "choose_swap", "target_draw2",
         "!", "?", "$", "*",
-        "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"
+        "A", "B", "C", "D", "E", "F", "G", "H", "J", "K", "L", "M", "N", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"
     ],
     "color": [ "black", "red", "yellow", "blue", "green", "cyan", "orange", "purple", "pink" ],
 
@@ -98,7 +99,11 @@ export default function DeckEditor({ setMenu, toast }) {
             delete card.rotation;
             return card;
         })
-        return result;
+        return {
+            name: document.getElementById("custom_name").value,
+            desc: document.getElementById("custom_desc").value,
+            cards: result
+        };
     }
 
     function writeToLocal() {
@@ -152,16 +157,12 @@ export default function DeckEditor({ setMenu, toast }) {
             {/* Nav */}
             <nav>
                 <h2 class="border_shadowed">
-                    <span id="custom_name" contentEditable="plaintext-only">
-                        Unnamed Deck
-                    </span>
+                    <input type="text" id="custom_name" class="discreet" defaultValue="Unnamed Deck" />
                     <img src="/icons/edit_24dp_FFFFFF_FILL0_wght400_GRAD200_opsz24.svg" alt="Rename" className="icon_inline"/>
                 </h2>
 
                 <h4 class="secondary_text">
-                    <span id="custom_desc" contentEditable="plaintext-only">
-                        Description
-                    </span>
+                    <input type="text" id="custom_desc" class="discreet" defaultValue="Description" />
                     <img src="/icons/edit_24dp_FFFFFF_FILL0_wght400_GRAD200_opsz24.svg" alt="Rename" className="icon_inline" />
                 </h4>
 
@@ -318,6 +319,10 @@ export default function DeckEditor({ setMenu, toast }) {
                 if(value === "draw2") card.draw = 2;
                 else delete card.draw;
 
+                // Target Draw2
+                if(value === "target_draw2") card.target_draw = 2;
+                else delete card.target_draw;
+
                 // Draw4
                 if(value === "draw4") {
                     card.draw = 4;
@@ -333,7 +338,14 @@ export default function DeckEditor({ setMenu, toast }) {
                 else delete card.reverse;
 
                 // Skip
-                if(value === "skip") card.skip = true;
+                if(value === "skip") card.skip = 1;
+                else delete card.skip;
+
+                // Double skip
+                if(typeof value === 'string' && value.includes("_skip")) {
+                    card.type = "skip";
+                    card.skip = Number(value[0]);
+                }
                 else delete card.skip;
             }
 
@@ -343,7 +355,9 @@ export default function DeckEditor({ setMenu, toast }) {
         // Boolean toggles
         const isBoolean = cardProperties[property] === Boolean;
         const onClick = isBoolean ? () => handleClick() : null;
-        const dataTitle = isBoolean ? `${capitalizeFirstLetter(property)}` : null;
+
+        const propertyLabel = lang.en[property] ?? capitalizeFirstLetter(property);
+        const dataTitle = isBoolean ? `${propertyLabel}` : null;
 
         return (
             <button className={`picker ${value}`} onClick={onClick} data-title={dataTitle}>
@@ -369,7 +383,7 @@ export default function DeckEditor({ setMenu, toast }) {
 
                     {/* Label */}
                     <strong>
-                        {capitalizeFirstLetter(property)} ({value})
+                        {propertyLabel} ({value})
                     </strong>
                 </div>    
             }

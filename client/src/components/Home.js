@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { socket } from "../socket";
+import { isProduction, socket } from "../socket";
 import { capitalizeFirstLetter } from "../Util";
 import lang from "../lang";
 
@@ -82,33 +82,48 @@ export default function Home({ setMenu, joinRoom }) {
                             const host = lobby?.usersParsed[lobby?.host];
 
                             return (
-                                <div
-                                    className="lobby flex gap_12px hover_border_shadowed"
-                                    role="button" tabIndex="0"
-                                    onClick={() => joinRoom(lobby.roomID)}
-                                >
-                                    {/* Icon */}
-                                    <img src={`/avatars/${host?.avatar}.png`} alt="" className="avatar" />
+                                <div className="lobby flex gap_12px">
+                                    {/* Inner */}
+                                    <div
+                                        className="lobby_block inner flex gap_12px hover_border_shadowed"
+                                        role="button" tabIndex="0"
+                                        onClick={() => joinRoom(lobby.roomID)}
+                                    >
+                                        {/* Icon */}
+                                        <img src={`/avatars/${host?.avatar}.png`} alt="" className="avatar" />
 
-                                    {/* Right */}
-                                    <div className="fullwidth">
-                                        <div className="flex">
-                                            <strong>
-                                                {lobby.roomID}
-                                            </strong>
-                                            <div className="margin_left_auto">
-                                                Mode: <b>{modeInfo}</b>
+                                        {/* Right */}
+                                        <div className="fullwidth">
+                                            <div className="flex">
+                                                <strong>
+                                                    {lobby.roomID}
+                                                </strong>
+                                                <div className="margin_left_auto">
+                                                    Mode: <b>{modeInfo}</b>
+                                                </div>
+                                            </div>
+                                            <div className="flex secondary_text">
+                                                <p>
+                                                    Host: <b>{host?.name}</b>
+                                                </p>
+                                                <p className="margin_left_auto">
+                                                    Players: {Object.keys(lobby?.usersParsed??{}).length}/4
+                                                </p>
                                             </div>
                                         </div>
-                                        <div className="flex secondary_text">
-                                            <p>
-                                                Host: <b>{host?.name}</b>
-                                            </p>
-                                            <p className="margin_left_auto">
-                                                Players: {Object.keys(lobby?.usersParsed??{}).length}/4
-                                            </p>
-                                        </div>
                                     </div>
+                                    
+                                    {/* Spectate */}
+                                    {!lobby.config.spectators ? null :
+                                    <div
+                                        className="lobby_block spectate_btn hover_border_shadowed flex flex_center"
+                                        title="Spectate"
+                                        role="button" tabIndex="0"
+                                        onClick={() => joinRoom(lobby.roomID, true)}
+                                    >
+                                        <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#ffffff"><path d="M480.18-303q73.82 0 125.32-51.68 51.5-51.67 51.5-125.5 0-73.82-51.68-125.32-51.67-51.5-125.5-51.5-73.82 0-125.32 51.68-51.5 51.67-51.5 125.5 0 73.82 51.68 125.32 51.67 51.5 125.5 51.5Zm-.12-101q-31.64 0-53.85-22.15T404-479.94q0-31.64 22.15-53.85T479.94-556q31.64 0 53.85 22.15T556-480.06q0 31.64-22.15 53.85T480.06-404ZM480-149q-159.6 0-288.3-92Q63-333 3-480q60-147 188.7-239T480-811q159.6 0 288.3 92Q897-627 957-480q-60 147-188.7 239T480-149Zm0-331Zm.09 218q111.91 0 206.7-59.04Q781.58-380.08 833-480q-51.42-99.92-146.3-158.96Q591.82-698 479.91-698t-206.7 59.04Q178.42-579.92 127-480q51.42 99.92 146.3 158.96Q368.18-262 480.09-262Z"/></svg>
+                                    </div>
+                                }
                                 </div>
                             )
                         })}
@@ -123,9 +138,13 @@ export default function Home({ setMenu, joinRoom }) {
                 
                 {/* More */}
                 <div className="flex media_flex gap_12px">
-                    {/* <button className="button_primary button_secondary button_mainbg button_border_bg_lighter hover_border_shadowed" onClick={() => setMenu("deck_editor")}>
-                        Custom Deck Builder
-                    </button> */}
+                    {/* Open deck builder */}
+                    {
+                        isProduction ? null :
+                        <button className="button_primary button_secondary button_mainbg button_border_bg_lighter hover_border_shadowed" onClick={() => setMenu("deck_editor")}>
+                            Custom Deck Builder (WIP)
+                        </button>
+                    }
                     {/* <button className="button_primary button_secondary button_mainbg button_border_bg_lighter hover_border_shadowed">
                         Placeholder
                     </button> */}
@@ -134,6 +153,10 @@ export default function Home({ setMenu, joinRoom }) {
                 <br/>
                 <br/>
                 <p className="secondary_text center">Play UNO online with friends!</p>
+                <br/>
+                <br/>
+                <br/>
+                <br/>
 
             </main>
         </>

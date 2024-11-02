@@ -2,7 +2,7 @@
 
 import Icon from "./Icon.js"
 
-export default function Card({ data=null, owner, game, rotation=0, onClick, style={}, animated }) {
+export default function Card({ data=null, owner, game, rotation=0, onClick, style={}, animated, clickable }) {
 
     // Empty
     if(data === null) return (
@@ -16,7 +16,7 @@ export default function Card({ data=null, owner, game, rotation=0, onClick, styl
     // let visible = (data.hidden || (owner !== game?.my_num));
     let visible = data.hidden;
     if(visible && !game?.config?.xray) return (
-            <div className={`card back${animated?" animated":""}`} onClick={onClick} tabIndex="0" role="button">
+            <div className={`card back${animated?" animated":""}${clickable ? " clickable":""}`} onClick={onClick} tabIndex="0" role="button">
                 <div className="oval"/>
                 <Icon icon="NOPE" />
             </div>
@@ -40,7 +40,7 @@ export default function Card({ data=null, owner, game, rotation=0, onClick, styl
     let classes = `card${data.color === 'black' ? ' no_decorator' : ''}`;
     if(visible && game?.config?.xray) classes += " xrayed";
     classes += ` ${data.type}`;
-    if(owner === game?.my_num && onClick !== undefined) classes += " clickable";
+    if((owner === game?.my_num && onClick !== undefined) || clickable) classes += " clickable";
     if(animated) classes += " animated";
     if(data.style) classes += ` style_${data.style}`
 

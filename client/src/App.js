@@ -31,6 +31,11 @@ export default function App() {
         socket.emit("start_game");
     }
 
+    /** Emits leave event */
+    function leaveGame() {
+        socket.emit("leave");
+    }
+
     // Chat
     const [chatOpen, setChatOpen] = useState(false);
     const [chatInput, setChatInput] = useState("");
@@ -103,10 +108,10 @@ export default function App() {
         socket.emit("setUser", { name, avatar });
     }
 
-    function joinRoom(roomID) {
+    function joinRoom(roomID, spectate=false) {
         if(roomID === '') roomID = undefined;
 
-        socket.emit("join", roomID);
+        socket.emit("join", { roomID, spectate });
         setMenu("joining");
 
         // Mark existing chatCache as old
@@ -148,7 +153,7 @@ export default function App() {
         // Game
         menu === "game" ? <Game game={game} setGame={setGame} startGame={startGame} /> :
         // Lobby
-        menu === "lobby" ? <Lobby game={game} setGame={setGame} startGame={startGame} toast={toast} /> :
+        menu === "lobby" ? <Lobby game={game} setGame={setGame} startGame={startGame} leaveGame={leaveGame} toast={toast} /> :
         // Joining...
         menu === "joining" ? <Joining game={game} setMenu={setMenu} /> :
         // Deck editor
@@ -248,6 +253,21 @@ export default function App() {
             }
         })
 
+        // Debug
+        // if(!isProduction) {
+        //     document.addEventListener("mousemove", mousemoveHandler);
+        // }
+        // function mousemoveHandler(event) {
+        //     window.mouse = { x:event.x, y:event.y };
+        //     const insight = document.getElementById("insight");
+        //     if(!insight) return;
+
+        //     requestAnimationFrame(() => {
+        //         insight.style.setProperty("--x", `${window.mouse.x}px`);
+        //         insight.style.setProperty("--y", `${window.mouse.y}px`);
+        //     })
+        // }
+
         // Unmount
         return () => {
             socket.off("chat_receive");
@@ -261,6 +281,10 @@ export default function App() {
             socket.off("request_custom_deck");
 
             window.location.hash = '';
+
+            // if(!isProduction) {
+            //     document.removeEventListener("mousemove", mousemoveHandler);
+            // }
         }
     }, []);
 
@@ -386,6 +410,38 @@ export default function App() {
                     <Toast data={{ title:"⚠ Disconnected" } } timed={false} classes="connection_lost" />
                 }
 
+                {/* Spectating */}
+                {
+                    game.my_spectating ?
+                    <Toast
+                        data={{
+                            title:null
+                        }}
+                        timed={false}
+                        interactive={true}
+                        classes="spectating_toast"
+                        afterJSX={
+                            <div>
+                                {/* Desc */}
+                                <h5>
+                                    Spectating...
+                                </h5>
+
+                                {/* Buttons */}
+                                <div className="flex flex_center_vertically gap_12px">
+                                    <button className="button_primary button_secondary button_transparent hover_border_shadowed" onClick={leaveGame}>
+                                        Leave
+                                    </button>
+                                    <button className="button_primary button_secondary button_transparent hover_border_shadowed" onClick={() => joinRoom(game.roomID)} disabled={game.state !== "lobby"}>
+                                        Join -&gt;
+                                    </button>
+                                </div>
+                            </div>
+                        }
+                    />
+                    : null
+                }
+
                 {/* Notifications */}
                 {toasts.map((t, index) => <Toast data={t} key={index} timed={t.timed} />)}
             </div>
@@ -404,12 +460,16 @@ export default function App() {
                             <td>{socket?.id}</td>
                         </tr>
                         <tr>
-                            <th>pnum</th>
+                            <th>my_num</th>
                             <td>{game?.my_num}</td>
                         </tr>
                         <tr>
-                            <th>draw_count</th>
-                            <td>{game.draw_count}</td>
+                            <th>my_spectating</th>
+                            <td>{String(game.my_spectating)}</td>
+                        </tr>
+                        <tr>
+                            <th>spectatorCount</th>
+                            <td>{game.spectatorCount}</td>
                         </tr>
                     </table>
                     <br/>
@@ -417,6 +477,11 @@ export default function App() {
                     <button onClick={debugDataRequest} className="pointer_events_all">Request server data (console)</button><br/>
                     <button onClick={() => console.log(game)} className="pointer_events_all">Game object (console)</button>
                 </div>
+
+                {/* Insight debug tooltip */}
+                {/* <div id="insight">
+                    Card information goes here
+                </div> */}
             </> : null}
         </>
     );

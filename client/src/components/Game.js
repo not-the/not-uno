@@ -60,10 +60,12 @@ export default function Game({ game, setGame, startGame }) {
 
     // Points in correct direction but arrow does not rotate in correct direction
     const arrowPosString = getPlayerOnscreenPosition(game.turn);
+    console.log(arrowPosString);
     let arrowRotation = 0;
-    if(arrowPosString === "top") arrowRotation = 90;
+    if(arrowPosString === "left") arrowRotation = 0;
+    else if(arrowPosString === "top") arrowRotation = 90;
     else if(arrowPosString === "right") arrowRotation = 180;
-    else arrowRotation = 270;
+    else if(arrowPosString === "bottom") arrowRotation = 270;
 
     // Rematch count
     const playersWantRematch = game.players.filter(p => p.wants_rematch === true).length;
@@ -167,10 +169,24 @@ export default function Game({ game, setGame, startGame }) {
         {/* Game container */}
         <main id="game">
             {/* Menu */}
-            <button className="button_primary button_secondary button_micro button_mainbg button_border_bg_lighter hover_border_shadowed" id="menu_button" onClick={toggleMenu}>
-                <span>Menu</span>
-                {/* <kbd>ESC</kbd> */}
-            </button>
+            <div className="menu_bar flex flex_center_vertically gap_12px">
+                {/* Button */}
+                <button className="button_primary button_secondary button_micro button_mainbg button_border_bg_lighter hover_border_shadowed" id="menu_button" onClick={toggleMenu}>
+                    <span>Menu</span>
+                    {/* <kbd>ESC</kbd> */}
+                </button>
+
+                {/* Spectators */}
+                {game.spectatorCount === 0 ? null :
+                    <p className="secondary_text">
+                        {/* Icon */}
+                        <svg class="icon_inline secondary_text" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#ffffff"><path d="M480.18-303q73.82 0 125.32-51.68 51.5-51.67 51.5-125.5 0-73.82-51.68-125.32-51.67-51.5-125.5-51.5-73.82 0-125.32 51.68-51.5 51.67-51.5 125.5 0 73.82 51.68 125.32 51.67 51.5 125.5 51.5Zm-.12-101q-31.64 0-53.85-22.15T404-479.94q0-31.64 22.15-53.85T479.94-556q31.64 0 53.85 22.15T556-480.06q0 31.64-22.15 53.85T480.06-404ZM480-149q-159.6 0-288.3-92Q63-333 3-480q60-147 188.7-239T480-811q159.6 0 288.3 92Q897-627 957-480q-60 147-188.7 239T480-149Zm0-331Zm.09 218q111.91 0 206.7-59.04Q781.58-380.08 833-480q-51.42-99.92-146.3-158.96Q591.82-698 479.91-698t-206.7 59.04Q178.42-579.92 127-480q51.42 99.92 146.3 158.96Q368.18-262 480.09-262Z"/></svg>
+
+                        {/* Count */}
+                        {game.spectatorCount} spectator{game.spectatorCount===1?"":"s"}
+                    </p>
+                }
+            </div>
 
             {/* Center */}
             <div id="game_center">
@@ -179,7 +195,7 @@ export default function Game({ game, setGame, startGame }) {
                     <div id="deck">
                         {/* Player {game.turn+1}'s turn<br/>
                         Deck ({game.deck.length}) */}
-                        <Card data={game.deck[game.deck.length-1]} onClick={() => drawCard()} />
+                        <Card data={game.deck[game.deck.length-1]} onClick={() => drawCard()} clickable={game.my_num !== -1} />
                         <div className="card_stack" style={{ "height": `${game.deck.length/4}px` }} />
                     </div>
 
@@ -410,7 +426,6 @@ export default function Game({ game, setGame, startGame }) {
             <div className="inner">
                 <h2 className="border_shadowed">Menu</h2>
 
-
                 {/* Info */}
                 <div className="flex">
                     {/* Players */}
@@ -462,7 +477,12 @@ export default function Game({ game, setGame, startGame }) {
 
                     {/* Leave */}
                     <button className="button_primary button_secondary button_transparent hover_border_shadowed" onClick={leaveGame}>
-                        <span>Quit game</span>
+                        <span>
+                            {game.my_num !== -1 ?
+                            "Quit game" :
+                            "Stop spectating"
+                            }
+                        </span>
                     </button>
                 </div>
             </div>

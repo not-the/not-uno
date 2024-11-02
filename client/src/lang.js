@@ -5,6 +5,7 @@ const lang = {
         "draw_stacking": "Draw Stacking",
         "continue": "Continues",
         "public_lobby": "Public",
+        "spectators": "Spectators",
         "enable_chat": "Chat",
         "xray": "Hands Down",
         "infinite_draw": "Infinite Draw",
@@ -19,7 +20,9 @@ const lang = {
         "any": "Any",
 
         "false": "",
-        "true": "Enabled"
+        "true": "Enabled",
+
+        "choose_color": "Choose color"
     }
 }
 

@@ -189,6 +189,7 @@ class Uno {
             always_play: false,
 
             public_lobby: false,
+            spectators: true,
             enable_chat: true,
             xray: false
         }
@@ -206,7 +207,7 @@ class Uno {
         this.state = 'lobby';
         this.winner = undefined;
 
-        this.players = [];
+        this.players = []; // In-play players
 
         this.draw_debt = 0;
 
@@ -225,8 +226,15 @@ class Uno {
     /** Object of users (socketID:data pairs) */
     get users() {
         let users = {};
-        for(const PID of this.playersBySocket) users[PID] = allusers[PID];
+        for(const PID of this.playersBySocket) {
+            if(allusers[PID].spectating) continue;
+            users[PID] = allusers[PID];
+        }
         return users;
+    }
+
+    get spectatorCount() {
+        return this.playersBySocket.filter(PID => allusers[PID].spectating).length;
     }
 
     /** Player leave game
@@ -235,16 +243,17 @@ class Uno {
      */
     leave(socket, sendtoast) {
         const roomID = this.roomID;
+        const wasSpectator = this.isSpectating(socket.id);
 
         // Remove player from game
-        this.players.splice(this.getPnumFromSocketID(socket.id), 1);
+        if(!wasSpectator) this.players.splice(this.getPnumFromSocketID(socket.id), 1);
 
         // Re-register user as being in room
         delete usersRooms[socket.id];
         socket.leave(roomID);
 
         // Tell room someone left
-        socket.to(roomID).emit("toast", {
+        if(!wasSpectator) socket.to(roomID).emit("toast", {
             title: `"${allusers[socket.id]?.name ?? "User"}" left!`
         })
 
@@ -255,10 +264,9 @@ class Uno {
         });
 
         // All players have left
-        // console.log('### ', this.players);
-        console.log(`Someone left. this.playersBySocket.length = ${this.playersBySocket.length}`)
-        if(this.playersBySocket.length === 0) {
+        if((this.playersBySocket.length - this.spectatorCount) === 0) {
             // console.log(`Room [${roomID}] is empty, closing game...`);
+            this.emit("toast", { title: "Game ended" });
             return this.close();
         }
 
@@ -299,7 +307,10 @@ class Uno {
 
         // Flatten data
         clone.usersParsed = this.users; // User list
-        hideAll(clone.deck, true); // Obfuscate deck
+        clone.spectatorCount = this.spectatorCount;
+
+        // Obfuscate deck
+        hideAll(clone.deck, true);
 
         return clone;
     }
@@ -319,9 +330,10 @@ class Uno {
 
             // Get User ID
             tailoredGame.my_num = this.getPnumFromSocketID(socketID, tailoredGame.players);
+            tailoredGame.my_spectating = this.isSpectating(socketID);
 
             // Other player's cards
-            if(!this.config.xray) {
+            if(!this.config.xray && !this.isSpectating(socketID)) {
                 // Hands
                 for(const pnum in tailoredGame.players) {
                     if(pnum != tailoredGame.my_num) hideAll(tailoredGame.players[pnum].cards, true);
@@ -347,6 +359,10 @@ class Uno {
         // this.emit("gameState", clone);
     }
 
+    isSpectating(socketID) {
+        return Boolean(allusers?.[socketID]?.spectating);
+    }
+
     setConfigOption(socket, option, value) {
         if(this.host !== socket.id) return socket.emit("Toast", {
             msg: "Must be the host to change game config"
@@ -354,6 +370,9 @@ class Uno {
 
         if(!this.config.hasOwnProperty(option)) return; // Config property doesn't exist
         if(typeof value !== typeof this.config[option]) return; // New value doesn't match existing type
+
+        // Invalid choice
+        // if ... return;
 
         // Set
         this.config[option] = value;
@@ -383,6 +402,11 @@ class Uno {
         }
     }
 
+    /** Returns the index of a given socket id within the players list
+     * @param {*} socketID Socket ID
+     * @param {*} players Players list (optional)
+     * @returns 
+     */
     getPnumFromSocketID(socketID, players=this.players) {
         return players.findIndex(p => p?.socketID === socketID);
     }
@@ -452,7 +476,9 @@ class Uno {
     /** Runs the addPlayer() method for each connected user */
     generatePlayers() {
         let sockets = this.playersBySocket;
+        console.log(sockets);
         for(let i = 0; i < sockets.length; i++) {
+            if(allusers[sockets?.[i]]?.spectating) continue;
             this.addPlayer(sockets[i]);
         }
     }
@@ -571,7 +597,11 @@ class Uno {
     }
 
     isValidTurn(pnum) {
-        return this.turn === pnum && this.winner === undefined;
+        return (
+            this.turn === pnum && // Is turn
+            this.winner === undefined && // Not in win state
+            pnum !== -1 // Not spectating
+        );
     }
 
     /** Swaps 2 player's hands
@@ -776,16 +806,15 @@ io.on("connection", (socket) => {
     console.log(`Connection: ${allusers[socket.id].name} [${socket.id}]`);
 
     // Join
-    socket.on("join", data => {
-        console.log(data);
+    socket.on("join", ({ roomID, spectate }) => {
+        let roomIDCopy = structuredClone(roomID);
 
-        let roomID = structuredClone(data);
-        let needsRandom = (!roomID);
-        if(needsRandom) roomID = getRoomUUID();
+        // ID undefined, needs random ID
+        const needsRandom = (!roomIDCopy);
+        if(needsRandom) roomIDCopy = getRoomUUID();
 
-        console.log(roomID, needsRandom);
-
-        joinRoom(roomID, needsRandom);
+        // Join
+        joinRoom(roomIDCopy, needsRandom, spectate);
     })
 
     socket.on("leave", () => {
@@ -854,7 +883,7 @@ io.on("connection", (socket) => {
     }
 
     // Join room handler
-    function joinRoom(rawRoomID, nameIsUUID) {
+    function joinRoom(rawRoomID, nameIsUUID, spectate=false) {
         // Replace non-breaking hyphens
         const roomID = rawRoomID.replaceAll("‑", "-").replaceAll("%E2%80%91", "-");
         console.log(rawRoomID, roomID);
@@ -914,19 +943,28 @@ io.on("connection", (socket) => {
 
         // Join
         usersRooms[socket.id] = roomID;
-        socket.join(roomID);
+        socket.join(roomID); // Join
+        allusers[socket.id].spectating = Boolean(spectate);
+
+        // Emit join
         socket.emit("joined", roomID); // Give client room ID
         // console.log(socket.id, ' is in rooms: ', socket.rooms);
 
         // Toast
-        socket.emit("toast", {
+        if(!spectate) socket.emit("toast", {
             title: toastTitle
         });
 
+        // Join message
+        const joinMessage =
+            !spectate ?
+                `"${allusers[socket.id].name}" joined!` :
+                `"${allusers[socket.id].name}" is spectating`;
         socket.to(roomID).emit("toast", {
-            msg: `"${allusers[socket.id].name}" joined!`
+            msg: joinMessage
         });
 
+        // Update
         game.updateClients();
     }
 

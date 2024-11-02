@@ -24,6 +24,10 @@
     --bg-comp-light: rgb(19, 83, 143);
     --bg-comp-lighter: rgb(48, 128, 202);
 
+    --bg-purple: rgb(46, 47, 117);
+    --bg-purple-light: rgb(59, 61, 143);
+    --bg-purple-lighter: rgb(100, 102, 216);
+
     /* Text */
     --text: white;
     --secondary-text: rgb(220, 224, 230);
@@ -135,6 +139,9 @@ h6 {
 img {
     -webkit-user-drag: none;
 }
+svg path {
+    fill: var(--fill);
+}
 hr {
     --color: var(--bg-comp-lighter);
 
@@ -210,6 +217,10 @@ button kbd {
 .flex_wrap { flex-wrap: wrap; }
 .flex_column { flex-direction: column; }
 .flex_important { display: flex !important; }
+.flex_center {
+    justify-content: center;
+    align-items: center;
+}
 .flex_center_vertically { align-items: center; }
 .flex_center_horizontally { justify-content: center; }
 .gap_6px { gap: 6px !important; }
@@ -271,8 +282,9 @@ section {
     display: inline-block;
     height: 0.75lh;
     vertical-align: -11%;
-    margin: 0 0.3em;
+    /* margin: 0 0.3em; */
 }
+.icon_inline.secondary_text { --fill: var(--secondary-text); }
 
 /* Logo */
 #main_logo {
@@ -300,6 +312,16 @@ table th {
 /* Inputs */
 input, button {
     font-family: 'Rubik', Arial, Helvetica, sans-serif;
+}
+
+input.discreet {
+    display: inline;
+    background-color: unset;
+    border: unset;
+    color: inherit;
+    font-size: inherit;
+    font-weight: inherit;
+    width: auto;
 }
 
 input.input_primary {
@@ -400,8 +422,9 @@ a.button {
     /* display: unset; */
     justify-content: center;
     font-size: 12pt;
-    padding: 6px 24px;
+    padding: 6px 18px;
     border-width: 2px;
+    min-width: fit-content;
 }
 .button_secondary:not([disabled]):hover,
 .button_secondary:not([disabled]):focus-visible {
@@ -539,18 +562,19 @@ a.button {
     flex-direction: column;
     gap: 9px;
 }
-.lobby {
+.lobby > .lobby_block {
     background-color: var(--bg-main);
     border: 1px solid transparent;
     border-radius: 5px;
 
+    width: 100%;
     padding: 6px 9px;
 
     cursor: pointer;
     transition: border-color 0.4s ease, transform 0.15s ease;
 }
-.lobby:hover,
-.lobby:focus-visible {
+.lobby > .lobby_block:hover,
+.lobby > .lobby_block:focus-visible {
     border-color: var(--bg-lighter);
     --shadow-color: rgba(0, 0, 0, 0.3);
     transform: translate(-1px, -1px);
@@ -558,6 +582,18 @@ a.button {
 
     transition: border-color 0.1s ease;
 }
+.lobby > .inner {
+
+}
+.lobby > .spectate_btn {
+    max-width: fit-content;
+    padding: 12px;
+}
+.lobby > .spectate_btn > svg {
+    width: 20px;
+    height: 20px;
+}
+.lobby > .spectate_btn path { fill: var(--secondary-text); }
 
 
 
@@ -723,10 +759,11 @@ button.share_button {
     height: 100dvh;
 }
 
-#menu_button {
+.menu_bar {
     position: fixed;
     top: 18px;
     left: 24px;
+    right: 24px;
 }
 
 /* Loader */
@@ -788,19 +825,26 @@ button.share_button {
 }
 
 /* Compact all cards except current player's */
-.player:not(.position_bottom) .card:not(:first-of-type) {
-    margin-left: -50px;
+.player:not(.me) .card.back:not(:first-of-type) {
+    margin-left: -0.5em;
 }
+.player:not(.me) .card:not(:first-of-type) {
+    margin-left: -0.25em;
+}
+
 
 .position_bottom {
     position: absolute;
     align-self: flex-end;
     transform-origin: bottom center;
 }
+.position_bottom:not(.me) {
+    transform: scale(0.8);
+}
 .position_left {
     position: absolute;
     left: 0;
-    max-width: 95vh;
+    max-width: 80vh;
 
     transform-origin: bottom left;
     transform: rotate(90deg) scale(0.8) translateX(-80%);
@@ -819,7 +863,7 @@ button.share_button {
 .position_right {
     position: absolute;
     right: 0;
-    max-width: 95vh;
+    max-width: 80vh;
 
     transform-origin: bottom right;
     transform: rotate(-90deg) scale(0.8) translateX(80%);
@@ -1142,9 +1186,10 @@ button.share_button {
     position: fixed;
     /* bottom: 24px;
     right: 24px; */
-    top: 24px;
-    left: 50%;
-    transform: translateX(-50%);
+    top: 18px;
+    right: 24px;
+    /* left: 50%;
+    transform: translateX(-50%); */
     z-index: 4;
 
     width: 100%;
@@ -1166,6 +1211,7 @@ button.share_button {
     
     /* box-shadow: 0 2px 9px rgba(0, 0, 0, 0.6); */
 }
+.can_interact { pointer-events: all; }
 .toast_timed {
     --duration: 6s;
     animation: toast-anim var(--duration) forwards ease;
@@ -1485,9 +1531,9 @@ button.share_button {
 
 /* Profile dialog */
 .dialog {
-    --bg-comp: rgb(46, 47, 117);
-    --bg-comp-light: rgb(59, 61, 143);
-    --bg-comp-lighter: rgb(100, 102, 216);
+    --bg-comp: var(--bg-purple);
+    --bg-comp-light: var(--bg-purple-light);
+    --bg-comp-lighter: var(--bg-purple-lighter);
 
     position: fixed;
 
@@ -1501,8 +1547,8 @@ button.share_button {
     max-height: 100vh;
     overflow-y: auto;
 
-    background-color: var(--bg-comp);
-    border: 1px solid var(--bg-comp-lighter);
+    background-color: var(--bg-purple);
+    border: 1px solid var(--bg-purple-lighter);
     border-radius: 5px;
 }
 #profile {
@@ -1772,10 +1818,6 @@ h3 > .user .avatar {
     width: 100%;
     padding: 9px 9px 350px 9px;
 }
-#deck_editor [contentEditable] {
-    display: inline-block;
-    min-width: 100px;
-}
 .deck_list {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
@@ -1822,6 +1864,10 @@ h3 > .user .avatar {
 .deck_list > .item:focus-within table {
     transform: unset;
     opacity: 1;
+}
+.deck_list > .item:has(.picker:focus) table {
+    filter: brightness(70%);
+    opacity: 0.5;
 }
 .deck_list .item .upper {
     margin-bottom: 6px;
@@ -1998,6 +2044,19 @@ h3 > .user .avatar {
     opacity: 0;
 }
 
+#insight {
+    --x: 0px; --y: 0px;
+    position: absolute;
+    top: min(var(--y), calc(100dvh - 100px));
+    left: min(var(--x), calc(100dvw - 200px));
+
+    overflow: hidden;
+
+    background-color: rgba(0, 0, 0, 0.7);
+    padding: 6px 9px;
+    border-radius: 6px;
+}
+
 
 .connection_lost {
     --warning-red: rgb(175, 52, 68);
@@ -2009,6 +2068,14 @@ h3 > .user .avatar {
     text-align: center;
     
     animation: toast 0.3s ease 5s backwards;
+}
+.spectating_toast {
+    background-color: var(--bg-purple-light);
+    border-color: var(--bg-purple-lighter)
+}
+body:has(.spectating_toast) #main_background {
+    --bg-main: #2f523c;
+    --bg-darker: #16382e;
 }
 @keyframes toast {
     from {
@@ -2025,16 +2092,44 @@ h3 > .user .avatar {
     /* Card size */
     .card { font-size: 95px; }
     .card_stack { width: 95px; }
+
+    #game {
+        padding-top: 64px;
+    }
 }
 @media only screen and (max-width: 720px) {
+    /* Keybind */
+    kbd { display: none; }
+
+    /* Toasts */
+    #toasts {
+        right: unset;
+        left: 50%;
+        transform: translateX(-50%);
+        top: 64px;
+    }
+
     /* Chat */
     #chat_button {
         left: 12px;
         bottom: 200px;
     }
 
-    .player {
+    .position_bottom,
+    .position_top {
         max-width: 100vw;
+    }
+    .position_left,
+    .position_right {
+        max-width: 45vh;
+    }
+
+    /* Game */
+    #game {
+        padding-top: 64px;
+    }
+    body:has(.spectating_toast) #game {
+        padding-top: 170px;
     }
 
     /* Game Center */
@@ -2042,21 +2137,37 @@ h3 > .user .avatar {
         outline: 5px solid red;
     } */
     #game_center > .upper {
-        flex-direction: column;
+        flex-direction: row;
+        flex-wrap: wrap;
         align-items: center;
+        justify-content: center;
         gap: 9px;
+        margin-bottom: 9px;
     }
     #game_center > .upper > .middle {
         flex-direction: row;
         gap: 12px;
+
+        flex: 1 1 100%;
+        transform: scale(0.85);
     }
     #game_center > .lower {
         flex-direction: column;
         padding: 0;
+        max-width: 150px;
+        margin: 0 auto;
     }
-    #pile {
-        margin-bottom: 12px;
+    .middle { order: 1; }
+    #deck   { order: 2; }
+    #pile   { order: 3; }
+
+    .player h3 {
+        --shadow-distance: 3px;
     }
+    h3 > .user .name {
+        font-size: 12pt;
+    }
+    h3 > .user .avatar { --size: 20px; }
 
     /* Card size */
     .card { font-size: 72px; }

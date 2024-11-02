@@ -5,7 +5,7 @@ import User from "./User.js"
 import Config from "./Config.js"
 // import lang from "../lang.js";
 
-export default function Lobby({ game, startGame, toast }) {
+export default function Lobby({ game, startGame, toast, leaveGame }) {
 
     const playerMax = 4;
     const playerCount = Object.keys(game.usersParsed).length;
@@ -28,10 +28,6 @@ export default function Lobby({ game, startGame, toast }) {
             msg: "Share it to invite your friends"
         });
 
-    }
-
-    function leaveGame() {
-        socket.emit("leave");
     }
 
     return (
@@ -97,7 +93,7 @@ export default function Lobby({ game, startGame, toast }) {
                             onClick={leaveGame}
                         >
                             <span>
-                                Leave
+                                {!game.my_spectating ? "Leave" : "Stop spectating"}
                             </span>
                         </button>
                     </div>
@@ -113,6 +109,20 @@ export default function Lobby({ game, startGame, toast }) {
                                     {playerCount}/{playerMax}
                                 </h4>
                             </div>
+
+                            {/* Spectating */}
+                            {game.spectatorCount === 0 ? null :
+                                <div className="secondary_text">
+                                    {/* Icon */}
+                                    <svg class="icon_inline secondary_text" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#ffffff"><path d="M480.18-303q73.82 0 125.32-51.68 51.5-51.67 51.5-125.5 0-73.82-51.68-125.32-51.67-51.5-125.5-51.5-73.82 0-125.32 51.68-51.5 51.67-51.5 125.5 0 73.82 51.68 125.32 51.67 51.5 125.5 51.5Zm-.12-101q-31.64 0-53.85-22.15T404-479.94q0-31.64 22.15-53.85T479.94-556q31.64 0 53.85 22.15T556-480.06q0 31.64-22.15 53.85T480.06-404ZM480-149q-159.6 0-288.3-92Q63-333 3-480q60-147 188.7-239T480-811q159.6 0 288.3 92Q897-627 957-480q-60 147-188.7 239T480-149Zm0-331Zm.09 218q111.91 0 206.7-59.04Q781.58-380.08 833-480q-51.42-99.92-146.3-158.96Q591.82-698 479.91-698t-206.7 59.04Q178.42-579.92 127-480q51.42 99.92 146.3 158.96Q368.18-262 480.09-262Z"/></svg>
+
+                                    {/* Count */}
+                                    {game.spectatorCount} spectator{game.spectatorCount===1?"":"s"}
+
+                                    <br/>
+                                    <br/>
+                                </div>
+                            }
 
                             {/* List */}
                             <div className="users_list">
@@ -137,6 +147,7 @@ export default function Lobby({ game, startGame, toast }) {
                         <span>Room Options</span>
                     </h4>
                     <Config name="public_lobby" game={game} />
+                    <Config name="spectators" game={game} />
                     <Config name="enable_chat" game={game} />
                 </section>
 

@@ -50,6 +50,12 @@ export default function Config({ name, game, disabled }) {
             condition: () => !game?.nameIsUUID,
             condition_reason: "Room ID must not be user-defined"
         },
+        "spectators": {
+            desc: "Players can spectate your game",
+
+            icon: "/icons/Door.svg",
+            type: "boolean"
+        },
         "enable_chat": {
             desc: "Enables the chat menu",
 

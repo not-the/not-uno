@@ -6,7 +6,7 @@ export default function Header() {
 
             {/* Footer */}
             <footer id="footer_main">
-                <div className="inner">
+                <div className="inner flex flex_column gap_12px">
                     {/* <a href="https://notkal.com/not-uno" target="_blank" rel="noreferrer"
                         className="button button_primary button_secondary button_mainbg hover_border_shadowed button_border_bg_lighter flex flex_left"
                     >
@@ -14,10 +14,15 @@ export default function Header() {
                         <span>About</span>
                     </a> */}
                     <a href="https://notkal.com" target="_blank" rel="noreferrer"
-                        className="button button_primary button_secondary button_mainbg hover_border_shadowed button_border_bg_lighter flex flex_left"
+                        className="button button_primary button_secondary button_mainbg hover_border_shadowed button_border_bg_lighter flex"
                     >
                         <img src="https://notkal.com/assets/icon.png" alt="" />
                         <span>notkal.com</span>
+                    </a>
+                    <a href="https://notkal.com/posts/not-uno-changelog" target="_blank" rel="noreferrer"
+                        className="button button_primary button_secondary button_mainbg hover_border_shadowed button_border_bg_lighter"
+                    >
+                        <span>Changelog</span>
                     </a>
                 </div>
             </footer>

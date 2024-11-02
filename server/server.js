@@ -933,7 +933,14 @@ io.on("connection", (socket) => {
             }
         }
 
-        // Join existing room
+        // -- Join existing room -- //
+
+        // Room does not allow spectators
+        if(spectate && !game.config.spectators) {
+            socket.emit("join_failed");
+            socket.emit("toast", { title:"Room does not allow spectators" })
+            return;
+        }
 
         // Leave all other rooms
         for(const r of socket.rooms) allgames[r]?.leave(socket, false);

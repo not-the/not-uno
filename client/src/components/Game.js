@@ -68,7 +68,7 @@ export default function Game({ game, setGame, startGame }) {
     else if(arrowPosString === "bottom") arrowRotation = 270;
 
     // Rematch count
-    const playersWantRematch = game.players.filter(p => p.wants_rematch === true).length;
+    const playersWantRematch = game.players.filter(p => p?.wants_rematch === true).length;
 
     
     /** Returns a string (bottom, left, right, or top) based on a player ID
@@ -400,7 +400,7 @@ export default function Game({ game, setGame, startGame }) {
                             Play again
                         </button>
                         :
-                        <button className="button_primary button_secondary hover_border_shadowed" onClick={requestRematch} disabled={game.players[game.my_num].wants_rematch ? true : false}>
+                        <button className="button_primary button_secondary hover_border_shadowed" onClick={requestRematch} disabled={game.players?.[game.my_num]?.wants_rematch ? true : false}>
                             Request rematch
                         </button>
                     }

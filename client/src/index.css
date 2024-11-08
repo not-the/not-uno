@@ -817,6 +817,16 @@ button.share_button {
 }
 .player h3 {
     margin-bottom: 6px;
+
+    opacity: 0.6;
+    transform: scale(0.85);
+    transform-origin: bottom left;
+    transition: transform 0.35s ease, opacity 0.3s ease;
+}
+.player.current_turn h3 {
+    opacity: 1;
+    transform: unset;
+    transition-timing-function: cubic-bezier(.34,1.19,.46,1.62);
 }
 .player .avatar {
     transform-origin: left center;

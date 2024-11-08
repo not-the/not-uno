@@ -271,6 +271,7 @@ export default function Game({ game, setGame, startGame }) {
                 player_${playerIndex}
                 position_${playerPosition}
                 ${playerIndex === game.my_num ? "me" : ""}
+                ${game.turn === playerIndex ? "current_turn" : ""}
                 `;
 
                 // CIRCULAR POSITIONING

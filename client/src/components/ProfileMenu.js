@@ -2,13 +2,18 @@ import User from "./User"
 import { capitalizeFirstLetter } from "../Util"
 import { useState } from "react";
 
-export default function ProfileMenu({ profile, randomName, setUser, clientData, setProfileOpen }) {
+export default function ProfileMenu({ profile, getRandomName, setUser, clientData, setProfileOpen }) {
     const [nameInput, setNameInput] = useState(profile.name);
 
     function doneProfile() {
         setProfileOpen(false);
-
         setUser(nameInput);
+    }
+
+    function randomizeName() {
+        const result = getRandomName();
+        document.getElementById("username_input").value = result;
+        setNameInput(result);
     }
 
     return (
@@ -27,7 +32,7 @@ export default function ProfileMenu({ profile, randomName, setUser, clientData, 
                     {/* Random username */}
                     <button
                         className="hover_underline flex flex_center_vertically gap_6px margin_left_auto"
-                        onClick={() => document.getElementById("username_input").value = randomName()}
+                        onClick={randomizeName}
                     >
                         <img src="/icons/casino_24dp_E8EAED_FILL1_wght400_GRAD200_opsz20.svg" alt="Random" className="icon_inline parent_invert" />
                         Randomize
@@ -39,7 +44,7 @@ export default function ProfileMenu({ profile, randomName, setUser, clientData, 
                     type="text" name="username_input" id="username_input"
                     placeholder="Username"
                     defaultValue={profile.name}
-                    onChange={(event) => setNameInput(event.target.value)}
+                    onChange={event => setNameInput(event.target.value)}
                     onKeyDown={event => { if(event.key === "Enter") setUser(nameInput) }}
                 />
 

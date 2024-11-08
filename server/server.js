@@ -212,7 +212,7 @@ class Uno {
         this.draw_debt = 0;
 
         // Dev tools
-        this.control_everyone = true; // Currently does nothing
+        // this.control_everyone = true; // Currently does nothing
 
         // Register game
         allgames[roomID] = this;
@@ -1188,10 +1188,10 @@ app.get('/', (req, res) => {
 })
 
 // avatars.json
-// app.get('/avatars.json', (req, res) => {
-//     const responseJSON = data.avatars;
-//     res.send(responseJSON);
-// })
+app.get('/data.json', (req, res) => {
+    res.setHeader('Content-Type', 'application/json');
+    res.end(JSON.stringify(data));
+})
 
 
 // Listen

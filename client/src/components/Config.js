@@ -2,94 +2,20 @@
 import { useState } from "react"
 import { socket } from "../socket"
 
+import { clientData } from "../App.js"
 import lang from "../lang"
 
 /** Config item */
 export default function Config({ name, game, disabled }) {
-    const options = {
-        "starting_deck": {
-            desc: "Game version",
-            icon: "/icons/play.svg",
-
-            type: "dropdown",
-            dropdown: ["normal", "all_wilds", "debug"]
-        },
-        "starting_cards": {
-            desc: "Number of cards each player starts with",
-            icon: "/icons/Three Cards.svg",
-
-            type: "number",
-            min: 3, max: 12
-        },
-        "draw_stacking": {
-            desc: "Playing a +2 or +4 card allows you to avoid drawing cards yourself",
-            icon: "/icons/Draw Stacking.svg",
-
-            type: "dropdown",
-            dropdown: ["off", "matching", "any"]
-        },
-        "continue": {
-            desc: "Continue the game after a winner is decided",
-            icon: "/icons/Continue.svg",
-
-            type: "boolean"
-        },
-        "always_play": {
-            desc: "Play your turn even after being forced to draw cards",
-            icon: "/icons/Continue.svg",
-
-            type: "boolean"
-        },
-
-        "public_lobby": {
-            desc: "Makes your lobby public",
-
-            icon: "/icons/Door.svg",
-            type: "boolean",
-            
-            condition: () => !game?.nameIsUUID,
-            condition_reason: "Room ID must not be user-defined"
-        },
-        "spectators": {
-            desc: "Players can spectate your game",
-
-            icon: "/icons/Door.svg",
-            type: "boolean"
-        },
-        "enable_chat": {
-            desc: "Enables the chat menu",
-
-            icon: "/icons/chat.svg",
-            type: "boolean",
-
-            condition: () => game?.has_been_public,
-            condition_reason: "Private games only"
-        },
-        "xray": {
-            desc: "Everyone's cards are visible",
-
-            icon: "/icons/Magnify.svg",
-            type: "boolean"
-        },
-        "infinite_draw": {
-            desc: "You can continue to draw cards until you get a match",
-
-            icon: "/icons/Infinity.svg",
-            type: "boolean"
-        }
+    // Data from server
+    const options = clientData.config;
+    const conditionals = {
+        "public_lobby": () => !game?.nameIsUUID,
+        "enable_chat": () => game?.has_been_public,
     }
-
-
-    // Custom deck experiment
-    // let custom0 = localStorage.getItem("nu_custom_0");
-    // if(custom0 !== undefined) {
-    //     options.starting_deck.dropdown.push("custom 0");
-    // }
-
-
     
     const option = options[name];
-    const condition = disabled || option?.condition?.();
+    const condition = disabled || conditionals?.[name]?.();
     const disabled_reason = option.condition_reason ?? "Not implemented";
 
     function updateConfig(option, value) {

@@ -288,14 +288,176 @@
     }
 },
 
-"NEEDS TO BE UPDATED IN 'clientData.json' TOO": 0,
+"config": {
+    "starting_deck": {
+        "desc": "Game version",
+        "icon": "/icons/play.svg",
+
+        "type": "dropdown",
+        "dropdown": ["normal", "all_wilds", "debug"]
+    },
+    "starting_cards": {
+        "desc": "Number of cards each player starts with",
+        "icon": "/icons/Three Cards.svg",
+
+        "type": "number",
+        "min": 3, "max": 12
+    },
+    "draw_stacking": {
+        "desc": "Playing a +2 or +4 card allows you to avoid drawing cards yourself",
+        "icon": "/icons/Draw Stacking.svg",
+
+        "type": "dropdown",
+        "dropdown": ["off", "matching", "any"]
+    },
+    "continue": {
+        "desc": "Continue the game after a winner is decided",
+        "icon": "/icons/Continue.svg",
+
+        "type": "boolean"
+    },
+    "always_play": {
+        "desc": "Play your turn even after being forced to draw cards",
+        "icon": "/icons/Continue.svg",
+
+        "type": "boolean"
+    },
+
+    "public_lobby": {
+        "desc": "Makes your lobby public",
+
+        "icon": "/icons/Door.svg",
+        "type": "boolean",
+
+        "condition_reason": "Room ID must not be user-defined"
+    },
+    "spectators": {
+        "desc": "Players can spectate your game",
+
+        "icon": "/icons/Door.svg",
+        "type": "boolean"
+    },
+    "enable_chat": {
+        "desc": "Enables the chat menu",
+
+        "icon": "/icons/chat.svg",
+        "type": "boolean",
+
+        "condition_reason": "Private games only"
+    },
+    "xray": {
+        "desc": "Everyone's cards are visible",
+
+        "icon": "/icons/Magnify.svg",
+        "type": "boolean"
+    },
+    "infinite_draw": {
+        "desc": "You can continue to draw cards until you get a match",
+
+        "icon": "/icons/Infinity.svg",
+        "type": "boolean"
+    }
+},
+
+"names": {
+    "adjectives": [
+        "red",
+        "orange",
+        "yellow",
+        "green",
+        "blue",
+        "purple",
+        "pink",
+        "magenta",
+        "black",
+        "white",
+        "gray",
+        "tan",
+        "chartreuse",
+        "navy",
+        "burgundy",
+        "maroon",
+        "amber",
+        "aqua",
+        "beige",
+
+        "striped",
+        "shiny",
+        "Opaque",
+        "bronze",
+        "silver",
+        "gold",
+
+        "slow",
+        "fast",
+        "small",
+        "big",
+        "useless",
+        "neat",
+        "grand",
+        "great",
+        "rad",
+
+        "energetic",
+        "jumpy",
+        "happy",
+        "tense",
+        "active",
+        "stopped",
+        "ready",
+        "funny",
+        "sweet",
+
+        "the",
+        "every",
+        "real",
+        "fake",
+        "genuine",
+
+        "boomer"
+    ],
+    "nouns": [
+        "Monkey",
+        "Elephant",
+        "Giraffe",
+        "Penguin",
+        "Dragon",
+        "Gator",
+        "Cicada",
+        "Lion",
+        "Bear",
+        "Wolf",
+        "Camel",
+        "Llama",
+        "Panther",
+        "Puffin",
+
+        "Apple",
+        "Tangerine",
+        "Carrot",
+        "Banana",
+        "Bacon",
+
+        "Stapler",
+        "Balloon",
+        "Clock",
+        "Robot",
+
+        "Gamer",
+        "Comedian",
+        "Bill",
+        "Belle",
+        "Greg"
+    ]
+},
+
 "avatars": [
     "balloon",
     "carrot",
     "yellow",
     "snake",
-    "stapler",
     "goldfish",
+    "stapler",
     "bacon",
     "gamer",
     "tree",

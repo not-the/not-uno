@@ -51,9 +51,10 @@ export default function Chat({
                             classes={
                                 "msg" +
                                 (data.clump ? " clump" : "") +
-                                (data.old_msg ? " old_msg" : "")
+                                (data.old_msg ? " old_msg" : "") // +
+                                // (index === 0 ? " msg_in" : "")
                             }
-                            key={index}
+                            key={chatCache - index - 1}
                         />)
                 }
             </div>

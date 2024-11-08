@@ -4,7 +4,7 @@ import Lobby from './components/Lobby.js'
 import Game from './components/Game.js'
 import Toast from './components/Toast.js'
 import Chat from './components/Chat.js'
-import User from './components/User.js'
+import ProfileMenu from './components/ProfileMenu.js'
 import { store, arrRandom, capitalizeFirstLetter } from './Util.js'
 
 // Socket.io
@@ -336,67 +336,7 @@ export default function App() {
 
             {/* Profile dialog */}
             {profileOpen ?
-                <div id="profile" className="dialog border_shadowed">
-                    <h3 className="border_shadowed">Profile</h3>
-    
-                    {/* Preview */}
-                    <User user={profile} classes="big_user" />
-                    <br/><hr/><br/>
-    
-                    {/* Name */}
-                    <label htmlFor="profile_name">
-                        <h5>Username</h5>
-                        <div className="cols_container gap_12px">
-                            <input className="input_primary"
-                                type="text" name="username_input" id="username_input"
-                                placeholder="Username"
-                                onKeyDown={event => { if(event.key === "Enter") setUser(event.target.value) }}
-                            />
-
-                            {/* Random username */}
-                            <button
-                                className="button_primary button_secondary button_comp button_micro"
-                                onClick={() => document.getElementById("username_input").value = randomName()}
-                                data-title="Random"
-                            >
-                                <img src="/icons/casino_24dp_E8EAED_FILL1_wght400_GRAD200_opsz20.svg" alt="Random" className="parent_invert" />
-                            </button>
-
-                            {/* Set */}
-                            <button
-                                className="button_primary button_secondary button_comp button_mini"
-                                onClick={() => setUser(document.getElementById("username_input").value)}
-                            >
-                                Set
-                            </button>
-                        </div>
-                    </label>
-                    <br/><br/><hr/><br/>
-    
-                    {/* Avatar */}
-                    <h5>Avatar</h5>
-                    <div className="avatar_list">
-                        {clientData.avatars.map((name, index) => {
-                            return (
-                                <button data-title={capitalizeFirstLetter(name)} key={index}
-                                    onClick={() => setUser(undefined, name)}
-                                    className={name === profile.avatar ? "active" : null}
-                                >
-                                    <img src={`/avatars/${name}.png`} alt={name} className="avatar_preview" />
-                                </button>
-                            )
-                        })
-                            
-                        }
-                    </div>
-    
-                    <br/><hr/><br/>
-    
-                    {/* Done */}
-                    <button className="button_primary button_secondary button_comp" onClick={() => setProfileOpen(false)}>
-                        Done
-                    </button>
-                </div>
+                <ProfileMenu profile={profile} randomName={randomName} setUser={setUser} clientData={clientData} setProfileOpen={setProfileOpen} />
                 : null
             }
 

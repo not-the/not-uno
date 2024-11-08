@@ -1030,27 +1030,32 @@ io.on("connection", (socket) => {
 
     socket.on("drawCard", () => {
         const game = getGameByUser();
-        if(game === undefined) return;
+        if(game === undefined) return errorDisconnected();
         game.drawCard(socket.id);
     })
 
     socket.on("playCard", cardID => {
         const game = getGameByUser();
-        if(game === undefined) return;
+        if(game === undefined) return errorDisconnected();;
         game.playCard(socket.id, cardID);
     })
 
     socket.on("endTurn", () => {
         const game = getGameByUser();
-        if(game === undefined) return;
+        if(game === undefined) return errorDisconnected();;
         game.endTurn(socket.id);
     })
 
     socket.on("requestRematch", () => {
         const game = getGameByUser();
-        if(game === undefined) return;
+        if(game === undefined) return errorDisconnected();;
         game.requestRematch(socket.id);
     })
+
+    function errorDisconnected() {
+        socket.emit("leave");
+        socket.emit("toast", { msg:"You were disconnected" });
+    }
 
     // Chat message
     socket.on("chat", (data) => {

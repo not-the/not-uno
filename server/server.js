@@ -264,7 +264,7 @@ class Uno {
         });
 
         // Tell room someone left
-        if(!wasSpectator) socket.to(roomID).emit("toast", {
+        if(!wasSpectator) this.emit("toast", {
             title: `"${allusers[socketID]?.name ?? "User"}" left!`
         })
 

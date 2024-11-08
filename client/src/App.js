@@ -201,37 +201,29 @@ export default function App() {
             window.location.hash = '';
         })
 
+        // Leave
+        socket.on("leave", () => {
+            gameStateHandler(false);
+        })
+
         // Toast notification
         socket.on("toast", (data) => {
             toast(data);
         });
 
-        socket.on("gameState", data => {
-            // console.log(data);
-
-            // let old = {};
-
-            // State
-            setGame(o => {
-                // console.log(o);
-                // old = structuredClone(o);
-                return data;
-            });
-
-            // Set menu
-            if(data === false) {
-                setMenu(null);
-                window.location.hash = "";
-            }
-            else if(data.state === 'lobby') setMenu("lobby");
-            else setMenu("game");
-
-
-            // Drew a card
-            // if(old?.players?.[data?.my_num]?.cards?.length < data?.players?.[data?.my_num]?.cards?.length) {
-            //     console.log("DREW A CARD");
-            // }
-        })
+        socket.on("gameState", gameStateHandler);
+        function gameStateHandler(data) {  
+                // State
+                setGame(o => data);
+    
+                // Set menu
+                if(data === false) {
+                    setMenu(null);
+                    window.location.hash = "";
+                }
+                else if(data.state === 'lobby') setMenu("lobby");
+                else setMenu("game");
+        }
 
         socket.on("assignedUserData", data => {
             store("user_data", data);

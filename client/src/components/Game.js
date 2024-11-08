@@ -15,6 +15,8 @@ export default function Game({ game, setGame, startGame }) {
     // let [dialogAction, setDialogAction] = useState(null);
     const [optionsOpen, setOptionsOpen] = useState(false);
 
+    const isHost = game.host === socket.id;
+
     // Setup
     useEffect(() => {
         // Keybinds
@@ -395,17 +397,17 @@ export default function Game({ game, setGame, startGame }) {
                 {/* Buttons */}
                 <div className="flex media_flex col gap_6px">
                     {/* Rematch */}
-                    {game.host === socket.id ?
+                    {isHost ?
                         <button className="button_primary button_secondary hover_border_shadowed" onClick={startGame}>
                             Play again
                         </button>
                         :
-                        <button className="button_primary button_secondary hover_border_shadowed" onClick={requestRematch} disabled={game.players?.[game.my_num]?.wants_rematch ? true : false}>
+                        <button className="button_primary button_secondary hover_border_shadowed" onClick={requestRematch} disabled={(game.players?.[game.my_num]?.wants_rematch || game.my_spectating) ? true : false}>
                             Request rematch
                         </button>
                     }
                     {/* Leave */}
-                    {game.host === socket.id ?
+                    {isHost ?
                     <button className="button_primary button_secondary button_transparent hover_border_shadowed position_relative" onClick={returnToLobby}>
                         <span>Back to lobby</span>
                     </button>
@@ -435,7 +437,7 @@ export default function Game({ game, setGame, startGame }) {
                             return <User
                                 key={index} user={user} game={game}
                                 title={`ID: ${user.socketID}
-                                ${user.socketID === game.host ? " (Host)":""}`}
+                                ${isHost ? " (Host)":""}`}
                             />
                         })}
                     </div> */}
@@ -469,22 +471,31 @@ export default function Game({ game, setGame, startGame }) {
                 <br/> */}
                 
                 {/* Buttons */}
-                <div className="flex media_flex col gap_6px">
-                    {/* Leave */}
-                    <button className="button_primary button_secondary hover_border_shadowed position_relative" onClick={toggleMenu}>
-                        <span>Return to game</span>
-                        <kbd>ESC</kbd>
-                    </button>
+                <div className="flex flex_column gap_12px">
+                    <div className="flex media_flex col gap_12px">
+                        {/* Leave */}
+                        <button className="button_primary button_secondary hover_border_shadowed position_relative" onClick={toggleMenu}>
+                            <span>Return to game</span>
+                            <kbd>ESC</kbd>
+                        </button>
 
-                    {/* Leave */}
-                    <button className="button_primary button_secondary button_transparent hover_border_shadowed" onClick={leaveGame}>
-                        <span>
-                            {game.my_num !== -1 ?
-                            "Quit game" :
-                            "Stop spectating"
-                            }
-                        </span>
-                    </button>
+                        {/* Leave */}
+                        <button className="button_primary button_secondary button_transparent hover_border_shadowed" onClick={leaveGame}>
+                            <span>
+                                {game.my_num !== -1 ?
+                                "Quit game" :
+                                "Stop spectating"
+                                }
+                            </span>
+                        </button>
+                    </div>
+
+                    {/* Return to lobby */}
+                    {!isHost ? null :
+                        <button className="button_primary button_secondary hover_border_shadowed button_transparent" onClick={returnToLobby}>
+                            <span>Back to lobby</span>
+                        </button>
+                    }
                 </div>
             </div>
         </div>

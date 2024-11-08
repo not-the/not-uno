@@ -241,7 +241,9 @@ class Uno {
      * @param {*} socket Player's socket
      * @param {Boolean} sendtoast Whether or not to send out a toast
      */
-    leave(socket, sendtoast) {
+    leave(socketID, sendtoast) {
+        const socket = io.sockets.sockets.get(socketID);
+
         const roomID = this.roomID;
         const wasSpectator = this.isSpectating(socket.id);
 
@@ -251,17 +253,18 @@ class Uno {
         // Re-register user as being in room
         delete usersRooms[socket.id];
         socket.leave(roomID);
+        
+        // Tell user they left
+        socket.emit("leave");
+        if(sendtoast) socket.emit("toast", {
+            title: "Left game",
+            msg: `Room ID: "${roomID}"`
+        });
 
         // Tell room someone left
         if(!wasSpectator) socket.to(roomID).emit("toast", {
             title: `"${allusers[socket.id]?.name ?? "User"}" left!`
         })
-
-        // Tell user they left
-        if(sendtoast) socket.emit("toast", {
-            title: "Left game",
-            msg: `Room ID: "${roomID}"`
-        });
 
         // All players have left
         if((this.playersBySocket.length - this.spectatorCount) === 0) {
@@ -277,21 +280,33 @@ class Uno {
             this.emit("toast", { title: `"${allusers[newHostID].name}" is now host` });
         }
 
+        // Update remaining clients
         this.updateClients();
+    }
+
+    /** Kicks a player by their socket ID
+     * @param {String} socketID 
+     */
+    kick(socketID, toast=true, msg=undefined) {
+        // Toast
+        if(toast) io.to(socketID).emit("toast", { title: "Kicked from game", msg });
+
+        // Leave
+        this.leave(socketID, false);
     }
 
     // Marks game as closed, automatically gets deleted after 24-48 hours
     close() {
         this.roomClosed = true;
         this.roomClosedTimestamp = Date.now();
-        this.emit("gameState", false);
+        this.emit("gameState");
     }
 
     // Completely destroys game object
     destroy() {
         this.destroyed = true;
         delete allgames[this.roomID]; // Delete self
-        this.emit("gameState", false);
+        this.emit("leave");
     }
 
     requestRematch(socketID) {
@@ -378,9 +393,19 @@ class Uno {
         this.config[option] = value;
 
         // Special cases
+        // Public lobby ON
         if(option === "public_lobby" && value === true) {
             this.config.enable_chat = false;
             this.has_been_public = true;
+        }
+
+        // Spectators OFF
+        else if(option === "spectators" && value === false) {
+            for(const socketID of this.playersBySocket) {
+                if(allusers[socketID]?.spectating) {
+                    this.kick(socketID, true, "Option to spectate was disabled");
+                }
+            }
         }
 
         // Update
@@ -818,8 +843,8 @@ io.on("connection", (socket) => {
     })
 
     socket.on("leave", () => {
-        getGameByUser()?.leave(socket, true);
-        socket.emit("gameState", false);
+        getGameByUser()?.leave(socket.id, true);
+        socket.emit("leave");
     });
 
     socket.on("action", data => {
@@ -943,7 +968,7 @@ io.on("connection", (socket) => {
         }
 
         // Leave all other rooms
-        for(const r of socket.rooms) allgames[r]?.leave(socket, false);
+        for(const r of socket.rooms) allgames[r]?.leave(socket.id, false);
         
         // Rejoin personal room
         socket.join(socket.id);
@@ -984,7 +1009,7 @@ io.on("connection", (socket) => {
                 title: "Error",
                 msg: "Game does not exist. Try making another one."
             })
-            socket.emit("gameState", false);
+            socket.emit("leave");
             return;
         }
         game.start(socket);
@@ -1111,8 +1136,6 @@ io.on("connection", (socket) => {
 
 
 // Game cleanup
-// const maxGameAge = 30000; // 48 hours
-// const cleanupPeriod = 5000; // 12 hours
 const maxGameAge = 172800000; // 48 hours
 const cleanupPeriod = 43200000; // 12 hours
 const cleanupTimer = setInterval(performCleanup, cleanupPeriod);

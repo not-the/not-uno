@@ -386,10 +386,13 @@ class Uno {
         })
 
         if(!this.config.hasOwnProperty(option)) return; // Config property doesn't exist
-        if(typeof value !== typeof this.config[option]) return; // New value doesn't match existing type
-
-        // Invalid choice
-        // if ... return;
+        const configData = data.config[option];
+        if(
+            typeof value !== configData.type &&
+            configData.type !== "dropdown"
+        ) return; // New value is wrong data type
+        if(configData.type === "dropdown" && !configData.dropdown.includes(value)) return; // Dropdown value is invalid
+        if(configData.type === "number" && (value > configData.max || value < configData.min)) return; // Number value is outside min/max range
 
         // Set
         this.config[option] = value;

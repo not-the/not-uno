@@ -96,6 +96,8 @@ h1, h2, h3, h4, h5, h6 {
     font-size: 20pt;
     margin-bottom: 12px;
     --shadow-color: rgba(0, 0, 0, 0.5);
+
+    word-break: break-word;
 }
 .fancy_title {
     position: relative;
@@ -1658,6 +1660,7 @@ body:has(.overlay) .backdrop {
 .user .name {
     font-weight: 600;
     font-size: 15pt;
+    word-break: break-word;
 }
 .user .name.small_name {
     font-size: 11pt;

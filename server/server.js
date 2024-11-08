@@ -242,20 +242,22 @@ class Uno {
      * @param {Boolean} sendtoast Whether or not to send out a toast
      */
     leave(socketID, sendtoast) {
-        const socket = io.sockets.sockets.get(socketID);
-
+        // Info
         const roomID = this.roomID;
-        const wasSpectator = this.isSpectating(socket.id);
+        const wasSpectator = this.isSpectating(socketID);
+
+        // Get socket
+        const socket = io.sockets.sockets.get(socketID);
+        if(socket !== undefined) socket.leave(roomID);
 
         // Remove player from game
-        if(!wasSpectator) this.players.splice(this.getPnumFromSocketID(socket.id), 1);
+        if(!wasSpectator) this.players.splice(this.getPnumFromSocketID(socketID), 1);
 
         // Re-register user as being in room
-        delete usersRooms[socket.id];
-        socket.leave(roomID);
+        delete usersRooms[socketID];
         
         // Tell user they left
-        socket.emit("leave");
+        if(socket !== undefined) socket.emit("leave");
         if(sendtoast) socket.emit("toast", {
             title: "Left game",
             msg: `Room ID: "${roomID}"`
@@ -263,7 +265,7 @@ class Uno {
 
         // Tell room someone left
         if(!wasSpectator) socket.to(roomID).emit("toast", {
-            title: `"${allusers[socket.id]?.name ?? "User"}" left!`
+            title: `"${allusers[socketID]?.name ?? "User"}" left!`
         })
 
         // All players have left
@@ -274,7 +276,7 @@ class Uno {
         }
 
         // Transfer ownership to remaining player
-        else if(socket.id === this.host) {
+        else if(socketID === this.host) {
             const newHostID = this.playersBySocket[0];
             this.host = newHostID;
             this.emit("toast", { title: `"${allusers[newHostID].name}" is now host` });
@@ -500,8 +502,7 @@ class Uno {
 
     /** Runs the addPlayer() method for each connected user */
     generatePlayers() {
-        let sockets = this.playersBySocket;
-        console.log(sockets);
+        const sockets = this.playersBySocket;
         for(let i = 0; i < sockets.length; i++) {
             if(allusers[sockets?.[i]]?.spectating) continue;
             this.addPlayer(sockets[i]);
@@ -911,7 +912,6 @@ io.on("connection", (socket) => {
     function joinRoom(rawRoomID, nameIsUUID, spectate=false) {
         // Replace non-breaking hyphens
         const roomID = rawRoomID.replaceAll("‑", "-").replaceAll("%E2%80%91", "-");
-        console.log(rawRoomID, roomID);
 
         // ID is not a string or too long
         if(typeof roomID !== 'string' || roomID.length < 4 || roomID.length > 32) {

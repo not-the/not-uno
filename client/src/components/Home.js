@@ -94,7 +94,7 @@ export default function Home({ setMenu, joinRoom }) {
 
                                         {/* Right */}
                                         <div className="fullwidth">
-                                            <div className="flex">
+                                            <div className="flex media_flex">
                                                 <strong>
                                                     {lobby.roomID}
                                                 </strong>
@@ -102,7 +102,7 @@ export default function Home({ setMenu, joinRoom }) {
                                                     Mode: <b>{modeInfo}</b>
                                                 </div>
                                             </div>
-                                            <div className="flex secondary_text">
+                                            <div className="flex media_flex secondary_text">
                                                 <p>
                                                     Host: <b>{host?.name}</b>
                                                 </p>

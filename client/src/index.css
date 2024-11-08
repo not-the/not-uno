@@ -226,6 +226,11 @@ button kbd {
 .gap_6px { gap: 6px !important; }
 .gap_12px { gap: 12px !important; }
 .position_relative { position: relative; }
+.hover_underline:hover,
+.hover_underline:focus-visible {
+    text-decoration: underline;
+}
+
 
 .underline {
     border-bottom: 5px solid white;
@@ -1567,6 +1572,9 @@ button.share_button {
     transform: translate(-50%, -50%);
     z-index: 5;
 
+    overflow-x: visible;
+    overflow-y: auto;
+
     animation: profile_in 0.25s ease;
 }
 @keyframes profile_in {
@@ -2212,6 +2220,12 @@ body:has(.spectating_toast) #main_background {
     }
     #config .item .inner:has(input[type="checkbox"]) {
         flex-direction: row;
+    }
+    .lobby {
+        line-height: 125%;
+    }
+    .lobby .margin_left_auto {
+        margin-left: unset;
     }
 
 

@@ -205,10 +205,8 @@ class Uno {
         // State
         // this.started = false;
         this.state = 'lobby';
-        this.winner = undefined;
-
         this.players = []; // In-play players
-
+        this.winner = undefined;
         this.draw_debt = 0;
 
         // Dev tools
@@ -476,6 +474,7 @@ class Uno {
         this.draw_count = 0; // This turns number of drawn cards
         this.players = [];
         this.winner = undefined;
+        this.draw_debt = 0;
 
         this.animation_key = 0;
 

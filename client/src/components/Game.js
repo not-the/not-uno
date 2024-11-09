@@ -1,7 +1,7 @@
 // import Icon from "./Icon.js"
 import Card from "./Card.js"
 import { shuffle, repeat, clamp } from "../Util.js"
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { socket } from "../socket.js";
 import User from "./User.js";
 import lang from "../lang.js";
@@ -14,6 +14,8 @@ export default function Game({ game, setGame, startGame }) {
     // let [dialog, setDialog] = useState(null);
     // let [dialogAction, setDialogAction] = useState(null);
     const [optionsOpen, setOptionsOpen] = useState(false);
+
+    const just_drew = useRef(false);
 
     const isHost = game.host === socket.id;
 
@@ -41,10 +43,43 @@ export default function Game({ game, setGame, startGame }) {
         }
         document.addEventListener('keyup', keyupHandler);
 
+        // Wheel event
+        const playerBottom = document.querySelector(".player.position_bottom > .inner");
+        const playerTop = document.querySelector(".player.position_top > .inner");
+        playerBottom.addEventListener("wheel", wheelHandler);
+        playerTop.addEventListener("wheel", wheelHandler);
+        function wheelHandler(event) {
+            const element = event.currentTarget;
+            element.scrollBy({
+                left: event.deltaY,
+                behavior: 'smooth'
+            })
+        }
+
+        // Scroll cards event
+        socket.on("scroll_cards", () => {
+            just_drew.current = true;
+        })
+
         return () => {
             document.removeEventListener('keyup', keyupHandler);
+            playerBottom.removeEventListener("wheel", wheelHandler);
+            playerTop.removeEventListener("wheel", wheelHandler);
+            socket.off("scroll_cards");
         }
-    }, [])
+    }, []);
+
+    useEffect(() => {
+        // Drew card, scroll container
+        console.log("just drew: ", just_drew.current);
+        if(!just_drew.current) return;
+        just_drew.current = false;
+        const me = document.querySelector('.player.me > .inner');
+        if(me !== null) me.scroll({
+            left: me.scrollWidth,
+            behavior: 'smooth' 
+        });
+    }, [game])
 
 
     // Variables

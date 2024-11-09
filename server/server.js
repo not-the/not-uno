@@ -603,7 +603,9 @@ class Uno {
         this.moveCard("deck", pnum, false);
         this.draw_count++;
 
+        // Update client
         this.updateClients();
+        io.to(socketID).emit("scroll_cards");
     }
 
     /** Sends toast to a given socket explaining draw stacking */
@@ -769,8 +771,11 @@ class Uno {
 
         // End turn, unless drawing with "Always Play" enabled
         const continueturn = (this.config.always_play && this.draw_debt !== 0);
-        this.nextTurn(undefined, undefined, continueturn);
+        const didDrawCards = this.nextTurn(undefined, undefined, continueturn);
+
+        // Update clients
         this.updateClients();
+        if(didDrawCards) io.to(socketID).emit("scroll_cards");
     }
 
     /** Start next turn
@@ -781,6 +786,8 @@ class Uno {
     nextTurn(skip=0, playerCard={}, keepTurn) {
         const lastPlayerID = this.turn;
         const turnValue = ((1 + skip) * this.direction);
+
+        let didDrawCards = false;
 
         // Update turn
         if(!keepTurn) {
@@ -798,6 +805,7 @@ class Uno {
             if(!playerCard.draw) {
                 this.drawMultipleCards(lastPlayerID, this.draw_debt);
                 this.draw_debt = 0;
+                didDrawCards = true;
             }
         }
 
@@ -811,6 +819,9 @@ class Uno {
 
         // Auto end turn if draw stacking is off and you must draw cards
         if(this.config.draw_stacking === "off" && this.draw_debt > 0) this.endTurn(this.players[this.turn].socketID);
+
+        // Did draw cards, return true
+        if(didDrawCards) return true;
     }
 }
 

@@ -216,16 +216,16 @@ export default function App() {
 
         socket.on("gameState", gameStateHandler);
         function gameStateHandler(data) {  
-                // State
-                setGame(o => data);
-    
-                // Set menu
-                if(data === false) {
-                    setMenu(null);
-                    window.location.hash = "";
-                }
-                else if(data.state === 'lobby') setMenu("lobby");
-                else setMenu("game");
+            // State
+            setGame(o => data);
+
+            // Set menu
+            if(data === false) {
+                setMenu(null);
+                window.location.hash = "";
+            }
+            else if(data.state === 'lobby') setMenu("lobby");
+            else setMenu("game");
         }
 
         socket.on("assignedUserData", data => {

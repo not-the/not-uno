@@ -817,10 +817,14 @@ button.share_button {
     max-width: 100%;
     overflow-x: auto;
 
-    padding: 8px;
+    padding: 8px 24px;
     border-radius: 16px;
     background-color: rgba(0, 0, 0, 0.2);
     box-shadow: inset 0 0 12px rgba(0, 0, 0, 0.5);
+
+    /* Scrollbar */
+    scrollbar-color: var(--bg-lighter) transparent;
+    /* scrollbar-width: thin; */
 }
 .player h3 {
     margin-bottom: 6px;

@@ -1,3 +1,11 @@
+/** Imports an external file and parses if JSON */
+export function get(url, parse=true) {
+    var rq = new XMLHttpRequest();
+    rq.open("GET", url, false);
+    rq.send(null);
+    return parse ? JSON.parse(rq.responseText) : rq.responseText;
+}
+
 /** Shuffles are array by modifying it, then returns original array (now shuffled)
  * https://stackoverflow.com/a/2450976/11039898
  * @param {Array} array

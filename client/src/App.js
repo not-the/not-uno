@@ -5,7 +5,7 @@ import Game from './components/Game.js'
 import Toast from './components/Toast.js'
 import Chat from './components/Chat.js'
 import ProfileMenu from './components/ProfileMenu.js'
-import { store, arrRandom, capitalizeFirstLetter } from './Util.js'
+import { get, store, arrRandom, capitalizeFirstLetter } from './Util.js'
 
 // Socket.io
 import { socket, isProduction, socketConnectionStatus, serverURL } from './socket.js'
@@ -14,7 +14,7 @@ import DeckEditor from './components/DeckEditor.js'
 
 // Game
 const appdataURL = serverURL + '/data.json';
-let clientData = {};
+const clientData = get(appdataURL);
 
 export { clientData };
 
@@ -174,14 +174,6 @@ export default function App() {
 
     // Server communication
     useEffect(() => {
-        fetch(appdataURL)
-            .then((res) => {
-                if(!res.ok) console.warn("App data could not be fetched from server");
-                return res.json();
-            })
-            .then(data => clientData = data)
-            .catch(error => console.error(error));
-
         // Auto join from URL
         if(window.location.hash !== '') joinRoom(window.location.hash.substring(1));
 

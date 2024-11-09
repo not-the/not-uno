@@ -153,16 +153,16 @@ export default function DeckEditor({ setMenu, toast }) {
     }
 
     return (
-        <main id="deck_editor" class="container">
+        <main id="deck_editor" className="container">
             {/* Nav */}
             <nav>
-                <h2 class="border_shadowed">
-                    <input type="text" id="custom_name" class="discreet" defaultValue="Unnamed Deck" />
+                <h2 className="border_shadowed">
+                    <input type="text" id="custom_name" className="discreet" defaultValue="Unnamed Deck" />
                     <img src="/icons/edit_24dp_FFFFFF_FILL0_wght400_GRAD200_opsz24.svg" alt="Rename" className="icon_inline"/>
                 </h2>
 
-                <h4 class="secondary_text">
-                    <input type="text" id="custom_desc" class="discreet" defaultValue="Description" />
+                <h4 className="secondary_text">
+                    <input type="text" id="custom_desc" className="discreet" defaultValue="Description" />
                     <img src="/icons/edit_24dp_FFFFFF_FILL0_wght400_GRAD200_opsz24.svg" alt="Rename" className="icon_inline" />
                 </h4>
 
@@ -217,7 +217,7 @@ export default function DeckEditor({ setMenu, toast }) {
                                 <Card data={data} />
 
                                 {/* Configuration */}
-                                <div class="right flex">
+                                <div className="right flex">
                                     {/* Properties */}
                                     <div className="properties flex">
 
@@ -232,7 +232,7 @@ export default function DeckEditor({ setMenu, toast }) {
                                     </div>
 
                                     {/* Debug */}
-                                    <table class="border_shadowed">
+                                    <table className="border_shadowed">
                                         {Object.entries(data).map(([key, value]) => {
                                             if(key === "rotation") return null;
                                             return (
@@ -374,7 +374,7 @@ export default function DeckEditor({ setMenu, toast }) {
                         {cardProperties[property].map((value, propertyIndex) => {
                             // Represent value
                             return (
-                                <button class={`picker_value ${value}`} key={propertyIndex} onClick={() => handleClick(value)}>
+                                <button className={`picker_value ${value}`} key={propertyIndex} onClick={() => handleClick(value)}>
                                     {doIcon ? <Icon icon={value} /> : null}
                                 </button>
                             )

@@ -1,0 +1,38 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+
+        {
+            "label": "NOT UNO dev servers",
+            "dependsOn": ["not-uno client", "not-uno server"],
+            "runOptions": {
+                "runOn": "folderOpen"
+            }
+        },
+
+        {
+            "label": "not-uno client",
+            "type": "shell",
+            "command": "cd ./client && npm start",
+            "isBackground": true,
+            "presentation": {
+                "panel": "dedicated",
+                "group": "terminal"
+            },
+            "problemMatcher": []
+        },
+
+        {
+            "label": "not-uno server",
+            "type": "shell",
+            "command": "cd ./server && npm start",
+            "isBackground": true,
+            "presentation": {
+                "panel": "dedicated",
+                "group": "terminal"
+            },
+            "problemMatcher": []
+        }
+
+    ]
+  }

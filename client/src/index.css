@@ -30,7 +30,7 @@
 
     /* Text */
     --text: white;
-    --secondary-text: rgb(220, 224, 230);
+    --secondary-text: #dce0e6;
     --link: #7ec1ff;
 
     --accent-blue: #508ddc;
@@ -288,6 +288,7 @@ section {
 .icon_inline {
     display: inline-block;
     height: 0.75lh;
+    max-width: 0.9lh;
     vertical-align: -11%;
     /* margin: 0 0.3em; */
 }
@@ -627,6 +628,12 @@ a.button {
         opacity: 0;
     }
 }
+
+/* .config_two_col {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 12px;
+} */
 
 #config {
     padding-bottom: 200px;

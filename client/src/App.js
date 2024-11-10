@@ -409,8 +409,8 @@ export default function App() {
                     </table>
                     <br/>
 
-                    <button onClick={debugDataRequest} className="pointer_events_all">Request server data (console)</button><br/>
-                    <button onClick={() => console.log(game)} className="pointer_events_all">Game object (console)</button>
+                    <button onClick={debugDataRequest} className="pointer_events_all hover_underline">Request server data (console)</button><br/>
+                    <button onClick={() => console.log(game)} className="pointer_events_all hover_underline">Game object (console)</button>
                 </div>
 
                 {/* Insight debug tooltip */}

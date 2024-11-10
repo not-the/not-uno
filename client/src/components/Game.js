@@ -46,8 +46,8 @@ export default function Game({ game, setGame, startGame }) {
         // Wheel event
         const playerBottom = document.querySelector(".player.position_bottom > .inner");
         const playerTop = document.querySelector(".player.position_top > .inner");
-        playerBottom.addEventListener("wheel", wheelHandler);
-        playerTop.addEventListener("wheel", wheelHandler);
+        if(playerBottom) playerBottom.addEventListener("wheel", wheelHandler);
+        if(playerTop) playerTop.addEventListener("wheel", wheelHandler);
         function wheelHandler(event) {
             const element = event.currentTarget;
             element.scrollBy({
@@ -63,8 +63,8 @@ export default function Game({ game, setGame, startGame }) {
 
         return () => {
             document.removeEventListener('keyup', keyupHandler);
-            playerBottom.removeEventListener("wheel", wheelHandler);
-            playerTop.removeEventListener("wheel", wheelHandler);
+            if(playerBottom) playerBottom.removeEventListener("wheel", wheelHandler);
+            if(playerTop) playerTop.removeEventListener("wheel", wheelHandler);
             socket.off("scroll_cards");
         }
     }, []);

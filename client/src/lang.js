@@ -7,6 +7,7 @@ const lang = {
         "public_lobby": "Public",
         "spectators": "Spectators",
         "enable_chat": "Chat",
+        "max_players": "Max Players",
         "xray": "Hands Down",
         "infinite_draw": "Infinite Draw",
         "always_play": "Always Play",

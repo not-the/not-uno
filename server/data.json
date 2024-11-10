@@ -324,27 +324,27 @@
     },
 
     "public_lobby": {
-        "desc": "Makes your lobby public",
-
         "icon": "/icons/Door.svg",
         "type": "boolean",
 
         "condition_reason": "Room ID must not be user-defined"
     },
     "spectators": {
-        "desc": "Players can spectate your game",
-
         "icon": "/icons/Door.svg",
         "type": "boolean"
     },
     "enable_chat": {
-        "desc": "Enables the chat menu",
-
         "icon": "/icons/chat.svg",
         "type": "boolean",
 
         "condition_reason": "Private games only"
     },
+    "max_players": {
+        "icon": "/icons/person.svg",
+        "type": "number",
+        "min": 2, "max": 4
+    },
+
     "xray": {
         "desc": "Everyone's cards are visible",
 

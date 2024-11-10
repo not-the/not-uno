@@ -107,7 +107,7 @@ export default function Home({ setMenu, joinRoom }) {
                                                     Host: <b>{host?.name}</b>
                                                 </p>
                                                 <p className="margin_left_auto">
-                                                    Players: {Object.keys(lobby?.usersParsed??{}).length}/4
+                                                    Players: {Object.keys(lobby?.usersParsed??{}).length}/{lobby.config.max_players}
                                                 </p>
                                             </div>
                                         </div>

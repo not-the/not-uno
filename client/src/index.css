@@ -464,6 +464,12 @@ a.button {
 .button_border_bg_main { border-color: var(--bg-main); }
 
 
+/* Select */
+select[disabled] {
+    appearance: none;
+}
+
+
 /* Toggle switch */
 .toggle {
     position: relative;

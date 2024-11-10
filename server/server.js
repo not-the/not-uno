@@ -176,22 +176,23 @@ class Uno {
 
         // Default Config
         this.config = {
+            public_lobby: false,
+            spectators: true,
+            enable_chat: true,
+            max_players: 4,
+
             starting_deck: "normal",
             starting_cards: 7,
+
+            infinite_draw: false,
+            draw_stacking: "matching",
+            always_play: false,
+            xray: false,
         
             // allow_continues: false, // Offer to continue game with remaining players after someone wins
             // require_calling_uno: false,
             // call_penalty: 'draw',
             // call_penalty_draw_amount: 2,
-        
-            infinite_draw: false,
-            draw_stacking: "matching",
-            always_play: false,
-
-            public_lobby: false,
-            spectators: true,
-            enable_chat: true,
-            xray: false
         }
 
         // Data
@@ -219,9 +220,7 @@ class Uno {
         this.updateClients();
     }
 
-    get playersBySocket() { return getRoomUsers(this.roomID); }
-
-    /** Object of users (socketID:data pairs) */
+    /** Object of all users' profiles (socketID:data pairs) */
     get users() {
         let users = {};
         for(const PID of this.playersBySocket) {
@@ -231,6 +230,14 @@ class Uno {
         return users;
     }
 
+    get playersBySocket() { return getRoomUsers(this.roomID); }
+
+    /** Gives the number of users who are in play (whether or not the game has started). Spectators excluded. */
+    get playerCount() {
+        return this.playersBySocket.filter(PID => !allusers[PID].spectating).length;
+    }
+
+    /** Gives current number of spectators */
     get spectatorCount() {
         return this.playersBySocket.filter(PID => allusers[PID].spectating).length;
     }
@@ -927,11 +934,16 @@ io.on("connection", (socket) => {
         const roomID = rawRoomID.replaceAll("‑", "-").replaceAll("%E2%80%91", "-");
 
         // ID is not a string or too long
-        if(typeof roomID !== 'string' || roomID.length < 4 || roomID.length > 32) {
+        const roomLengthMin = 4, roomLengthMax = 32;
+        if(
+            typeof roomID !== 'string' ||
+            roomID.length < roomLengthMin ||
+            roomID.length > roomLengthMax
+        ) {
             console.warn(`Failed trying to join room: User ID ${socket.id}`);
             socket.emit("toast", {
                 title: "Error",
-                msg: `Failed trying to join room. Must be between 4 and 32 characters.`
+                msg: `Failed trying to join room. Must be between ${roomLengthMin} and ${roomLengthMax} characters.`
             });
             return;
         };
@@ -976,7 +988,14 @@ io.on("connection", (socket) => {
         // Room does not allow spectators
         if(spectate && !game.config.spectators) {
             socket.emit("join_failed");
-            socket.emit("toast", { title:"Room does not allow spectators" })
+            socket.emit("toast", { title:"Room does not allow spectators" });
+            return;
+        }
+
+        // Room is full
+        if(game.playerCount >= game.config.max_players) {
+            socket.emit("join_failed");
+            socket.emit("toast", { title:"Room is full" });
             return;
         }
 
@@ -1006,7 +1025,7 @@ io.on("connection", (socket) => {
                 `"${allusers[socket.id].name}" joined!` :
                 `"${allusers[socket.id].name}" is spectating`;
         socket.to(roomID).emit("toast", {
-            msg: joinMessage
+            title: joinMessage
         });
 
         // Update

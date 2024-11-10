@@ -148,7 +148,7 @@ export default function Lobby({ game, startGame, toast, leaveGame }) {
                         <Config name="public_lobby" game={game} />
                         <Config name="spectators" game={game} />
                         <Config name="enable_chat" game={game} />
-
+                        <Config name="max_players" game={game} />
                     {/* </div> */}
                 </section>
 

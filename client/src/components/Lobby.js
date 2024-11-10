@@ -7,7 +7,7 @@ import Config from "./Config.js"
 
 export default function Lobby({ game, startGame, toast, leaveGame }) {
 
-    const playerMax = 4;
+    const playerMax = game.config.max_players;
     const playerCount = Object.keys(game.usersParsed).length;
     const startButtonTooltip = socket?.id !== game?.host ? "Ask the host to start the game" : null;
 
@@ -114,7 +114,7 @@ export default function Lobby({ game, startGame, toast, leaveGame }) {
                             {game.spectatorCount === 0 ? null :
                                 <div className="secondary_text">
                                     {/* Icon */}
-                                    <img src="/icons/eyeball.svg" alt="" class="icon_inline secondary_text" />{game.spectatorCount} spectator{game.spectatorCount===1?"":"s"}
+                                    <img src="/icons/eyeball.svg" alt="" class="icon_inline secondary_text" /> {game.spectatorCount} spectator{game.spectatorCount===1?"":"s"}
 
                                     <br/>
                                     <br/>

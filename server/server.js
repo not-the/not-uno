@@ -220,6 +220,10 @@ class Uno {
         this.updateClients();
     }
 
+    get isFull() {
+        return (this.playerCount >= this.config.max_players);
+    }
+
     /** Object of all users' profiles (socketID:data pairs) */
     get users() {
         let users = {};
@@ -330,6 +334,7 @@ class Uno {
         // Flatten data
         clone.usersParsed = this.users; // User list
         clone.spectatorCount = this.spectatorCount;
+        clone.isFull = this.isFull;
 
         // Obfuscate deck
         hideAll(clone.deck, true);
@@ -993,7 +998,7 @@ io.on("connection", (socket) => {
         }
 
         // Room is full
-        if(game.playerCount >= game.config.max_players) {
+        if(game.isFull && !spectate) {
             socket.emit("join_failed");
             socket.emit("toast", { title:"Room is full" });
             return;

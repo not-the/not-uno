@@ -367,7 +367,7 @@ export default function App() {
                                     <button className="button_primary button_secondary button_transparent hover_border_shadowed" onClick={leaveGame}>
                                         Leave
                                     </button>
-                                    <button className="button_primary button_secondary button_transparent hover_border_shadowed" onClick={() => joinRoom(game.roomID)} disabled={game.state !== "lobby"}>
+                                    <button className="button_primary button_secondary button_transparent hover_border_shadowed" onClick={() => joinRoom(game.roomID)} disabled={game.state !== "lobby" || game.isFull}>
                                         Join -&gt;
                                     </button>
                                 </div>

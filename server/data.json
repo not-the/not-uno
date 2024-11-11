@@ -330,7 +330,7 @@
         "condition_reason": "Room ID must not be user-defined"
     },
     "spectators": {
-        "icon": "/icons/Door.svg",
+        "icon": "/icons/eyeball.svg",
         "type": "boolean"
     },
     "enable_chat": {

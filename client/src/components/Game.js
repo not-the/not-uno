@@ -155,6 +155,11 @@ export default function Game({ game, setGame, startGame }) {
         socket.emit("action", choice);
     }
 
+    /** Signals the server to cancel the current action */
+    function cancelAction() {
+        socket.emit("action", null);
+    }
+
     /** Asks the server to return to lobby */
     function returnToLobby() {
         socket.emit("returnToLobby");
@@ -368,6 +373,10 @@ export default function Game({ game, setGame, startGame }) {
                         <div className="green hover_border_shadowed" role="button" tabIndex="0" onClick={() => action("green")} />
                         <div className="blue hover_border_shadowed" role="button" tabIndex="0" onClick={() => action("blue")} />
                     </div>
+
+                    {/* Cancel */}
+                    <br/>
+                    <button class="button_primary button_secondary hover_border_shadowed" onClick={cancelAction}>Cancel</button>
                 </div>
                 :
 
@@ -383,6 +392,10 @@ export default function Game({ game, setGame, startGame }) {
                             <User key={index} user={user} game={game} tagline={`P${index+1}`} onClick={() => action(index)} classes="cursor_pointer" />
                         })}
                     </div>
+
+                    {/* Cancel */}
+                    <br/>
+                    <button class="button_primary button_secondary hover_border_shadowed" onClick={cancelAction}>Cancel</button>
                 </div>
                 :
 
@@ -398,6 +411,10 @@ export default function Game({ game, setGame, startGame }) {
                             <User key={index} user={user} game={game} tagline={`P${index+1}`} onClick={() => action(index)} classes="cursor_pointer" />
                         })}
                     </div>
+
+                    {/* Cancel */}
+                    <br/>
+                    <button class="button_primary button_secondary hover_border_shadowed" onClick={cancelAction}>Cancel</button>
                 </div>
                 : null
             )

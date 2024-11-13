@@ -432,7 +432,14 @@ class Uno {
         const pnum = this.getPnumFromSocketID(socket.id);
         if(this.turn !== pnum) return; // Not your turn
 
-        // Chose a color
+        // Cancel
+        if(choice === null) {
+            delete this.action;
+            this.updateClients();
+            return;
+        }
+
+        // Pass action along to playCard method
         if(
             this.action === "choose_color" ||
             this.action === "choose_swap" ||

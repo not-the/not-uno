@@ -435,6 +435,7 @@ a.button {
     min-width: fit-content;
 }
 .button_secondary:not([disabled]):hover,
+.button_secondary:not([disabled]):active,
 .button_secondary:not([disabled]):focus-visible {
     color: black;
 }

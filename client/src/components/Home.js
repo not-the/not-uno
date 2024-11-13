@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
-import { isProduction, socket } from "../socket";
-import { capitalizeFirstLetter } from "../Util";
-import lang from "../lang";
+import { isProduction, socket } from "../socket"
+
+import LobbyListing from "./LobbyListing"
 
 export default function Home({ setMenu, joinRoom }) {
     const [serverInfo, setServerInfo] = useState(undefined);
@@ -28,7 +28,7 @@ export default function Home({ setMenu, joinRoom }) {
 
         // Recieve lobbies
         socket.on("lobby_list", response => {
-            setServerInfo(response.publicLobbies.length !== 0 ? response : false);
+            setServerInfo(response.joinableLobbies.length !== 0 ? response : false);
             setIsLobbyListFetched(true);
 
             // Restart loop
@@ -67,80 +67,23 @@ export default function Home({ setMenu, joinRoom }) {
                     {/* List */}
                     <div className="lobbies_list">
                         {!serverInfo ?
-                        <p className="center secondary_text">
-                            No public lobbies open
-                        </p>
+                            <p className="center secondary_text">No public lobbies open</p>
                             :
-                        serverInfo.publicLobbies.map(lobby => {
-                            let modeInfo = lang.en?.[lobby?.config?.starting_deck] ?? lobby?.config?.starting_deck;
-
-                            if(lobby?.config?.xray) {
-                                if(modeInfo === "Normal") modeInfo = "Hands Down";
-                                else modeInfo += ", Hands Down";
-                            }
-
-                            const host = lobby?.usersParsed[lobby?.host];
-
-                            return (
-                                <div className="lobby flex gap_12px">
-                                    {/* Inner */}
-                                    <div
-                                        className="lobby_block inner flex gap_12px hover_border_shadowed"
-                                        role="button" tabIndex="0"
-                                        onClick={() => joinRoom(lobby.roomID)}
-                                    >
-                                        {/* Icon */}
-                                        <img src={`/avatars/${host?.avatar}.png`} alt="" className="avatar" />
-
-                                        {/* Right */}
-                                        <div className="fullwidth">
-                                            <div className="flex media_flex">
-                                                <strong>
-                                                    {lobby.roomID}
-                                                </strong>
-                                                <div className="margin_left_auto">
-                                                    Mode: <b>{modeInfo}</b>
-                                                </div>
-                                            </div>
-                                            <div className="flex media_flex secondary_text">
-                                                <p>
-                                                    Host: <b>{host?.name}</b>
-                                                </p>
-                                                <p className="margin_left_auto">
-                                                    Players: {Object.keys(lobby?.usersParsed??{}).length}/{lobby.config.max_players}
-                                                </p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    
-                                    {/* Spectate */}
-                                    {!lobby.config.spectators ? null :
-                                    <div
-                                        className="lobby_block spectate_btn hover_border_shadowed flex flex_center"
-                                        title="Spectate"
-                                        role="button" tabIndex="0"
-                                        onClick={() => joinRoom(lobby.roomID, true)}
-                                    >
-                                        <img src="/icons/eyeball.svg" alt="Click to spectate" class="icon_inline secondary_text" />
-                                    </div>
-                                }
-                                </div>
-                            )
-                        })}
+                            serverInfo.joinableLobbies.map(lobby => <LobbyListing lobby={lobby} joinRoom={joinRoom} />)
+                        }
                     </div>
 
                     {/* Bottom */}
-                    {/* <div className="bottom_bar secondary_text">
+                    <div className="bottom_bar secondary_text">
                         {serverInfo?.online_users ?? 0} player{serverInfo?.online_users !== 1 ? "s" : ""} online
-                    </div> */}
+                    </div>
                 </div>
                 <br/>
                 
                 {/* More */}
                 <div className="flex media_flex gap_12px">
                     {/* Open deck builder */}
-                    {
-                        isProduction ? null :
+                    {isProduction ? null :
                         <button className="button_primary button_secondary button_mainbg button_border_bg_lighter hover_border_shadowed" onClick={() => setMenu("deck_editor")}>
                             Custom Deck Builder (WIP)
                         </button>

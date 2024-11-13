@@ -1141,17 +1141,21 @@ io.on("connection", (socket) => {
             Object.values(allgames)
                 .filter(game => {
                     return game?.config?.public_lobby === true &&   // Set to public
-                           game?.state === "lobby" &&               // Still in lobby
                            game?.nameIsUUID &&                      // Game ID is not picked by user
                            !game?.roomClosed                        // Game has not ended
                 })
                 .map(game => game.publicClone());
+
+        // Lobby arrays
+        const joinableLobbies = publicLobbies.filter(game => game?.state === "lobby"); // Still in lobby
+        // const spectateLobbies = publicLobbies.filter(game => game?.config?.spectate);
         
         // Delay makes it feel like it's doing more work than it is
         setTimeout(() => {
             socket.emit("lobby_list", {
                 online_users: Object.keys(allusers).length,
-                publicLobbies: publicLobbies,
+                joinableLobbies,
+                // spectateLobbies
             });
         }, 250);
     })

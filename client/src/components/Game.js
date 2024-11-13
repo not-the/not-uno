@@ -151,7 +151,6 @@ export default function Game({ game, setGame, startGame }) {
      * @param {*} choice Player choice data
      */
     function action(choice) {
-        console.log(choice);
         socket.emit("action", choice);
     }
 

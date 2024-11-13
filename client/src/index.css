@@ -841,6 +841,7 @@ button.share_button {
     /* scrollbar-width: thin; */
 }
 .player h3 {
+    width: fit-content;
     margin-bottom: 6px;
 
     opacity: 0.6;

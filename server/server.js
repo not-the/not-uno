@@ -190,9 +190,11 @@ class Uno {
             xray: false,
         
             // allow_continues: false, // Offer to continue game with remaining players after someone wins
-            // require_calling_uno: false,
-            // call_penalty: 'draw',
-            // call_penalty_draw_amount: 2,
+
+            require_call: false,
+            call_penalty: "draw",
+            call_draw_penalty: 2,
+            call_timer: 3 // In seconds
         }
 
         // Data
@@ -206,6 +208,7 @@ class Uno {
         // State
         // this.started = false;
         this.state = 'lobby';
+        this.round = 1;
         this.players = []; // In-play players
         this.winner = undefined;
         this.draw_debt = 0;
@@ -335,6 +338,8 @@ class Uno {
         clone.usersParsed = this.users; // User list
         clone.spectatorCount = this.spectatorCount;
         clone.isFull = this.isFull;
+
+        for(let p of clone.players) delete p.call_timer;
 
         // Obfuscate deck
         hideAll(clone.deck, true);
@@ -486,8 +491,9 @@ class Uno {
         this.deck = structuredClone(data.decks[this.config.starting_deck].cards), // Deck you draw from
         this.pile = []; // Played cards pile
 
-        this.turn = 0;
-        this.turn_rotation_value = 0;
+        this.turn = 0; // Will always the player ID of whoever's turn it is
+        this.turn_absolute = 0; // Incremements by one each turn
+        this.turn_rotation_value = 0; // Increases and decreases depending on rotation but is not clamped to player ID
         // this.last_turn_rotation_value = 0;
         this.direction = 1; // 1 is clockwise
         this.draw_count = 0; // This turns number of drawn cards
@@ -505,6 +511,7 @@ class Uno {
 
         // if(this.players.length < 2) return console.warn("Not enough players");
         this.state = "ingame";
+        this.round++;
 
         this.updateClients();
     }
@@ -796,7 +803,7 @@ class Uno {
         if(didDrawCards) io.to(socketID).emit("scroll_cards");
     }
 
-    /** Start next turn
+    /** Starts next turn
      * @param {Number} skip Number of players to skip
      * @param {*} playerCard 
      * @param {Boolean} keepTurn Does not end current player's turn but still enacts draw cards, etc
@@ -813,6 +820,7 @@ class Uno {
                 this.turn + turnValue,
                 this.players.length
             );
+            this.turn_absolute++;
             // this.last_turn_rotation_value = this.turn_rotation_value;
             this.turn_rotation_value += turnValue;
             this.draw_count = 0;
@@ -837,6 +845,39 @@ class Uno {
 
         // Auto end turn if draw stacking is off and you must draw cards
         if(this.config.draw_stacking === "off" && this.draw_debt > 0) this.endTurn(this.players[this.turn].socketID);
+
+        // Check if awaiting callout
+        else if(lastPlayerID !== turnValue) {
+
+            console.log(lastPlayerID, turnValue);
+
+            const lastPlayer = this.players?.[lastPlayerID];
+            if(lastPlayer?.cards?.length === 1) {
+
+                const round = structuredClone(this.round);
+                const timerMS = this.config.call_timer * 1000;
+                lastPlayer.awaiting_call = true;
+                setTimeout(() => {
+                    // Clear
+                    delete lastPlayer.awaiting_call;
+
+                    console.log(round, this.round);
+
+                    // Invalid
+                    if(
+                        !this.config.require_call ||            // Not required
+                        this.config.call_draw_penalty === 0 ||  // Penalty is 0
+                        this.winner !== undefined ||            // Win screen
+                        round !== this.round                    // Even was from previous round
+                    ) return;
+
+                    // Penalty
+                    this.drawMultipleCards(lastPlayerID, this.config.call_draw_penalty);
+                    this.emit("toast", { title:`A player failed to call "last card" in time` });
+                        this.updateClients();
+                }, timerMS);
+            }
+        }
 
         // Did draw cards, return true
         if(didDrawCards) return true;
@@ -1098,7 +1139,7 @@ io.on("connection", (socket) => {
 
     function errorDisconnected() {
         socket.emit("leave");
-        socket.emit("toast", { msg:"You were disconnected" });
+        socket.emit("toast", { title:"You were disconnected" });
     }
 
     // Chat message

@@ -84,6 +84,8 @@ export default function Game({ game, setGame, startGame }) {
 
     // Variables
     const myTurn = game.turn === game.my_num;
+    const awaiting_call = Boolean(game?.players?.[game?.my_num]?.awaiting_call);
+    const disableLastCard = !myTurn && !awaiting_call;
     const hightlightEndTurn = 
         (
             (
@@ -145,6 +147,11 @@ export default function Game({ game, setGame, startGame }) {
     /** Requests the server to end your turn */
     function endTurn() {
         socket.emit("endTurn");
+    }
+
+    /** Signals the server to call your last card */
+    function callout() {
+        socket.emit("callout");
     }
 
     /** Signals the server the action the player would like to take after using an action card
@@ -274,12 +281,22 @@ export default function Game({ game, setGame, startGame }) {
 
                 {/* Lower */}
                 <div className="lower">
-                    <button className="button_primary button_secondary button_lightbg hover_border_shadowed position_relative" disabled>
-                        <kbd>Q</kbd>
+                    {/* <button
+                        id="last_card"
+                        className="button_primary button_secondary button_lightbg hover_border_shadowed position_relative"
+                        onClick={callout}
+                        disabled={disableLastCard}
+                        data-timer={awaiting_call}
+                        style={{
+                            "--duration": `${game.config.call_timer}s`
+                        }}
+                    >
+                        <div className="under progress" />
                         <span>Last card</span>
-                    </button>
+                        <div className="over progress" />
+                        <kbd>Q</kbd>
+                    </button> */}
                     <button className="button_primary button_secondary button_lightbg hover_border_shadowed position_relative" onClick={endTurn} disabled={hightlightEndTurn}>
-                        <kbd>E</kbd>
                         <span>
                             {
                                 game.config.always_play && game.draw_debt !== 0 ?
@@ -292,6 +309,7 @@ export default function Game({ game, setGame, startGame }) {
                                 +{game.draw_debt}
                             </div>
                         }
+                        <kbd>E</kbd>
                     </button>
                 </div>
             </div>
@@ -333,7 +351,7 @@ export default function Game({ game, setGame, startGame }) {
                     <div className={classes} key={playerIndex} style={styles}>
                         <h3 className="border_shadowed">
                             {<User user={game.usersParsed[player.socketID]} postName={
-                                <span className="small">(P{playerIndex+1})</span>
+                                <span className="small">(P{playerIndex+1}) {String(player?.awaiting_call)}</span>
                             } />}
                         </h3>
 

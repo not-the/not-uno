@@ -250,7 +250,7 @@ export default function DeckEditor({ setMenu, toast }) {
                             <div className="flex gap_6px">
                                 {/* Amount */}
                                 <div className="input_container border_shadowed">
-                                    <button className="number_input_btn" onClick={() => changeAmount(cardIndex, -1)}>
+                                    <button className="number_input_btn" onClick={() => changeAmount(cardIndex, -1)} disabled={data.amount === 1}>
                                         -
                                     </button>
                                     <input type="text" value={`x${data.amount}`} disabled />

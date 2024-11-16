@@ -356,6 +356,35 @@
 
         "icon": "/icons/Infinity.svg",
         "type": "boolean"
+    },
+
+    "require_call": {
+        "desc": "Whether or not you must call out when you have one card",
+
+        "icon": "/icons/Infinity.svg",
+        "type": "boolean"
+    },
+    "call_penalty": {
+        "desc": "Type of penalty for not calling last card",
+
+        "icon": "/icons/Infinity.svg",
+        "type": "dropdown",
+        "dropdown": ["draw", "forfeit"]
+    },
+    "call_draw_penalty": {
+        "desc": "Cards to draw if you fail to callout your last card",
+
+        "icon": "/icons/Infinity.svg",
+        "type": "number",
+        "min": 1, "max": 16
+    },
+    "call_timer": {
+        "desc": "Additional callout time after your turn ends",
+
+        "icon": "/icons/Infinity.svg",
+        "type": "number",
+        "format": "#s",
+        "min": 0, "max": 15, "step": 0.5
     }
 },
 

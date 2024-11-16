@@ -165,6 +165,19 @@ export default function Lobby({ game, startGame, toast, leaveGame }) {
                     <Config name="always_play" game={game} />
                     {/* <Config name="continue" game={game} disabled={true} /> */}
                 </section>
+
+
+                {/* <Config name="call_penalty" game={game} /> */}
+
+                {/* <section>
+                    <h4 className="center fancy_title">
+                        <span>Callouts</span>
+                    </h4>
+                    <Config name="require_call" game={game} />
+
+                    <Config name="call_draw_penalty" game={game} />
+                    <Config name="call_timer" game={game} />
+                </section> */}
             </div>
         </>
     )

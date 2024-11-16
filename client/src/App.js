@@ -342,7 +342,7 @@ export default function App() {
                 {/* Connection lost */}
                 {
                     socketConnectionStatus ? null :
-                    <Toast data={{ title:"⚠ Disconnected" } } timed={false} classes="connection_lost" />
+                    <Toast data={{ title:"⚠ Disconnected", msg:"Can't reach server" } } timed={false} classes="connection_lost" />
                 }
 
                 {/* Spectating */}

@@ -330,6 +330,7 @@ input.discreet {
     font-size: inherit;
     font-weight: inherit;
     width: auto;
+    max-width: 100%;
 }
 
 input.input_primary {
@@ -749,6 +750,9 @@ select[disabled] {
   -moz-appearance: textfield;
   /* appearance: textfield; */
 }
+.number_input_btn[disabled] {
+    color: var(--bg-main);
+}
 
 button.share_button {
     font-size: 14pt;
@@ -808,6 +812,47 @@ button.share_button {
     display: flex;
     justify-content: center;
     align-items: center;
+}
+
+
+/* Last card */
+#last_card {
+    --duration: 1s;
+    --under: black;
+    --over: white;
+}
+#last_card:hover,
+#last_card:focus-visible,
+#last_card:active {
+    --under: white;
+    /* --over: black; */
+}
+#last_card[data-timer="true"] > .progress {
+    animation: button_progress var(--duration) linear forwards;
+}
+@keyframes button_progress {
+    0% { width: 100%; }
+    100% { width: 0%; }
+}
+
+#last_card > span {
+    z-index: 1;
+}
+#last_card > kbd { z-index: 3; }
+#last_card > .progress {
+    position: absolute;
+    inset: 0;
+    width: 0%;
+    pointer-events: none;
+    border-radius: 4px;
+}
+#last_card > .under {
+    background-color: var(--under);
+}
+#last_card > .over {
+    background-color: var(--over);
+    mix-blend-mode: difference;
+    z-index: 2;
 }
 
 
@@ -1851,16 +1896,20 @@ h3 > .user .avatar {
 
 
 
-/* Custom Deck editor */
+/* Deck builder */
 #deck_editor {
     --container-width: 1125px;
 
     width: 100%;
     padding: 9px 9px 350px 9px;
 }
+#deck_editor .card {
+    font-size: 54pt;
+}
 .deck_list {
     display: grid;
-    grid-template-columns: repeat(5, 1fr);
+    /* grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); */
+    grid-template-columns: repeat(4, 1fr);
     gap: 12px;
 }
 .deck_list > .item {
@@ -2034,12 +2083,6 @@ h3 > .user .avatar {
     background-color: var(--bg-lighter);
     border-color: var(--bg-main);
 }
-
-/* Right */
-#deck_editor .card {
-    font-size: 54pt;
-}
-
 
 
 /* Debug */

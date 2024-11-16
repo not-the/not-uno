@@ -12,11 +12,12 @@ export default function Config({ name, game, disabled }) {
     const conditionals = {
         "public_lobby": () => !game?.nameIsUUID,
         "enable_chat": () => game?.has_been_public,
+        "call_draw_penalty": () => !game?.config?.require_call
     }
     
     const option = options[name];
     const condition = disabled || conditionals?.[name]?.();
-    const disabled_reason = option.condition_reason ?? "Not implemented";
+    const disabled_reason = option.condition_reason ?? "Disabled";
 
     function updateConfig(option, value) {
         socket.emit("update_config", { option, value });
@@ -58,6 +59,10 @@ function Input({ id, option, configValue, updateConfig, disabled }) {
     const [localValue, setValue] = useState(configValue);
 
     const { type, min, max } = option;
+    const step = option.step ?? 1;
+
+    let configValueFormatted = configValue;
+    if(option.format) configValueFormatted = option.format.split("#").join(configValue);
 
     function set(v) {
         console.log(id, v);
@@ -76,11 +81,11 @@ function Input({ id, option, configValue, updateConfig, disabled }) {
     }
 
     if(type === "number") {
-        const buttonDown = <button className="number_input_btn" onClick={() => set(old => old-1)}>
+        const buttonDown = <button className="number_input_btn" onClick={() => set(old => old-step)} disabled={configValue === min}>
             -
         </button>;
-        const input = <input id={id} type="number" min={min} max={max} value={configValue} onChange={event => set(Number(event.target.value))} disabled />;
-        const buttonUp = <button className="number_input_btn" onClick={() => set(old => old+1)}>
+        const input = <input id={id} type="text" min={min} max={max} value={configValueFormatted} onChange={event => set(Number(event.target.value))} disabled />;
+        const buttonUp = <button className="number_input_btn" onClick={() => set(old => old+step)} disabled={configValue === max}>
             +
         </button>;
 

@@ -23,7 +23,10 @@ const lang = {
         "false": "",
         "true": "Enabled",
 
-        "choose_color": "Choose color"
+        "choose_color": "Choose color",
+
+        "require_call": "Callouts Required",
+        "call_draw_penalty": "Callout Penalty"
     }
 }
 

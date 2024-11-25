@@ -35,10 +35,9 @@ export default function Game({ game, setGame, startGame }) {
 
             const key = event.key.toUpperCase();
 
-            // End turn
-            if(key === "E") {
-                endTurn();
-            }
+            // Keybinds
+            if(key === "E") endTurn();      // End turn
+            // else if(key === "Q") callout(); // Callout
 
             // Play cards (1-9) - doesn't seem to work
             // if(!isNaN(Number(key))) {
@@ -77,10 +76,9 @@ export default function Game({ game, setGame, startGame }) {
     }, []);
 
 
+    const playerMeInner = useRef(null);
 
     useEffect(() => {
-        console.log("useEffect with [game] running. Your turn: ", myTurn);
-
         // My turn SFX
         // if(myTurn) {
         //     const sfx = new Audio("/sounds/ding-sound-246413.mp3");
@@ -92,9 +90,8 @@ export default function Game({ game, setGame, startGame }) {
         // console.log("just drew: ", just_drew.current);
         if(just_drew.current) {
             just_drew.current = false;
-            const me = document.querySelector('.player.me > .inner');
-            if(me !== null) me.scroll({
-                left: me.scrollWidth,
+            if(playerMeInner !== null) playerMeInner.current.scroll({
+                left: playerMeInner.current.scrollWidth,
                 behavior: 'smooth' 
             });
         }
@@ -206,15 +203,16 @@ export default function Game({ game, setGame, startGame }) {
 
     const startRect = getCardRect(game.animation?.fromName, game.animation?.fromIndex-1);
     const endRect = getCardRect(game.animation?.toName);
-    const cardAnimated = game.animation !== undefined ?
-        <Card key={game.animation_key} data={game.animation.card} animated={true} style={{
-            "--start-x": `${startRect.x}px`,
-            "--start-y": `${startRect.y}px`,
-            "--end-x": `${endRect.x}px`,
-            "--end-y": `${endRect.y}px`,
-        }} />
-        :
-        null
+    const cardAnimated =
+        game.animation !== undefined ?
+            <Card key={game.animation_key} data={game.animation.card} animated={true} style={{
+                "--start-x": `${startRect.x}px`,
+                "--start-y": `${startRect.y}px`,
+                "--end-x": `${endRect.x}px`,
+                "--end-y": `${endRect.y}px`,
+            }} />
+            :
+            null;
 
 
 
@@ -363,9 +361,10 @@ export default function Game({ game, setGame, startGame }) {
                         </h3>
 
                         {/* Cards */}
-                        <div className="inner">
+                        <div className="inner" ref={game.turn === playerIndex ? playerMeInner : null}>
                             {player.cards.map((cardData, cardIndex) => {
-                                return <Card data={cardData} key={cardIndex}
+                                return <Card
+                                    data={cardData} key={cardIndex}
                                     owner={playerIndex} game={game}
                                     onClick={playerIndex === game.my_num ?
                                         function() { playCard(cardIndex) } :
@@ -392,10 +391,11 @@ export default function Game({ game, setGame, startGame }) {
                 <div className="choice_popup choose_color">
                     <h3 className="border_shadowed">CHOOSE A COLOR</h3>
                     <div className="choose_color_container">
-                        <div className="red hover_border_shadowed" role="button" tabIndex="0" onClick={() => action("red")} />
-                        <div className="yellow hover_border_shadowed" role="button" tabIndex="0" onClick={() => action("yellow")} />
-                        <div className="green hover_border_shadowed" role="button" tabIndex="0" onClick={() => action("green")} />
-                        <div className="blue hover_border_shadowed" role="button" tabIndex="0" onClick={() => action("blue")} />
+                        {(game.players[game.my_num].cards[game.action_params[1]].colors ?? ["red", "blue", "yellow", "green", "purple"]).map(color => {
+                            return <div className={`${color} hover_border_shadowed`} role="button" tabIndex="0" onClick={() => action(color)} />
+                        })
+
+                        }
                     </div>
 
                     {/* Cancel */}
@@ -446,134 +446,125 @@ export default function Game({ game, setGame, startGame }) {
         }
 
         {/* Win screen */}
-        {game?.winner !== undefined ?
-        <div id="win_screen" className="overlay">
-            <div className="inner">
-                <h2 className="border_shadowed">
-                    {game.winner === socket.id ?
-                        "You win! 🎉" :
-                        `${game.usersParsed[game.winner]?.name} won...`
-                    }
-                </h2>
+        {game?.winner === undefined ? null :
+            <div id="win_screen" className="overlay">
+                <div className="inner">
+                    <h2 className="border_shadowed">
+                        {game.winner === socket.id ?
+                            "You win! 🎉" :
+                            `${game.usersParsed[game.winner]?.name} won...`
+                        }
+                    </h2>
 
-                <User user={game.usersParsed[game.winner]} classes="big_user" />
-                <br/>
+                    <User user={game.usersParsed[game.winner]} classes="big_user" />
+                    <br/>
 
-                <p className={`${playersWantRematch === 0 ? "secondary_text" : "bounce"} center`}>
-                    {
-                        game.players.length !== 1 ?
-                        `${playersWantRematch}/${game.players.length-1} players have requested a rematch` :
-                        "Very impressive"
-                    }
-                </p><br/>
+                    <p className={`${playersWantRematch === 0 ? "secondary_text" : "bounce"} center`}>
+                        {
+                            game.players.length !== 1 ?
+                            `${playersWantRematch}/${game.players.length-1} players have requested a rematch` :
+                            "Very impressive"
+                        }
+                    </p><br/>
 
-                {/* Buttons */}
-                <div className="flex media_flex col gap_6px">
-                    {/* Rematch */}
-                    {isHost ?
-                        <button className="button_primary button_secondary hover_border_shadowed" onClick={startGame}>
-                            Play again
+                    {/* Buttons */}
+                    <div className="flex media_flex col gap_6px">
+                        {/* Rematch */}
+                        {isHost ?
+                            <button className="button_primary button_secondary hover_border_shadowed" onClick={startGame}>
+                                Play again
+                            </button>
+                            :
+                            <button className="button_primary button_secondary hover_border_shadowed" onClick={requestRematch} disabled={(game.players?.[game.my_num]?.wants_rematch || game.my_spectating) ? true : false}>
+                                Request rematch
+                            </button>
+                        }
+                        {/* Leave */}
+                        {isHost ?
+                        <button className="button_primary button_secondary button_transparent hover_border_shadowed position_relative" onClick={returnToLobby}>
+                            <span>Back to lobby</span>
                         </button>
                         :
-                        <button className="button_primary button_secondary hover_border_shadowed" onClick={requestRematch} disabled={(game.players?.[game.my_num]?.wants_rematch || game.my_spectating) ? true : false}>
-                            Request rematch
+                        <button className="button_primary button_secondary button_transparent hover_border_shadowed" onClick={leaveGame}>
+                            Leave
                         </button>
-                    }
-                    {/* Leave */}
-                    {isHost ?
-                    <button className="button_primary button_secondary button_transparent hover_border_shadowed position_relative" onClick={returnToLobby}>
-                        <span>Back to lobby</span>
-                    </button>
-                    :
-                    <button className="button_primary button_secondary button_transparent hover_border_shadowed" onClick={leaveGame}>
-                        Leave
-                    </button>
-                    }
+                        }
+                    </div>
                 </div>
             </div>
-        </div>
-        : null
         }
 
 
         {/* Menu */}
-        {optionsOpen ?
-        <div id="menu" className="overlay">
-            <div className="inner">
-                <h2 className="border_shadowed">Menu</h2>
+        {!optionsOpen ? null :
+            <div id="menu" className="overlay">
+                <div className="inner">
+                    <h2 className="border_shadowed">Menu</h2>
 
-                {/* Info */}
-                <div className="flex">
-                    {/* Players */}
-                    {/* <div className="users_list">
-                        {Object.entries(game.usersParsed).map(([, user], index) => {
-                            return <User
-                                key={index} user={user} game={game}
-                                title={`ID: ${user.socketID}
-                                ${isHost ? " (Host)":""}`}
-                            />
-                        })}
-                    </div> */}
-
-                    {/* Config */}
-                    <div className="fullwidth">
-                        {/* <h4>Config</h4> */}
-                        <table className="fullwidth">
-                            {Object.entries(game.config).map(([key, value]) => {
-                                // Skip
-                                if(value === false || key === "enable_chat" || key === "public_lobby") return null;
-
-                                // Row
-                                return (
-                                    <tr>
-                                        <th>{lang.en[key]}</th>
-                                        <td className="text_align_right">{lang.en[String(value)] ?? String(value)}</td>
-                                    </tr>
-                                )
+                    {/* Info */}
+                    <div className="flex">
+                        {/* Players */}
+                        {/* <div className="users_list">
+                            {Object.entries(game.usersParsed).map(([, user], index) => {
+                                return <User
+                                    key={index} user={user} game={game}
+                                    title={`ID: ${user.socketID}
+                                    ${isHost ? " (Host)":""}`}
+                                />
                             })}
-                        </table>
+                        </div> */}
+
+                        {/* Config */}
+                        <div className="fullwidth">
+                            {/* <h4>Config</h4> */}
+                            <table className="fullwidth">
+                                {Object.entries(game.config).map(([key, value]) => {
+                                    // Skip
+                                    if(value === false || key === "enable_chat" || key === "public_lobby") return null;
+
+                                    // Row
+                                    return (
+                                        <tr key={key}>
+                                            <th>{lang.en[key]}</th>
+                                            <td className="text_align_right">{lang.en[String(value)] ?? String(value)}</td>
+                                        </tr>
+                                    )
+                                })}
+                            </table>
+                        </div>
                     </div>
-                </div>
-                <br/>
-                <br/>
+                    <br/>
+                    <br/>
+                    
+                    {/* Buttons */}
+                    <div className="flex flex_column gap_12px">
+                        <div className="flex media_flex col gap_12px">
+                            {/* Leave */}
+                            <button className="button_primary button_secondary hover_border_shadowed position_relative" onClick={toggleMenu}>
+                                <span>Return to game</span>
+                                <kbd>ESC</kbd>
+                            </button>
 
-                {/* Return to lobby */}
-                {/* <button className="button_primary button_secondary button_lightbg hover_border_shadowed position_relative" onClick={returnToLobby}>
-                        <span>Back to lobby</span>
-                </button>
-                <br/> */}
-                
-                {/* Buttons */}
-                <div className="flex flex_column gap_12px">
-                    <div className="flex media_flex col gap_12px">
-                        {/* Leave */}
-                        <button className="button_primary button_secondary hover_border_shadowed position_relative" onClick={toggleMenu}>
-                            <span>Return to game</span>
-                            <kbd>ESC</kbd>
-                        </button>
+                            {/* Leave */}
+                            <button className="button_primary button_secondary button_transparent hover_border_shadowed" onClick={leaveGame}>
+                                <span>
+                                    {game.my_num !== -1 ?
+                                        "Quit game" :
+                                        "Stop spectating"
+                                    }
+                                </span>
+                            </button>
+                        </div>
 
-                        {/* Leave */}
-                        <button className="button_primary button_secondary button_transparent hover_border_shadowed" onClick={leaveGame}>
-                            <span>
-                                {game.my_num !== -1 ?
-                                "Quit game" :
-                                "Stop spectating"
-                                }
-                            </span>
-                        </button>
+                        {/* Return to lobby */}
+                        {!isHost ? null :
+                            <button className="button_primary button_secondary hover_border_shadowed button_transparent" onClick={returnToLobby}>
+                                <span>Back to lobby</span>
+                            </button>
+                        }
                     </div>
-
-                    {/* Return to lobby */}
-                    {!isHost ? null :
-                        <button className="button_primary button_secondary hover_border_shadowed button_transparent" onClick={returnToLobby}>
-                            <span>Back to lobby</span>
-                        </button>
-                    }
                 </div>
             </div>
-        </div>
-        :
-        null
         }
 
         </>

@@ -444,9 +444,11 @@ class Uno {
             return;
         }
 
+        const wildOptions = this.players?.[pnum]?.cards?.[this.action_params?.[1]]?.colors ?? ["red", "blue", "yellow", "green"];
+
         // Pass action along to playCard method
         if(
-            this.action === "choose_color" ||
+            (this.action === "choose_color" && wildOptions.includes(choice)) ||
             this.action === "choose_swap" ||
             this.action === "target_draw"
         ) {
@@ -500,6 +502,8 @@ class Uno {
         this.players = [];
         this.winner = undefined;
         this.draw_debt = 0;
+        delete this.action;
+        delete this.action_params;
 
         this.animation_key = 0;
 

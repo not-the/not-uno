@@ -46,27 +46,44 @@ export default function Card({ data=null, owner, game, rotation=0, onClick, styl
 
     data.rotation ??= rotation;
 
-    // Wild decorator
-    let ovalInner;
-    if(data.style === 'wild') {
-        ovalInner =
-        <div className="oval_inner">
-            <div className="flex">
-                <div className="red" /><div className="blue" />
-            </div>
-            <div className="flex">
-                <div className="yellow" /><div className="green" />
-            </div>
-            <div className="gradient" />
-        </div>
+
+    // Wild (conic gradient)
+    // let conic = data.color === "black" ? null : `var(--${data.color})`;
+    let conic = null;
+    if(data.style === "wild" && data.colors !== undefined) {
+
+        let steps = [];
+
+        for(let i = 0; i < data.colors.length; i++) {
+            const color = data.colors[i];
+
+            const step = 360/data.colors.length;
+            const start = step*i;
+            const end = step*(i+1)
+
+            steps.push(`var(--${color}) ${start}deg ${end}deg`);
+        }
+
+        conic = steps.join(", ");
     }
-    
+
+    console.log(conic);
+
+
+    // HTML
     return (
         <div className={classes} onClick={onClick} tabIndex="0" role="button"
-            style={{ ...style, "transform": `rotate(${data.rotation}deg)`, "--card-color": `var(--${data.color})` }}
+            style={{
+                ...style,
+                "transform": `rotate(${data.rotation}deg)`,
+                "--card-color": `var(--${data.color})`,
+                "--conic": conic
+            }}
         >
             {/* Decorator */}
-            <div className="oval">{ovalInner}</div>
+            <div className="oval">
+                <div className="oval_inner"/>
+            </div>
 
             {/* Corner */}
             {/* {cornerSymbol} */}

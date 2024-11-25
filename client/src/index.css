@@ -43,7 +43,7 @@
     --yellow: #eec719;
     --green: #20860e;
     --blue: #166aca;
-    --black: #000000;
+    --black: #0a0913;
 
     /* Cards (Extra) */
     --purple: #7143c7;
@@ -1186,23 +1186,24 @@ button.share_button {
 }
 
 /* Wild card */
-.card.style_wild > .oval > .oval_inner {
-    position: relative;
-    width: 100%;
-    height: 100%;
+.card.style_wild {
+    /* Default wild card colors */
+    --conic:  
+        var(--blue) 90deg,
+        var(--green) 90deg 180deg,
+        var(--yellow) 180deg 270deg, 
+        var(--red) 270deg 360deg;
 }
-.card.style_wild > .oval > .oval_inner > .gradient {
+.card.style_wild > .oval {
+    background: conic-gradient(var(--conic));
+}
+.card.style_wild > .oval > .oval_inner {
     position: absolute;
     inset: 0;
     background: radial-gradient(circle, rgba(255,255,255,0.1) 15%, rgba(0, 0, 0, 0.4) 110%);
     mix-blend-mode: hard-light;
 }
-.card.style_wild > .oval > .oval_inner > .flex > div {
-    width: 50%;
-    height: 0.45em;
-    background-color: rgb(255, 181, 181);
-    /* border: 2px solid rgb(73, 140, 241); */
-}
+
 
 .animation_container {
     overflow: hidden;
@@ -1232,7 +1233,7 @@ button.share_button {
 }
 
 /* Colors */
-.black { background-color: black !important; }
+.black { background-color: var(--black) !important; }
 .red { background-color: var(--red) !important; }
 .yellow { background-color: var(--yellow) !important; }
 .green { background-color: var(--green) !important; }
@@ -1349,6 +1350,8 @@ button.share_button {
 
     width: 100%;
     max-width: 290px;
+    max-height: 90vh;
+    overflow-y: auto;
     padding: 18px 24px;
     
     background-color: var(--bg-comp);
@@ -1386,10 +1389,10 @@ button.share_button {
 
     cursor: pointer;
 }
-.choose_color_container > .red { transform-origin: bottom right; }
-.choose_color_container > .yellow { transform-origin: bottom left; }
-.choose_color_container > .green { transform-origin: top right; }
-.choose_color_container > .blue { transform-origin: top left; }
+.choose_color_container > div:nth-of-type(1) { transform-origin: bottom right; }
+.choose_color_container > div:nth-of-type(2) { transform-origin: bottom left; }
+.choose_color_container > div:nth-of-type(3) { transform-origin: top right; }
+.choose_color_container > div:nth-of-type(4) { transform-origin: top left; }
 
 
 

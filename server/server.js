@@ -805,7 +805,7 @@ class Uno {
 
     /** Starts next turn
      * @param {Number} skip Number of players to skip
-     * @param {*} playerCard 
+     * @param {Object} playerCard 
      * @param {Boolean} keepTurn Does not end current player's turn but still enacts draw cards, etc
      */
     nextTurn(skip=0, playerCard={}, keepTurn) {

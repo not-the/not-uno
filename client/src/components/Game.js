@@ -9,15 +9,22 @@ import lang from "../lang.js";
 
 
 export default function Game({ game, setGame, startGame }) {
-
     // State
-    // let [dialog, setDialog] = useState(null);
-    // let [dialogAction, setDialogAction] = useState(null);
     const [optionsOpen, setOptionsOpen] = useState(false);
-
     const just_drew = useRef(false);
 
+    // Variables
+    const myTurn = game.turn === game.my_num;
     const isHost = game.host === socket.id;
+    const awaiting_call = Boolean(game?.players?.[game?.my_num]?.awaiting_call);
+    const disableLastCard = !myTurn && !awaiting_call;
+    const hightlightEndTurn = 
+        (
+            (
+                game.draw_count !== 0 || game.draw_debt > 0
+            )
+            && myTurn
+        ) ? false : true;
 
     // Setup
     useEffect(() => {
@@ -69,30 +76,30 @@ export default function Game({ game, setGame, startGame }) {
         }
     }, []);
 
+
+
     useEffect(() => {
+        console.log("useEffect with [game] running. Your turn: ", myTurn);
+
+        // My turn SFX
+        // if(myTurn) {
+        //     const sfx = new Audio("/sounds/ding-sound-246413.mp3");
+        //     sfx.volume = 0.6;
+        //     sfx.play();
+        // }
+
         // Drew card, scroll container
-        console.log("just drew: ", just_drew.current);
-        if(!just_drew.current) return;
-        just_drew.current = false;
-        const me = document.querySelector('.player.me > .inner');
-        if(me !== null) me.scroll({
-            left: me.scrollWidth,
-            behavior: 'smooth' 
-        });
+        // console.log("just drew: ", just_drew.current);
+        if(just_drew.current) {
+            just_drew.current = false;
+            const me = document.querySelector('.player.me > .inner');
+            if(me !== null) me.scroll({
+                left: me.scrollWidth,
+                behavior: 'smooth' 
+            });
+        }
+
     }, [game])
-
-
-    // Variables
-    const myTurn = game.turn === game.my_num;
-    const awaiting_call = Boolean(game?.players?.[game?.my_num]?.awaiting_call);
-    const disableLastCard = !myTurn && !awaiting_call;
-    const hightlightEndTurn = 
-        (
-            (
-                game.draw_count !== 0 || game.draw_debt > 0
-            )
-            && myTurn
-        ) ? false : true;
 
     // Only works with 4 players
     // const arrowRotation = (game.turn_rotation_value-1-game.my_num)*90;

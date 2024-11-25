@@ -26,7 +26,9 @@ const lang = {
         "choose_color": "Choose color",
 
         "require_call": "Callouts Required",
-        "call_draw_penalty": "Callout Penalty"
+        "call_penalty": "Callout Penalty",
+        "call_draw_penalty": "Callout Draw Cards",
+        "call_timer": "Callout Time"
     }
 }
 

@@ -2005,8 +2005,8 @@ h3 > .user .avatar {
 }
 .deck_list {
     display: grid;
-    /* grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); */
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+    /* grid-template-columns: repeat(4, 1fr); */
     gap: 12px;
 }
 .deck_list > .item {
@@ -2043,6 +2043,9 @@ h3 > .user .avatar {
     transform: translateY(-4px) scale(0.95);
     transform-origin: bottom;
     transition: 0.15s ease;
+}
+.deck_list .item table td {
+    word-break: break-word;
 }
 .deck_list > .item:hover table,
 .deck_list > .item:focus-visible table,

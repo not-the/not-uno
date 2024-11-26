@@ -24,71 +24,7 @@ const cardProperties = {
 /** Custom Deck editor */
 export default function DeckEditor({ setMenu, toast }) {
 
-    const workingDefaultOld = [
-        { amount: 1, color: "red", type: "0" },
-        { amount: 2, color: "red", type: "1" },
-        { amount: 2, color: "red", type: "2" },
-        { amount: 2, color: "red", type: "3" },
-        { amount: 2, color: "red", type: "4" },
-        { amount: 2, color: "red", type: "5" },
-        { amount: 2, color: "red", type: "6" },
-        { amount: 2, color: "red", type: "7" },
-        { amount: 2, color: "red", type: "8" },
-        { amount: 2, color: "red", type: "9" },
-
-        { amount: 1, color: "yellow", type: "0" },
-        { amount: 2, color: "yellow", type: "1" },
-        { amount: 2, color: "yellow", type: "2" },
-        { amount: 2, color: "yellow", type: "3" },
-        { amount: 2, color: "yellow", type: "4" },
-        { amount: 2, color: "yellow", type: "5" },
-        { amount: 2, color: "yellow", type: "6" },
-        { amount: 2, color: "yellow", type: "7" },
-        { amount: 2, color: "yellow", type: "8" },
-        { amount: 2, color: "yellow", type: "9" },
-
-        { amount: 1, color: "blue", type: "0" },
-        { amount: 2, color: "blue", type: "1" },
-        { amount: 2, color: "blue", type: "2" },
-        { amount: 2, color: "blue", type: "3" },
-        { amount: 2, color: "blue", type: "4" },
-        { amount: 2, color: "blue", type: "5" },
-        { amount: 2, color: "blue", type: "6" },
-        { amount: 2, color: "blue", type: "7" },
-        { amount: 2, color: "blue", type: "8" },
-        { amount: 2, color: "blue", type: "9" },
-
-        { amount: 1, color: "green", type: "0" },
-        { amount: 2, color: "green", type: "1" },
-        { amount: 2, color: "green", type: "2" },
-        { amount: 2, color: "green", type: "3" },
-        { amount: 2, color: "green", type: "4" },
-        { amount: 2, color: "green", type: "5" },
-        { amount: 2, color: "green", type: "6" },
-        { amount: 2, color: "green", type: "7" },
-        { amount: 2, color: "green", type: "8" },
-        { amount: 2, color: "green", type: "9" },
-
-        { amount: 2, color: "red",      type: "draw2", draw: 2 },
-        { amount: 2, color: "yellow",   type: "draw2", draw: 2 },
-        { amount: 2, color: "blue",     type: "draw2", draw: 2 },
-        { amount: 2, color: "green",    type: "draw2", draw: 2 },
-
-        { amount: 4, color: "black", type: "wild", style: "wild", "choose_color": true },
-
-        { amount: 2, color: "red",      type: "reverse", reverse: true },
-        { amount: 2, color: "yellow",   type: "reverse", reverse: true },
-        { amount: 2, color: "blue",     type: "reverse", reverse: true },
-        { amount: 2, color: "green",    type: "reverse", reverse: true },
-
-        { amount: 4, color: "black", type: "draw4", draw: 4, "choose_color": true },
-
-        { amount: 2, color: "red",      type: "skip", "skip": 1 },
-        { amount: 2, color: "yellow",   type: "skip", "skip": 1 },
-        { amount: 2, color: "blue",     type: "skip", "skip": 1 },
-        { amount: 2, color: "green",    type: "skip", "skip": 1 }
-    ];
-
+    // Default
     const workingDefault = convertToConciseDeck(clientData.decks.classic);
 
     const [working, setWorking] = useState(workingDefault);
@@ -112,8 +48,6 @@ export default function DeckEditor({ setMenu, toast }) {
     /** Converts raw deck to concise array and removes name/desc properties */
     function convertToConciseDeck(rawReference) {
         const raw = structuredClone(rawReference);
-        console.log(raw);
-
         let result = [];
 
         for(const i in raw.cards) {
@@ -124,7 +58,6 @@ export default function DeckEditor({ setMenu, toast }) {
             if(existingIndex === -1) result.push({ ...card, amount:1 }); // New entry
             else result[existingIndex].amount++; // Incremement amount on existing entry
         }
-
 
         return result;
     }
@@ -165,9 +98,20 @@ export default function DeckEditor({ setMenu, toast }) {
         setWorking([]);
     }
 
-    /** Resets workspace */
-    function toDefault() {
-        setWorking(workingDefault);
+    /** Resets workspace and imports an existing deck */
+    function toExisting(name="classic") {
+        if(!clientData.decks[name]) return console.warn(`Deck "${name}" doesn't exist`);
+
+        const converted = convertToConciseDeck(clientData.decks[name]);
+        setWorking(converted);
+    }
+
+    /** onChange handler for import deck dropdown */
+    function handleImportDeck({ target }) {
+        toExisting(target.value);
+        toast({ title:`Imported deck`, msg:`${lang.en[target.value]}` });
+
+        target.value = "none";
     }
 
     /** Returns total number of cards */
@@ -206,17 +150,27 @@ export default function DeckEditor({ setMenu, toast }) {
                         Clear
                     </button>
 
-                    {/* Default */}
-                    <button className="button_primary button_secondary button_mainbg button_border_bg_lighter hover_border_shadowed button_mini" onClick={toDefault}>
-                        Reset to default
-                    </button>
-
                     {/* Debug */}
                     {isProduction ? null :
                         <button className="button_primary button_secondary button_mainbg button_border_bg_lighter hover_border_shadowedg button_mini hover_border_shadowed" onClick={() => console.log(convertToRawDeck())}>
-                            Export as JSON
+                            Export to console
                         </button>
                     }
+
+                    {/* Import */}
+                    <div className="input_container ">
+                        <select name="import_deck" id="import_deck" class="button_mainbg" onChange={handleImportDeck}>
+                            <option value="none">
+                                Import deck...
+                            </option>
+                            {Object.keys(clientData.decks).map(key => {
+                                return (
+                                    <option value={key}>{lang.en[key]}</option>
+                                )
+                            })}
+                        </select>
+                    </div>
+
                 </div>
             </nav>
             <br/>

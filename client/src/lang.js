@@ -12,8 +12,8 @@ const lang = {
         "infinite_draw": "Infinite Draw",
         "always_play": "Always Play",
 
-        "normal": "Normal",
-        "all_wilds": "All Wilds!",
+        "classic": "Classic",
+        "all_wild": "All Wild!",
         "debug": "Debug",
 
         "off": "Off",

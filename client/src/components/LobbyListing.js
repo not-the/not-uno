@@ -5,7 +5,7 @@ export default function LobbyListing({ lobby, joinRoom }) {
     // Mode string
     let modeInfo = lang.en?.[lobby?.config?.starting_deck] ?? lobby?.config?.starting_deck;
     if(lobby?.config?.xray) {
-        if(modeInfo === "Normal") modeInfo = "Hands Down";
+        if(modeInfo === "Classic") modeInfo = "Hands Down";
         else modeInfo += ", Hands Down";
     }
 

@@ -71,3 +71,14 @@ export function arrRandom(arr) {
 export function capitalizeFirstLetter(string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
 }
+
+/** Acts like indexOf, but does a loose comparison on objects. Ignores the "amount" property when comparing objects. */
+export function looseIndexOfObj(array, obj) {
+    for(let i = 0; i < array.length; i++) {
+        const item = array[i];
+        if (
+            Object.entries(obj).every(([key, value]) => item[key] === value && key !== "amount")
+        ) return i;
+    }
+    return -1; // No match
+}

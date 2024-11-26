@@ -2,9 +2,10 @@ import { useState } from "react";
 
 import Card from "./Card"
 import Icon from "./Icon"
-import { capitalizeFirstLetter } from "../Util"
+import { capitalizeFirstLetter, looseIndexOfObj } from "../Util"
 import { isProduction } from "../socket"
 import lang from "../lang";
+import { clientData } from "../App";
 
 const cardProperties = {
     "type": [
@@ -23,7 +24,7 @@ const cardProperties = {
 /** Custom Deck editor */
 export default function DeckEditor({ setMenu, toast }) {
 
-    const workingDefault = [
+    const workingDefaultOld = [
         { amount: 1, color: "red", type: "0" },
         { amount: 2, color: "red", type: "1" },
         { amount: 2, color: "red", type: "2" },
@@ -88,10 +89,12 @@ export default function DeckEditor({ setMenu, toast }) {
         { amount: 2, color: "green",    type: "skip", "skip": 1 }
     ];
 
+    const workingDefault = convertToConciseDeck(clientData.decks.classic);
 
     const [working, setWorking] = useState(workingDefault);
 
 
+    /** Converts workspace to a raw deck object */
     function convertToRawDeck() {
         let result = structuredClone(working).reduce((res, current) => res.concat([current, current]), []);
         result = result.map(card => {
@@ -104,6 +107,26 @@ export default function DeckEditor({ setMenu, toast }) {
             desc: document.getElementById("custom_desc").value,
             cards: result
         };
+    }
+
+    /** Converts raw deck to concise array and removes name/desc properties */
+    function convertToConciseDeck(rawReference) {
+        const raw = structuredClone(rawReference);
+        console.log(raw);
+
+        let result = [];
+
+        for(const i in raw.cards) {
+            const card = raw.cards[i];
+            
+            const existingIndex = looseIndexOfObj(result, card);
+            console.log(card, existingIndex);
+            if(existingIndex === -1) result.push({ ...card, amount:1 }); // New entry
+            else result[existingIndex].amount++; // Incremement amount on existing entry
+        }
+
+
+        return result;
     }
 
     function writeToLocal() {
@@ -154,6 +177,12 @@ export default function DeckEditor({ setMenu, toast }) {
 
     return (
         <main id="deck_editor" className="container">
+            {/* Exit */}
+            <button className="button_primary button_secondary button_mainbg button_border_bg_lighter hover_border_shadowed button_mini" onClick={() => setMenu(null)}>
+                Exit
+            </button>
+            <br/>
+
             {/* Nav */}
             <nav>
                 <h2 className="border_shadowed">
@@ -170,11 +199,6 @@ export default function DeckEditor({ setMenu, toast }) {
                     {/* Save */}
                     <button className="button_primary button_secondary button_mini hover_border_shadowed" onClick={writeToLocal}>
                         Save
-                    </button>
-
-                    {/* Exit */}
-                    <button className="button_primary button_secondary button_mainbg button_border_bg_lighter hover_border_shadowed button_mini" onClick={() => setMenu(null)}>
-                        Exit
                     </button>
 
                     {/* Clear */}

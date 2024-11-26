@@ -181,7 +181,7 @@ class Uno {
             enable_chat: true,
             max_players: 4,
 
-            starting_deck: "normal",
+            starting_deck: "classic",
             starting_cards: 7,
 
             infinite_draw: false,
@@ -444,6 +444,7 @@ class Uno {
             return;
         }
 
+        // Wild color options
         const wildOptions = this.players?.[pnum]?.cards?.[this.action_params?.[1]]?.colors ?? ["red", "blue", "yellow", "green"];
 
         // Pass action along to playCard method

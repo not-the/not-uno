@@ -1,8 +1,9 @@
-import User from "./User"
-import { capitalizeFirstLetter } from "../Util"
 import { useState } from "react";
+import User from "./User"
+import { clientData } from "../App";
+import { capitalizeFirstLetter } from "../Util"
 
-export default function ProfileMenu({ profile, getRandomName, setUser, clientData, setProfileOpen }) {
+export default function ProfileMenu({ profile, getRandomName, setUser, setProfileOpen }) {
     const [nameInput, setNameInput] = useState(profile.name);
 
     function doneProfile() {

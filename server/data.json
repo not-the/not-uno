@@ -1,7 +1,7 @@
 {
 "decks": {
-    "normal": {
-        "name": "Normal",
+    "classic": {
+        "name": "Classic",
 
         "cards": [
             { "color":"red", "type": "0" },
@@ -123,7 +123,7 @@
         ]
     },
 
-    "all_wilds": {
+    "all_wild": {
         "name": "All Wilds",
 
         "cards": [
@@ -270,13 +270,13 @@
             { "color": "black", "type": "wild", "style": "wild", "choose_color": true, "colors": ["red", "blue"] },
             { "color": "black", "type": "wild", "style": "wild", "choose_color": true, "colors": ["red", "blue", "yellow"]  },
             { "color": "black", "type": "wild", "style": "wild", "choose_color": true, "colors": ["blue", "green", "yellow", "red", "purple", "orange", "cyan", "pink"]  },
-            { "color": "black", "type": "wild", "style": "wild", "choose_color": true, "colors": ["red", "blue"]  },
-            { "color": "black", "type": "wild", "style": "wild", "choose_color": true, "colors": ["red", "blue"]  },
-            { "color": "black", "type": "wild", "style": "wild", "choose_color": true, "colors": ["red", "blue"]  },
-            { "color": "black", "type": "wild", "style": "wild", "choose_color": true, "colors": ["red", "blue"]  },
-            { "color": "black", "type": "wild", "style": "wild", "choose_color": true, "colors": ["red", "blue"]  },
-            { "color": "black", "type": "wild", "style": "wild", "choose_color": true, "colors": ["red", "blue"]  },
-            { "color": "black", "type": "wild", "style": "wild", "choose_color": true, "colors": ["red", "blue"]  },
+            { "color": "black", "type": "wild", "style": "wild", "choose_color": true, "colors": ["blue"]  },
+            { "color": "black", "type": "wild", "style": "wild", "choose_color": true, "colors": ["blue"]  },
+            { "color": "black", "type": "wild", "style": "wild", "choose_color": true, "colors": ["blue"]  },
+            { "color": "black", "type": "wild", "style": "wild", "choose_color": true, "colors": ["blue"]  },
+            { "color": "black", "type": "wild", "style": "wild", "choose_color": true, "colors": ["blue"]  },
+            { "color": "black", "type": "wild", "style": "wild", "choose_color": true, "colors": ["blue"]  },
+            { "color": "black", "type": "wild", "style": "wild", "choose_color": true, "colors": ["blue"]  },
             { "color": "blue", "type": "reverse", "reverse": true },
             { "color": "blue", "type": "reverse", "reverse": true },
             { "color": "blue", "type": "reverse", "reverse": true },
@@ -292,7 +292,7 @@
         "icon": "/icons/play.svg",
 
         "type": "dropdown",
-        "dropdown": ["normal", "all_wilds", "debug"]
+        "dropdown": ["classic", "all_wild", "debug"]
     },
     "starting_cards": {
         "desc": "Number of cards each player starts with",
@@ -414,6 +414,7 @@
         "bronze",
         "silver",
         "gold",
+        "paper",
 
         "slow",
         "fast",

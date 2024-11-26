@@ -67,9 +67,6 @@ export default function Card({ data=null, owner, game, rotation=0, onClick, styl
         conic = steps.join(", ");
     }
 
-    console.log(conic);
-
-
     // HTML
     return (
         <div className={classes} onClick={onClick} tabIndex="0" role="button"

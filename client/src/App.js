@@ -241,12 +241,12 @@ export default function App() {
             }
         })
 
-        socket.on("request_custom_deck", () => {
-            let custom0 = localStorage.getItem("nu_custom_0");
-            if(custom0 !== undefined) {
-                socket.emit("custom_deck", JSON.parse(custom0));
-            }
-        })
+        // socket.on("request_custom_deck", () => {
+        //     let custom0 = localStorage.getItem("nu_custom_0");
+        //     if(custom0 !== undefined) {
+        //         socket.emit("custom_deck", JSON.parse(custom0));
+        //     }
+        // })
 
         // Debug
         // if(!isProduction) {
@@ -331,7 +331,7 @@ export default function App() {
 
             {/* Profile dialog */}
             {profileOpen ?
-                <ProfileMenu profile={profile} getRandomName={getRandomName} setUser={setUser} clientData={clientData} setProfileOpen={setProfileOpen} />
+                <ProfileMenu profile={profile} getRandomName={getRandomName} setUser={setUser} setProfileOpen={setProfileOpen} />
                 : null
             }
 

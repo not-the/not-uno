@@ -3,6 +3,8 @@
 import { socket } from "../socket.js";
 import User from "./User.js"
 import Config from "./Config.js"
+import ConfigDeck from "./ConfigDeck.js"
+import { clientData } from "../App";
 // import lang from "../lang.js";
 
 export default function Lobby({ game, startGame, toast, leaveGame }) {
@@ -106,7 +108,7 @@ export default function Lobby({ game, startGame, toast, leaveGame }) {
                             <div className="flex flex_center_vertically">
                                 <h3 className="border_shadowed">Players</h3>
                                 <h4 className={`player_count margin_left_auto${playerCount >= playerMax ? " full border_shadowed" : ""}`}>
-                                    {playerCount}/{playerMax}
+                                    {playerCount === playerMax ? "Full" : null} {playerCount}/{playerMax}
                                 </h4>
                             </div>
 
@@ -138,11 +140,21 @@ export default function Lobby({ game, startGame, toast, leaveGame }) {
 
             {/* Options */}
             <div id="config" className="container">
+                {/* Deck */}
+                <section>
+                    <h3 className="fancy_title">
+                        <span>Deck</span>
+                    </h3>
+                    
+                    {/* Decks */}
+                    <ConfigDeck game={game} />
+                </section>
+
                 {/* Lobby */}
                 <section>
-                    <h4 className="center fancy_title">
+                    <h3 className="fancy_title">
                         <span>Room Options</span>
-                    </h4>
+                    </h3>
 
                     {/* <div className="config_two_col"> */}
                         <Config name="public_lobby" game={game} />
@@ -154,10 +166,10 @@ export default function Lobby({ game, startGame, toast, leaveGame }) {
 
                 {/* Game */}
                 <section>
-                    <h4 className="center fancy_title">
+                    <h3 className="fancy_title">
                         <span>Modifiers</span>
-                    </h4>
-                    <Config name="starting_deck" game={game} />
+                    </h3>
+                    {/* <Config name="starting_deck" game={game} /> */}
                     <Config name="starting_cards" game={game} />
                     <Config name="draw_stacking" game={game} />
                     <Config name="xray" game={game} />
@@ -170,9 +182,9 @@ export default function Lobby({ game, startGame, toast, leaveGame }) {
                 {/* <Config name="call_penalty" game={game} /> */}
 
                 {/* <section>
-                    <h4 className="center fancy_title">
+                    <h3 className="fancy_title">
                         <span>Callouts</span>
-                    </h4>
+                    </h3>
                     <Config name="require_call" game={game} />
 
                     <Config name="call_draw_penalty" game={game} />

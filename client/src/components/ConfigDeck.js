@@ -1,13 +1,21 @@
 import { socket } from "../socket"
 import { clientData } from "../App";
-import lang from "../lang"
 
 export default function ConfigDeck({ game }) {
 
+    const allDecks = structuredClone(clientData.decks);
+
+    // Object.entries(localStorage).forEach(([key, value]) => {
+    //     console.log(key);
+    //     if(!value === undefined || !key.startsWith("not_uno_deck")) return;
+    //     // console.log(key, value);
+    //     allDecks[key] = JSON.parse(value);
+    // })
+
     const myHost = game.host === socket.id;
 
-    const deckEntries = Object.entries(clientData.decks);
-    const currentIndex = Object.keys(clientData.decks).indexOf(game.config.starting_deck);
+    const deckEntries = Object.entries(allDecks);
+    const currentIndex = Object.keys(allDecks).indexOf(game.config.starting_deck);
 
     function updateStartingDeck(value) {
         console.log(value);
@@ -36,11 +44,19 @@ export default function ConfigDeck({ game }) {
                                 "--img": `url('/images/${key}.png')`
                             }}
                         >
-                            <h3 class="border_shadowed">{lang.en[key]}</h3>
+
+                            <h3 class="border_shadowed">{value.name}</h3>
                         </li>
                     )
                 })}
             </ul>
+
+            {/* Deck Description */}
+            {/* <br/>
+            <p className="center secondary_text">
+                {deckEntries[currentIndex][1].desc}
+            </p> */}
+
         </div>
     )
 }

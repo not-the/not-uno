@@ -247,6 +247,7 @@ button kbd {
 .float_right { float: right; }
 .no_margin { margin: 0; }
 .margin_left_auto { margin-left: auto; }
+.margin_center { margin-left: auto; margin-right: auto; }
 .text_align_right { text-align: right; }
 
 /* Small */

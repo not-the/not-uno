@@ -18,7 +18,7 @@ export default function ConfigDeck({ game }) {
     const currentIndex = Object.keys(allDecks).indexOf(game.config.starting_deck);
 
     function updateStartingDeck(value) {
-        console.log(value);
+        // console.log(value);
         socket.emit("update_config", { option:"starting_deck", value });
     }
 

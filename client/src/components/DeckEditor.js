@@ -1,9 +1,9 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import Card from "./Card"
 import Icon from "./Icon"
 import { capitalizeFirstLetter, looseIndexOfObj } from "../Util"
-import { isProduction } from "../socket"
+import { isProduction, socket } from "../socket"
 import lang from "../lang";
 import { clientData } from "../App";
 
@@ -28,6 +28,8 @@ export default function DeckEditor({ setMenu, toast }) {
     const workingDefault = convertToConciseDeck(clientData.decks.classic);
 
     const [working, setWorking] = useState(workingDefault);
+
+    const [awaitingResponse, setAwaitingResponse] = useState(false);
 
 
     /** Converts workspace to a raw deck object */
@@ -62,18 +64,53 @@ export default function DeckEditor({ setMenu, toast }) {
         return result;
     }
 
-    function writeToLocal() {
+    // Effects
+    useEffect(() => {
+        // Custom deck success
+        socket.on("custom_deck_success", id => {
+            console.log(id);
+
+            let list = [id];
+
+            if(localStorage.custom_decks) {
+                list = [
+                    ...JSON.parse(localStorage.getItem("custom_decks")),
+                    id
+                ];
+            }
+
+            localStorage.setItem("custom_decks", JSON.stringify(list));
+            setAwaitingResponse(false);
+            toast({ title:"Saved successfully" });
+        })
+
+        return () => {
+            socket.off("custom_deck_success");
+        }
+    }, []);
+
+    /** Sends deck to server and saves its ID to localStorage */
+    function submitDeck() {
         const raw = convertToRawDeck();
 
-        localStorage.setItem("nu_deck_0", JSON.stringify(raw));
+        socket.emit("custom_deck", raw);
+        setAwaitingResponse(true);
 
-        toast({ title: "Saved deck to localStorage" });
+
+
+        // Localstorage only
+        // let id = 1;
+        // while(localStorage[`not_uno_deck${id}`] !== undefined) {
+        //     id++;
+        // }
+        // localStorage.setItem(`not_uno_deck${id}`, JSON.stringify(raw));
+        // toast({ title: "Saved deck to localStorage", msg:`ID: ${id}` });
     }
 
     function changeAmount(index, change) {
         let modified = structuredClone(working);
         modified[index].amount += change;
-        if(modified[index].amount <= 0 || modified[index].amount > 108) return;
+        if(modified[index].amount <= 0 || modified[index].amount > 120) return;
         setWorking(modified);
     }
 
@@ -120,6 +157,8 @@ export default function DeckEditor({ setMenu, toast }) {
     }
 
     return (
+        <>
+        {/* Main */}
         <main id="deck_editor" className="container">
             {/* Exit */}
             <button className="button_primary button_secondary button_mainbg button_border_bg_lighter hover_border_shadowed button_mini" onClick={() => setMenu(null)}>
@@ -130,32 +169,23 @@ export default function DeckEditor({ setMenu, toast }) {
             {/* Nav */}
             <nav>
                 <h2 className="border_shadowed">
-                    <input type="text" id="custom_name" className="discreet" defaultValue="Unnamed Deck" />
-                    <img src="/icons/edit_24dp_FFFFFF_FILL0_wght400_GRAD200_opsz24.svg" alt="Rename" className="icon_inline"/>
+                    <img src="/icons/edit_24dp_FFFFFF_FILL0_wght400_GRAD200_opsz24.svg" alt="Rename" className="icon_inline"/> <input type="text" id="custom_name" className="discreet" defaultValue="Unnamed Deck" />
                 </h2>
 
                 <h4 className="secondary_text">
-                    <input type="text" id="custom_desc" className="discreet" defaultValue="Description" />
-                    <img src="/icons/edit_24dp_FFFFFF_FILL0_wght400_GRAD200_opsz24.svg" alt="Rename" className="icon_inline" />
+                    <img src="/icons/edit_24dp_FFFFFF_FILL0_wght400_GRAD200_opsz24.svg" alt="Rename" className="icon_inline" /> <input type="text" id="custom_desc" className="discreet" defaultValue="Description" />
                 </h4>
 
                 <div className="flex flex_wrap gap_12px">
                     {/* Save */}
-                    <button className="button_primary button_secondary button_mini hover_border_shadowed" onClick={writeToLocal}>
-                        Save
+                    <button className="button_primary button_secondary button_mini hover_border_shadowed" onClick={submitDeck}>
+                        Submit
                     </button>
 
                     {/* Clear */}
                     <button className="button_primary button_secondary button_mainbg button_border_bg_lighter hover_border_shadowed button_mini" onClick={clearWorkspace}>
                         Clear
                     </button>
-
-                    {/* Debug */}
-                    {isProduction ? null :
-                        <button className="button_primary button_secondary button_mainbg button_border_bg_lighter hover_border_shadowedg button_mini hover_border_shadowed" onClick={() => console.log(convertToRawDeck())}>
-                            Export to console
-                        </button>
-                    }
 
                     {/* Import */}
                     <div className="input_container ">
@@ -170,6 +200,13 @@ export default function DeckEditor({ setMenu, toast }) {
                             })}
                         </select>
                     </div>
+
+                    {/* Debug */}
+                    {isProduction ? null :
+                        <button className="button_primary button_secondary button_mainbg button_border_bg_lighter hover_border_shadowedg button_mini hover_border_shadowed" onClick={() => console.log(convertToRawDeck())}>
+                            Export to console
+                        </button>
+                    }
 
                 </div>
             </nav>
@@ -253,6 +290,21 @@ export default function DeckEditor({ setMenu, toast }) {
                 </button>
             </div>
         </main>
+
+        {/* Overlay */}
+        {!awaitingResponse ? null :
+            <div className="overlay">
+                <div className="inner">
+                    <h3 class="border_shadowed">
+                        <img src="/icons/Loader.svg" alt="Waiting..." className="loader_spin icon_inline" /> Submitting deck...
+                    </h3>
+                    <p class="secondary_text">If this gets stuck, the server may be unavailable</p>
+
+                    
+                </div>
+            </div>
+        }
+        </>
     )
 
 

@@ -166,6 +166,9 @@ const usersRooms = {};
 const allgames = {};
 const allusers = {};
 
+// Storing custom decks in memory is temporary- make this a database instead
+const customDecks = {};
+
 
 
 /** Game class */
@@ -401,12 +404,13 @@ class Uno {
         })
 
         if(!this.config.hasOwnProperty(option)) return; // Config property doesn't exist
+
         const configData = data.config[option];
-        if(
-            typeof value !== configData.type &&
-            configData.type !== "dropdown"
-        ) return; // New value is wrong data type
-        if(configData.type === "dropdown" && !configData.dropdown.includes(value)) return; // Dropdown value is invalid
+        if(typeof value !== configData.type && configData.type !== "dropdown") return; // New value is wrong data type
+
+        // const customDeckException = (option !== "starting_deck" && !value.startsWith("not_uno_deck"));
+        const customDeckException = false;
+        if(configData.type === "dropdown" && (!configData.dropdown.includes(value) && customDeckException)) return; // Dropdown value is invalid
         if(configData.type === "number" && (value > configData.max || value < configData.min)) return; // Number value is outside min/max range
 
         // Set
@@ -491,7 +495,7 @@ class Uno {
         // }
 
         // Setup
-        this.deck = structuredClone(data.decks[this.config.starting_deck].cards), // Deck you draw from
+        this.deck = this.getStartingDeckCards(); // Deck you draw from
         this.pile = []; // Played cards pile
 
         this.turn = 0; // Will always the player ID of whoever's turn it is
@@ -519,6 +523,17 @@ class Uno {
         this.round++;
 
         this.updateClients();
+    }
+
+    getStartingDeckCards() {
+        const inbuilt = data.decks?.[this.config.starting_deck];
+
+        // Inbuilt
+        if(inbuilt) return structuredClone(inbuilt.cards);
+
+        // else {
+        //     throw new Error("custom decks not added")
+        // }
     }
 
     /** Sets game state to lobby */
@@ -1217,12 +1232,39 @@ io.on("connection", (socket) => {
     });
 
 
+    // socket.on("custom_deck", raw => {
+    //     // Invalid data
+    //     if(
+    //         typeof raw !== 'object' ||          // Not an object
+    //         raw?.cards === undefined ||         // No cards
+    //         !Array.isArray(raw?.cards) ||       // cards property not an array
+    //         raw?.name === undefined ||          // Name is undefined
+    //         typeof raw?.name !== 'string' ||    // Name not a string
+    //         raw?.cards?.length > 240            // Too many cards
+            
+    //         // To add:
+    //         // All cards are objects
+    //         // All card properties are legal
+    //     ) return;
+
+    //     // ID
+    //     const id = crypto.randomUUID();
+    //     customDecks[id] = raw; // Save temporarily
+    //     console.log(`A custom deck has been submitted [${id}]`);
+
+    //     // Send ID
+    //     socket.emit("custom_deck_success", id); 
+    // })
+
+
     // Debug
     if(!isProduction) socket.on("debug", (data) => {
         socket.emit("debug", {
             usersRooms,
             allgames,
-            allusers
+            allusers,
+
+            customDecks
         })
     });
 
@@ -1266,7 +1308,9 @@ app.get('/', (req, res) => {
         responseJSON.debug = {
             usersRooms,
             allgames,
-            allusers
+            allusers,
+
+            customDecks
         }
     }
 

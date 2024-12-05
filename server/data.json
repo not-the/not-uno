@@ -490,5 +490,7 @@
     "gamer",
     "tree",
     "reverse"
-]
+],
+
+"card_colors": ["black", "red", "yellow", "blue", "green", "cyan", "purple", "orange", "pink"]
 }

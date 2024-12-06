@@ -191,6 +191,7 @@ class Uno {
             draw_stacking: "matching",
             always_play: false,
             xray: false,
+            who_goes_first: "first_player",
         
             // allow_continues: false, // Offer to continue game with remaining players after someone wins
 
@@ -394,6 +395,10 @@ class Uno {
         // this.emit("gameState", clone);
     }
 
+    /** Returns a Boolean based on if a provided socketID is spectating or not
+     * @param {String} socketID Socket ID of the player to test
+     * @returns {Boolean} True if user is a spectator
+     */
     isSpectating(socketID) {
         return Boolean(allusers?.[socketID]?.spectating);
     }
@@ -498,7 +503,21 @@ class Uno {
         this.deck = this.getStartingDeckCards(); // Deck you draw from
         this.pile = []; // Played cards pile
 
-        this.turn = 0; // Will always the player ID of whoever's turn it is
+        // Turn
+        // Will always the player ID of whoever's turn it is
+        let startingPlayerID = 0;
+        // Random
+        if(this.config.who_goes_first === "random") {
+            startingPlayerID = Math.floor(Math.random() * this.playerCount);
+        }
+        // Last winner
+        else if(this.config.who_goes_first === "winner") {
+            const lastWinnerID = this.getPnumFromSocketID(this.winner);
+            startingPlayerID = (lastWinnerID === -1 ? 0 : lastWinnerID) ?? 0;
+        }
+
+        this.turn = startingPlayerID;
+
         this.turn_absolute = 0; // Incremements by one each turn
         this.turn_rotation_value = 0; // Increases and decreases depending on rotation but is not clamped to player ID
         // this.last_turn_rotation_value = 0;

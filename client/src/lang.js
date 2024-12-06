@@ -12,6 +12,11 @@ const lang = {
         "infinite_draw": "Infinite Draw",
         "always_play": "Always Play",
 
+        "who_goes_first": "Who Goes First",
+        "first_player": "First player",
+        "random": "Random",
+        "winner": "Winner",
+
         "classic": "Classic",
         "all_wild": "All Wild!",
         "debug": "Debug",

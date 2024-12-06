@@ -108,7 +108,7 @@ export default function Lobby({ game, startGame, toast, leaveGame }) {
                             <div className="flex flex_center_vertically">
                                 <h3 className="border_shadowed">Players</h3>
                                 <h4 className={`player_count margin_left_auto${playerCount >= playerMax ? " full border_shadowed" : ""}`}>
-                                    {playerCount === playerMax ? "Full" : null} {playerCount}/{playerMax}
+                                    {playerCount >= playerMax ? "Full" : null} {playerCount}/{playerMax}
                                 </h4>
                             </div>
 
@@ -172,6 +172,7 @@ export default function Lobby({ game, startGame, toast, leaveGame }) {
                     {/* <Config name="starting_deck" game={game} /> */}
                     <Config name="starting_cards" game={game} />
                     <Config name="draw_stacking" game={game} />
+                    <Config name="who_goes_first" game={game} />
                     <Config name="xray" game={game} />
                     <Config name="infinite_draw" game={game} />
                     <Config name="always_play" game={game} />

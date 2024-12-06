@@ -320,6 +320,13 @@
 
         "type": "boolean"
     },
+    "who_goes_first": {
+        "desc": "How the game decides the first player",
+        "icon": "/icons/Continue.svg",
+
+        "type": "dropdown",
+        "dropdown": ["first_player", "random", "winner"]
+    },
 
     "public_lobby": {
         "icon": "/icons/Door.svg",

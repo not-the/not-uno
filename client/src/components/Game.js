@@ -324,6 +324,8 @@ export default function Game({ game, setGame, startGame }) {
 
                 // Positioning
                 const playerPosition = getPlayerOnscreenPosition(playerIndex);
+
+                const user = game.usersParsed[player.socketID];
                     
 
                 // Classes
@@ -354,8 +356,21 @@ export default function Game({ game, setGame, startGame }) {
 
                 return (
                     <div className={classes} key={playerIndex} style={styles}>
-                        <h3 className="border_shadowed">
-                            {<User user={game.usersParsed[player.socketID]} postName={
+                        {/* Disconnected notice */}
+                        {!player.disconnected ? null :
+                            <div className="user_disconnect">
+                                <h3 className="center border_shadowed">
+                                    P{playerIndex+1} disconnected
+                                </h3>
+                                <button className="button_primary button_secondary hover_border_shadowed button_mini margin_center">
+                                    Remove
+                                </button>
+                            </div>
+                        }
+
+                        {/* Upper */}
+                        <h3 className="player_upper border_shadowed">
+                            {<User user={user} postName={
                                 <span className="small">(P{playerIndex+1})</span>
                             } />}
                         </h3>

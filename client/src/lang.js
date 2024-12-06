@@ -19,6 +19,7 @@ const lang = {
 
         "classic": "Classic",
         "all_wild": "All Wild!",
+        "classic_7_0": "7-0 rule",
         "debug": "Debug",
 
         "off": "Off",

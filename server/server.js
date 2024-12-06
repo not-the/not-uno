@@ -120,14 +120,25 @@ function shuffle(array) {
     }
  
     return array;
- }
+}
+
+/** Modifies the provided array by rotating all of its items
+ * @param {Array} arr Array to rotate once
+ * @param {Number} dir Direction to rotate in (accepts either 1 or -1, any other input will result in an unchanged array)
+ * @returns {Array} The original array, now modified
+ */
+function rotateArr(arr, dir=1) {
+	if(dir === 1) arr.unshift(arr.pop());
+	else if(dir === -1) arr.push(arr.shift());
+    return arr;
+}
  
- /** Repeat function
-  * https://stackoverflow.com/a/35556907/11039898
-  * @param {Function} func 
-  * @param {Number} times 
-  */
- function repeat(func, times=1) {
+/** Repeats a provided function x number of times
+ * https://stackoverflow.com/a/35556907/11039898
+ * @param {Function} func 
+ * @param {Number} times 
+ */
+function repeat(func, times=1) {
      func();
      times && --times && repeat(func, times);
  }
@@ -268,6 +279,12 @@ class Uno {
 
         // Remove player from game
         if(!wasSpectator) this.players.splice(this.getPnumFromSocketID(socketID), 1);
+
+        // Mark player as disconnected
+        // if(!wasSpectator) {
+        //     const p = this.players?.[this.getPnumFromSocketID(socketID)];
+        //     if(p !== undefined) p.disconnected = true;
+        // }
 
         // Re-register user as being in room
         delete usersRooms[socketID];
@@ -707,7 +724,7 @@ class Uno {
      * @param {Number} pnum1 First player's ID
      * @param {Number} pnum2 Second player's ID
      */
-    swapCards(pnum1, pnum2) {
+    swapHands(pnum1, pnum2) {
         [
             this.players[pnum1].cards,
             this.players[pnum2].cards,
@@ -715,6 +732,14 @@ class Uno {
             this.players[pnum2].cards,
             this.players[pnum1].cards,
         ];
+    }
+
+    /** Every player passes their hands along in the current rotation direction */
+    passHands() {
+        const direction = this.direction;
+        const hands = this.players.map(p => p.cards);
+        rotateArr(hands);
+        for(const i in this.players) this.players[i].cards = hands[i];
     }
 
     /** Player play card (attempt to put into discard pile)
@@ -790,10 +815,12 @@ class Uno {
             if(actionName === "choose_color") this.piletop.color = actionChoice;
 
             // Swap cards
-            else if(actionName === "choose_swap") this.swapCards(pnum, actionChoice);
+            else if(actionName === "choose_swap") this.swapHands(pnum, actionChoice);
 
             else if(actionName === "target_draw") this.drawMultipleCards(actionChoice, playerCard.target_draw);
         }
+
+        if(this.piletop.pass_hands) this.passHands();
 
         // End action prompt
         delete this.action;
@@ -1248,7 +1275,7 @@ io.on("connection", (socket) => {
     socket.on("disconnect", () => {
         console.log(`Disconnected: ${socket.id}`);
 
-        getGameByUser()?.leave(socket);
+        getGameByUser()?.leave(socket.id);
 
         // De-register
         delete allusers[socket.id];

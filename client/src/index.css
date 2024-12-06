@@ -980,7 +980,7 @@ button.share_button {
     scrollbar-color: var(--bg-lighter) transparent;
     /* scrollbar-width: thin; */
 }
-.player h3 {
+.player .player_upper {
     width: fit-content;
     margin-bottom: 6px;
 
@@ -989,7 +989,7 @@ button.share_button {
     transform-origin: bottom left;
     transition: transform 0.35s ease, opacity 0.3s ease;
 }
-.player.current_turn h3 {
+.player.current_turn .player_upper {
     opacity: 1;
     transform: unset;
     transition-timing-function: cubic-bezier(.34,1.19,.46,1.62);
@@ -1006,6 +1006,17 @@ button.share_button {
 }
 .player:not(.me) .card:not(:first-of-type) {
     margin-left: -0.25em;
+}
+
+.user_disconnect {
+    position:absolute;
+    inset: 0;
+    z-index: 1;
+    background-color: rgba(20, 20, 20, 0.9);
+    border-radius: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 
 

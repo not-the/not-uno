@@ -1536,7 +1536,8 @@ button.share_button {
     pointer-events: none;
 }
 .chat_messages {
-    height: min(calc(100vh - 168px), 424px);
+    /* height: min(calc(100vh - 168px), 424px); */
+    max-height: calc(100% - 140px);
     padding-top: 18px;
     overflow-y: auto;
     display: flex;

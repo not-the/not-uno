@@ -594,17 +594,7 @@ class Uno {
         to.push(card); // Move
 
         // Empty deck
-        if(fromName === 'deck' && this.deck.length === 0) {
-            // console.log('Shuffling pile back into deck');
-
-            // Move cards
-            this.deck = structuredClone(this.pile.slice(0, -1));
-            this.pile = [ this.pile[this.pile.length-1] ];
-
-            // Hide/shuffle
-            hideAll(this.deck, false);
-            shuffle(this.deck);
-        }
+        this.replenishDeck();
 
         // Animate
         this.animation = { fromName, toName, fromIndex, card };
@@ -612,6 +602,20 @@ class Uno {
 
         // Update
         if(runUpdateClients) this.updateClients();
+    }
+
+    replenishDeck() {
+        if(this.deck.length !== 0) return;
+
+        // Move cards
+        this.deck = structuredClone(this.pile.slice(0, -1));
+        console.log(this.deck);
+        this.pile = [ this.pile[this.pile.length-1] ];
+        console.log(this.pile);
+
+        // Hide/shuffle
+        hideAll(this.deck, false);
+        shuffle(this.deck);
     }
 
     /** Player draw card

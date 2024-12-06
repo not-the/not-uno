@@ -356,7 +356,7 @@ export default function Game({ game, setGame, startGame }) {
                     <div className={classes} key={playerIndex} style={styles}>
                         <h3 className="border_shadowed">
                             {<User user={game.usersParsed[player.socketID]} postName={
-                                <span className="small">(P{playerIndex+1}) {String(player?.awaiting_call)}</span>
+                                <span className="small">(P{playerIndex+1})</span>
                             } />}
                         </h3>
 

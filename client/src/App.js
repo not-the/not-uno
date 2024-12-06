@@ -403,8 +403,8 @@ export default function App() {
                             <td>{String(game.my_spectating)}</td>
                         </tr>
                         <tr>
-                            <th>spectatorCount</th>
-                            <td>{game.spectatorCount}</td>
+                            <th>Deck size</th>
+                            <td>{String(game?.deck?.length)}</td>
                         </tr>
                     </table>
                     <br/>

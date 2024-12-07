@@ -40,74 +40,6 @@ export default function App() {
         socket.emit("leave");
     }
 
-    // Chat
-    const [chatOpen, setChatOpen] = useState(false);
-    const [chatInput, setChatInput] = useState("");
-
-
-    const [chatUnread, setChatUnread] = useState(0);
-
-    const [chatCache, setChatCache] = useState([]);
-    const [chatBubble, setChatBubble] = useState(undefined);
-
-    let chatBubbleTimeout;
-    let removeChatBubbleTimeout;
-    function newChatMsg(data) {
-        setChatCache(old => {
-            let newArr = [data, ...old];
-
-            // Clump messages from same user together
-            for(let i in newArr) {
-                const item = newArr[i];
-                const prev = newArr[i - 1];
-                if(item?.socketID === prev?.socketID && prev !== undefined) prev.clump = true;
-            }
-
-            return newArr;
-        }); // Push new message
-
-        // Bubble
-        const isChatOpenByClass = document.querySelector(".chat_container").classList.contains("open");
-        if(!isChatOpenByClass) {
-            setChatBubble(data);
-            setChatUnread(old => old+1);
-
-            // Timer
-            clearTimeout(chatBubbleTimeout);
-            clearTimeout(removeChatBubbleTimeout);
-            chatBubbleTimeout = setTimeout(() => {
-                setChatBubble(old => ({...old, bubble_timed_out:true}));
-            }, 6000);
-            removeChatBubbleTimeout = setTimeout(() => {
-                setChatBubble(undefined);
-            }, 6300);
-        }
-    }
-
-    function toggleChat() {
-        // Clear bubble
-        setChatBubble(undefined);
-        setChatUnread(0);
-
-        setChatOpen(old => {
-            // Opening
-            if(!old) {
-                document.getElementById("chat_input").focus();
-            }
-
-            return !old;
-        });
-    }
-
-    const sendChat = () => {
-        if(game === false) return;
-
-        socket.emit("chat", { msg:chatInput });
-        // newChatMsg(chatInput);
-        setChatInput("");
-        document.getElementById("chat_input").value = "";
-    }
-
     const setUser = (name=profile.name, avatar=profile.avatar) => {
         socket.emit("setUser", { name, avatar });
     }
@@ -119,10 +51,10 @@ export default function App() {
         setMenu("joining");
 
         // Mark existing chatCache as old
-        setChatCache(old => old.map(c => {
-            c.old_msg = true;
-            return c;
-        }));
+        // setChatCache(old => old.map(c => {
+        //     c.old_msg = true;
+        //     return c;
+        // }));
     }
 
     function debugDataRequest() {
@@ -183,11 +115,6 @@ export default function App() {
         // Pre-existing username
         let myUser = store("user_data") ?? { name: getRandomName() };
         socket.emit("setUser", myUser);
-
-        // Receive MSG
-        socket.on("chat_receive", data => {
-            newChatMsg(data);
-        });
 
         // Joined to room
         socket.on("joined", roomID => {
@@ -268,7 +195,6 @@ export default function App() {
 
         // Unmount
         return () => {
-            socket.off("chat_receive");
             socket.off("join");
             socket.off("join_failed");
             socket.off("toast");
@@ -298,33 +224,7 @@ export default function App() {
             {page}
 
             {/* Chat */}
-            <div className={`chat_container ${chatOpen ? "open" : null}`}>
-                <Chat
-                    game={game}
-                    chatOpen={chatOpen} setChatOpen={setChatOpen}
-                    profile={profile} setUser={setUser}
-                    chatCache={chatCache}
-                    chatInput={chatInput} setChatInput={setChatInput}
-                    sendChat={sendChat}
-                    setProfileOpen={setProfileOpen}
-                />
-                <button id="chat_button" className="border_shadowed" onClick={toggleChat}>
-                    <img src="/icons/chat.svg" alt="Chat" />
-                    <span>{chatUnread > 9 ? "9+" : chatUnread || null}</span>
-
-                    {/* Bubble */}
-                    {chatBubble ?
-                        <div className="bubble" data-expired={chatBubble.bubble_timed_out}>
-                            <div className="inner">
-                                <strong>{chatBubble.user.name}</strong>
-                                <span>{chatBubble.msg}</span>
-                            </div>
-                        </div>
-                        : null
-                    }
-
-                </button>
-            </div>
+            <Chat game={game} profile={profile} setUser={setUser} setProfileOpen={setProfileOpen} />
 
             {/* Background layer */}
             <div id="main_background"/>

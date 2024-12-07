@@ -403,14 +403,16 @@ a.button {
 }
 .button_primary:not([disabled]):not(.no_interact):hover,
 .button_primary:not([disabled]):not(.no_interact):focus-visible,
-.button_primary:not([disabled]):not(.no_interact):active {
+.button_primary:not([disabled]):not(.no_interact):active,
+.button_primary[aria-selected="true"] {
     --shadow-distance: 5px;
     transform: translate(-1px, -1px);
     background-color: rgb(243, 251, 255);
 }
 .button_primary:not([disabled]):not(.no_interact):hover .parent_invert,
 .button_primary:not([disabled]):not(.no_interact):focus-visible .parent_invert,
-.button_primary:not([disabled]):not(.no_interact):active .parent_invert {
+.button_primary:not([disabled]):not(.no_interact):active .parent_invert,
+.button_primary[aria-selected="true"] .parent_invert {
     filter: invert();
 }
 .button_primary:not([disabled]):not(.no_interact):active {
@@ -418,6 +420,14 @@ a.button {
     transform: translate(1px, 1px);
     background-color: rgb(243, 251, 255);
 }
+.button_primary[aria-selected="true"] {
+    --shadow-distance: 3px !important;
+    --shadow-color: transparent;
+    transform: unset !important;
+    cursor: unset;
+    border-color: var(--accent-blue);
+}
+
 .button_primary > * {
     --shadow-color: rgba(0, 0, 0, 0.5);
     transition: filter 0.2s ease;
@@ -440,11 +450,13 @@ a.button {
 }
 .button_secondary:not([disabled]):hover,
 .button_secondary:not([disabled]):active,
-.button_secondary:not([disabled]):focus-visible {
+.button_secondary:not([disabled]):focus-visible,
+.button_secondary[aria-selected="true"] {
     color: black;
 }
 .button_secondary:not([disabled]):hover kbd,
-.button_secondary:not([disabled]):focus-visible kbd {
+.button_secondary:not([disabled]):focus-visible kbd,
+.button_secondary[aria-selected="true"] kbd {
     background-color: black;
     color: white;
 }
@@ -2195,6 +2207,44 @@ h3 > .user .avatar {
 
     background-color: var(--bg-lighter);
     border-color: var(--bg-main);
+}
+
+
+/* Tutorial */
+#help {
+    padding-bottom: 140px;
+}
+#help .card_explanation {
+    display: flex;
+    /* gap: 21px; */
+    max-width: 480px;
+
+    background-color: var(--bg-darker);
+    border-radius: 12px;
+}
+#help .card_explanation.ce_reverse {
+    flex-direction: row-reverse;
+    text-align: right;
+    margin-left: auto;
+}
+#help .paragraph {
+    padding: 3px 12px;
+    line-height: 140%;
+}
+#help .paragraph li {
+    margin-left: 24px;
+}
+#help figure {
+    margin-bottom: 15px;
+}
+#help figcaption {
+    padding: 12px 18px 18px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+#help .card {
+    font-size: 80px;
 }
 
 

@@ -1,3 +1,4 @@
+/** Contains localization strings */
 const lang = {
     "en": {
         "starting_deck": "Deck",

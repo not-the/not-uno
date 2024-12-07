@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import Home from './components/Home.js'
 import Lobby from './components/Lobby.js'
 import Game from './components/Game.js'
+import Help from './components/Help.js'
 import Toast from './components/Toast.js'
 import Chat from './components/Chat.js'
 import ProfileMenu from './components/ProfileMenu.js'
@@ -161,6 +162,8 @@ export default function App() {
         menu === "joining" ? <Joining game={game} setMenu={setMenu} /> :
         // Deck editor
         menu === "deck_editor" ? <DeckEditor setMenu={setMenu} toast={toast} /> :
+        // Help
+        menu === "help" ? <Help setMenu={setMenu} /> :
         // Home
         <Home setMenu={setMenu} joinRoom={joinRoom} />; // Home
 

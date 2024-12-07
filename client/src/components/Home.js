@@ -81,17 +81,20 @@ export default function Home({ setMenu, joinRoom }) {
                 <br/>
                 
                 {/* More */}
-                <div className="flex media_flex gap_12px">
+                <footer id="footer" className="flex media_flex gap_12px flex_center_horizontally">
                     {/* Open deck builder */}
                     {isProduction ? null :
-                        <button className="button_primary button_secondary button_mainbg button_border_bg_lighter hover_border_shadowed" onClick={() => setMenu("deck_editor")}>
+                        <button className="button_primary button_secondary button_mainbg button_border_bg_lighter hover_border_shadowed button_mini" onClick={() => setMenu("deck_editor")}>
                             Custom Deck Builder (WIP)
                         </button>
                     }
-                    {/* <button className="button_primary button_secondary button_mainbg button_border_bg_lighter hover_border_shadowed">
-                        Placeholder
-                    </button> */}
-                </div>
+
+                    {/* Tutorial */}
+                    <button className="button_primary button_secondary button_mainbg button_border_bg_lighter hover_border_shadowed button_mini" onClick={() => setMenu("help")}>
+                        <span>?</span>
+                        How to play
+                    </button>
+                </footer>
 
                 <br/>
                 <br/>

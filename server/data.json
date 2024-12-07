@@ -124,7 +124,7 @@
     },
 
     "all_wild": {
-        "name": "All Wilds",
+        "name": "All Wild!",
 
         "cards": [
             { "color": "black", "type": "wild", "style": "wild" },

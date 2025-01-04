@@ -1369,7 +1369,9 @@ app.get('/', (req, res) => {
     function getUptime() {
         const minutes = serverStats.uptime_ms / 60000;
         const hours = minutes / 60;
+        const days = hours / 24;
 
+        if(days >= 2) return `${days.toFixed(1)} days`; // Days (more than 48 hours)
         if(minutes >= 60) return `${hours.toFixed(1)} hours`; // Hours
         return `${minutes.toFixed(1)} minutes`; // Minutes
     }

@@ -6,6 +6,8 @@ import { capitalizeFirstLetter } from "../Util"
 export default function ProfileMenu({ profile, getRandomName, setUser, setProfileOpen }) {
     const [nameInput, setNameInput] = useState(profile.name);
 
+    const showResetButton = profile.name !== nameInput;
+
     function doneProfile() {
         setProfileOpen(false);
         setUser(nameInput);
@@ -15,6 +17,11 @@ export default function ProfileMenu({ profile, getRandomName, setUser, setProfil
         const result = getRandomName();
         document.getElementById("username_input").value = result;
         setNameInput(result);
+    }
+
+    function resetUsername() {
+        document.getElementById("username_input").value = profile.name;
+        setNameInput(profile.name);
     }
 
     return (
@@ -27,8 +34,18 @@ export default function ProfileMenu({ profile, getRandomName, setUser, setProfil
 
             {/* Name */}
             <label htmlFor="profile_name">
-                <div className="flex">
+                <div className="flex gap_12px">
                     <h5>Username</h5>
+
+                    {/* Reset username */}
+                    {!showResetButton ? null :
+                        <button
+                            className="hover_underline flex flex_center_vertically secondary_text"
+                            onClick={resetUsername}
+                        >
+                            (Reset)
+                        </button>
+                    }
                     
                     {/* Random username */}
                     <button

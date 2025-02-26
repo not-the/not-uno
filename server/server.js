@@ -61,7 +61,7 @@ const server = isProduction ?
     http.createServer(app); // Development
 
 
-
+// Startup message
 console.log(
 `
 \x1b[47m\x1b[30m  Starting Not UNO server...  \x1b[0m
@@ -77,6 +77,31 @@ const io = new Server(server, {
         methods: ["GET", "POST"]
     }
 });
+
+/** Logging shorthand */
+const log = function(message) {
+    console.log(
+        `\u001b[1;36m[${formattedDate()}]\u001b[0m ${message}`
+    )
+
+    function formattedDate() {
+        const currentDate = new Date();
+        let hours = currentDate.getHours();
+        let minutes = currentDate.getMinutes();
+        let seconds = currentDate.getSeconds();
+
+        const ampm = hours >= 12 ? 'PM' : 'AM';
+        hours = hours % 12;
+        hours = hours ? hours : 12;
+        minutes = minutes < 10 ? '0' + minutes : minutes;
+        seconds = seconds < 10 ? '0' + seconds : seconds;
+
+        const date = currentDate.toISOString().split('T')[0];
+
+        // Combine time and date
+        return `${hours}:${minutes}:${seconds} ${ampm}, ${date}`;
+    }
+}
 
 /** Creates a URL-safe base64 encoded UUID */
 function getRoomUUID() {
@@ -236,8 +261,12 @@ class Uno {
 
         // Update
         this.updateClients();
+
+        // Log
+        log(`🎮 Created game (${this.roomID}) hosted by ${allusers[this.host].name} (${this.host})`);
     }
 
+    /** Boolean representing whether the game has reached max players */
     get isFull() {
         return (this.playerCount >= this.config.max_players);
     }
@@ -303,7 +332,7 @@ class Uno {
 
         // All players have left
         if((this.playersBySocket.length - this.spectatorCount) === 0) {
-            // console.log(`Room [${roomID}] is empty, closing game...`);
+            // log(`Room [${roomID}] is empty, closing game...`);
             this.emit("toast", { title: "Game ended" });
             return this.close();
         }
@@ -335,6 +364,9 @@ class Uno {
         this.roomClosed = true;
         this.roomClosedTimestamp = Date.now();
         this.emit("gameState");
+
+        // Log
+        log(`🎮 Closed game (${this.roomID})`);
     }
 
     // Completely destroys game object
@@ -394,7 +426,7 @@ class Uno {
 
                 // Animation data
                 const tailoredAnimTo = tailoredGame?.animation?.toName;
-                // console.log('card ', tailoredGame.animation?.card);
+                // log('card ', tailoredGame.animation?.card);
                 if(
                     tailoredGame.animation?.card !== undefined &&
                     typeof tailoredAnimTo === 'number' &&
@@ -645,9 +677,7 @@ class Uno {
 
         // Move cards
         this.deck = structuredClone(this.pile.slice(0, -1));
-        console.log(this.deck);
         this.pile = [ this.pile[this.pile.length-1] ];
-        console.log(this.pile);
 
         // Hide/shuffle
         hideAll(this.deck, false);
@@ -674,8 +704,8 @@ class Uno {
             // const deckTop = this.deck[this.deck.length-1];
             // const playerCards = this.players[pnum].cards;
             // const playerLast = playerCards[playerCards.length-1];
-            // console.log('###');
-            // console.log(deckTop, playerLast);
+            // log('###');
+            // log(deckTop, playerLast);
             // if(!testCards(deckTop, playerLast)) this.nextTurn();
 
             // Update state
@@ -919,7 +949,7 @@ class Uno {
         // Check if awaiting callout
         else if(lastPlayerID !== turnValue) {
 
-            console.log(lastPlayerID, turnValue);
+            // log(lastPlayerID, turnValue);
 
             const lastPlayer = this.players?.[lastPlayerID];
             if(lastPlayer?.cards?.length === 1) {
@@ -931,7 +961,7 @@ class Uno {
                     // Clear
                     delete lastPlayer.awaiting_call;
 
-                    console.log(round, this.round);
+                    // log(round, this.round);
 
                     // Invalid
                     if(
@@ -972,7 +1002,7 @@ io.on("connection", (socket) => {
     setUser(undefined, true);
     
     // Log
-    console.log(`Connection: ${allusers[socket.id].name} [${socket.id}]`);
+    log(`\u001b[1;32m➜ \u001b[0m ${allusers[socket.id].name} connected (${socket.id})`);
 
     // Join
     socket.on("join", ({ roomID, spectate }) => {
@@ -1135,7 +1165,7 @@ io.on("connection", (socket) => {
 
         // Emit join
         socket.emit("joined", roomID); // Give client room ID
-        // console.log(socket.id, ' is in rooms: ', socket.rooms);
+        // log(socket.id, ' is in rooms: ', socket.rooms);
 
         // Toast
         if(!spectate) socket.emit("toast", {
@@ -1240,7 +1270,7 @@ io.on("connection", (socket) => {
         // allusers[socket.id].last_msg = Date.now();
 
         // Log
-        console.log(`[${roomID}] ${data.user.name}: ${data.msg}`);
+        log(`🗨  (${roomID}) ${data.user.name}: ${data.msg}`);
 
         // Broadcast
         io.to(roomID).emit("chat_receive", data);
@@ -1273,7 +1303,7 @@ io.on("connection", (socket) => {
 
     // Disconnect
     socket.on("disconnect", () => {
-        console.log(`Disconnected: ${socket.id}`);
+        log(`\u001b[1;31m← \u001b[0m ${allusers[socket.id].name} disconnected (${socket.id})`);
 
         getGameByUser()?.leave(socket.id);
 
@@ -1300,7 +1330,7 @@ io.on("connection", (socket) => {
     //     // ID
     //     const id = crypto.randomUUID();
     //     customDecks[id] = raw; // Save temporarily
-    //     console.log(`A custom deck has been submitted [${id}]`);
+    //     log(`A custom deck has been submitted [${id}]`);
 
     //     // Send ID
     //     socket.emit("custom_deck_success", id); 

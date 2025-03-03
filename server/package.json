@@ -2,10 +2,11 @@
   "name": "not-uno-server",
   "version": "1.0.0",
   "description": "",
-  "main": "server.js",
+  "main": "server.mjs",
+  "private": true,
   "scripts": {
-    "start": "nodemon server.js",
-    "prod": "cross-env NODE_ENV=production node server.js",
+    "start": "nodemon server.mjs",
+    "prod": "cross-env NODE_ENV=production node server.mjs",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "not-the",
@@ -13,6 +14,7 @@
   "dependencies": {
     "cors": "^2.8.5",
     "cross-env": "^7.0.3",
+    "dotenv": "^16.4.7",
     "express": "^4.19.2",
     "fs": "^0.0.1-security",
     "nodemon": "^3.1.4",

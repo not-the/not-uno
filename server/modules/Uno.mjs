@@ -1,188 +1,8 @@
-// not uno backend
+import { io, data, server } from "../server.mjs"
 
-// Dependencies
-const express = require("express");
-const app = express();
-const fs = require("fs");
-const http = require("http");
-const https = require("https");
-const { Server } = require("socket.io");
-const data = require('./data.json');
-let word_blacklist;
-try { word_blacklist = require('./word_blacklist.json'); }
-catch (error) { }
-
-// CORS
-const cors = require("cors");
-app.use(cors());
-
-// Environment
-const isProduction = process.env.NODE_ENV === 'production';
-const clientOrigin = isProduction ?
-    "https://uno.notkal.com" :  // Production website
-    'http://localhost:3000';    // Development
-
-/** Server statistics since process was started. Resets when server is closed */
-const serverStats = {
-    startup_time: Date.now(),
-    total_connections: 0,
-    total_games: 0,
-
-    get uptime_ms() {
-        return Date.now() - this.startup_time;
-    }
-}
+import { repeat, clamp, shuffle, rotateArr} from "./utils.mjs";
 
 
-// SSL
-var privateKey, certificate;
-if(isProduction) {
-    try {
-        privateKey  = fs.readFileSync(
-            '/etc/letsencrypt/live/uno-server1.notkal.com/privkey.pem',
-            'utf8'
-        );
-        certificate = fs.readFileSync(
-            '/etc/letsencrypt/live/uno-server1.notkal.com/fullchain.pem',
-            'utf8'
-        );
-    } catch (error) {
-        console.warn("SSL keys not found. Error below:");
-        console.warn(error);
-    }
-}
-
-
-/** Express server instance */
-const server = isProduction ?
-    https.createServer({
-        key: privateKey, cert: certificate
-    }, app) : // Production, SSL
-    http.createServer(app); // Development
-
-
-// Startup message
-console.log(
-`
-\x1b[47m\x1b[30m  Starting Not UNO server...  \x1b[0m
-> Environment: \x1b[33m${isProduction ? 'production' : 'dev'}\x1b[0m
-> Client origin: \x1b[33m${clientOrigin}\x1b[0m
-${word_blacklist === undefined ? "> No ./word_blacklist.json provided\n" : ""}`);
-
-/** Socket.io */
-const io = new Server(server, {
-    cors: {
-        // Frontend origin
-        origin: clientOrigin,
-        methods: ["GET", "POST"]
-    }
-});
-
-/** Logging shorthand */
-const log = function(message) {
-    console.log(
-        `\u001b[1;36m[${formattedDate()}]\u001b[0m ${message}`
-    )
-
-    function formattedDate() {
-        const currentDate = new Date();
-        let hours = currentDate.getHours();
-        let minutes = currentDate.getMinutes();
-        let seconds = currentDate.getSeconds();
-
-        const ampm = hours >= 12 ? 'PM' : 'AM';
-        hours = hours % 12;
-        hours = hours ? hours : 12;
-        minutes = minutes < 10 ? '0' + minutes : minutes;
-        seconds = seconds < 10 ? '0' + seconds : seconds;
-
-        const date = currentDate.toISOString().split('T')[0];
-
-        // Combine time and date
-        return `${hours}:${minutes}:${seconds} ${ampm}, ${date}`;
-    }
-}
-
-/** Creates a URL-safe base64 encoded UUID */
-function getRoomUUID() {
-    // Convert
-    let uuid = crypto.randomUUID();
-    let result = Buffer.from(uuid.replace(/-/g, ''), 'hex').toString('base64url');
-
-    // Reduce in length (This increases the odds of duplicate UUIDs being produced, but since we're not dealing with sensitive data it's unique enough)
-    result = result.substring(0, 9);
-
-    return result;
-}
-
-/** Returns an array of socket IDs that are in a given room
- * @param {String} roomID 
- * @returns {Array}
- */
-function getRoomUsers(roomID) {
-    return [...io.sockets.adapter.rooms.get(roomID)??[]];
-}
-
-/** Uses the modulus operator to keep a value within amount */
-function clamp(value, max) {
-    return ((value % max) + max) % max;
-}
-
-/** Shuffles are array by modifying it, then returns original array (now shuffled)
- * https://stackoverflow.com/a/2450976/11039898
-*/
-function shuffle(array) {
-    let currentIndex = array.length;
- 
-    // While there remain elements to shuffle...
-    while(currentIndex !== 0) {
-        // Pick a remaining element...
-        let randomIndex = Math.floor(Math.random() * currentIndex);
-        currentIndex--;
- 
-        // And swap it with the current element.
-        [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
-    }
- 
-    return array;
-}
-
-/** Modifies the provided array by rotating all of its items
- * @param {Array} arr Array to rotate once
- * @param {Number} dir Direction to rotate in (accepts either 1 or -1, any other input will result in an unchanged array)
- * @returns {Array} The original array, now modified
- */
-function rotateArr(arr, dir=1) {
-	if(dir === 1) arr.unshift(arr.pop());
-	else if(dir === -1) arr.push(arr.shift());
-    return arr;
-}
- 
-/** Repeats a provided function x number of times
- * https://stackoverflow.com/a/35556907/11039898
- * @param {Function} func 
- * @param {Number} times 
- */
-function repeat(func, times=1) {
-     func();
-     times && --times && repeat(func, times);
- }
-
-
-/** Tests whether a move is valid
- * @param {Object} card_a 
- * @param {Object} card_b 
- * @returns {Boolean}
- */
-function testCards(card_a, card_b) {
-    if(
-        card_a.type === card_b.type // Type
-        || card_a.color === card_b.color // Color
-        || card_a.color === "black"
-        || card_b.color === "black"
-    ) return true;
-    return false;
-}
 
 /** Sets the hidden property to true for all cards in an array */
 function hideAll(arr, obfuscate) {
@@ -197,21 +17,11 @@ function hideAll(arr, obfuscate) {
     return arr;
 }
 
-// Key = socket.id, value = roomID
-const usersRooms = {};
-const allgames = {};
-const allusers = {};
-
-// Storing custom decks in memory is temporary- make this a database instead
-const customDecks = {};
-
-
-
-/** Game class */
-class Uno {
+/** Game class and methods (Uno) */
+export default class Uno {
     constructor({ roomID, host, nameIsUUID }) {
         // Statistics
-        serverStats.total_games++;
+        server.stats.total_games++;
 
         // Default Config
         this.config = {
@@ -257,14 +67,30 @@ class Uno {
         // this.control_everyone = true; // Currently does nothing
 
         // Register game
-        allgames[roomID] = this;
+        server.games[roomID] = this;
 
         // Update
         this.updateClients();
 
         // Log
-        log(`🎮 Created game (${this.roomID}) hosted by ${allusers[this.host].name} (${this.host})`);
+        server.log(`🎮 Created game (${this.roomID}) hosted by ${server.users[this.host].name} (${this.host})`);
     }
+
+
+    /** Tests whether a move is valid
+    * @param {Object} card_a 
+    * @param {Object} card_b 
+    * @returns {Boolean}
+    */
+    static testCards(card_a, card_b) {
+       if(
+           card_a.type === card_b.type // Type
+           || card_a.color === card_b.color // Color
+           || card_a.color === "black"
+           || card_b.color === "black"
+       ) return true;
+       return false;
+   }
 
     /** Boolean representing whether the game has reached max players */
     get isFull() {
@@ -275,22 +101,26 @@ class Uno {
     get users() {
         let users = {};
         for(const PID of this.playersBySocket) {
-            if(allusers[PID].spectating) continue;
-            users[PID] = allusers[PID];
+            if(server.users[PID].spectating) continue;
+            users[PID] = server.users[PID];
         }
         return users;
     }
 
-    get playersBySocket() { return getRoomUsers(this.roomID); }
+    /** Returns an array of socket IDs in the game
+     * @param {String} roomID 
+     * @returns {Array}
+     */
+    get playersBySocket() { return [...io.sockets.adapter.rooms.get(this.roomID) ?? []]; }
 
     /** Gives the number of users who are in play (whether or not the game has started). Spectators excluded. */
     get playerCount() {
-        return this.playersBySocket.filter(PID => !allusers[PID].spectating).length;
+        return this.playersBySocket.filter(PID => !server.users[PID].spectating).length;
     }
 
     /** Gives current number of spectators */
     get spectatorCount() {
-        return this.playersBySocket.filter(PID => allusers[PID].spectating).length;
+        return this.playersBySocket.filter(PID => server.users[PID].spectating).length;
     }
 
     /** Player leave game
@@ -316,7 +146,7 @@ class Uno {
         // }
 
         // Re-register user as being in room
-        delete usersRooms[socketID];
+        delete server.usersRooms[socketID];
         
         // Tell user they left
         if(socket !== undefined) socket.emit("leave");
@@ -327,12 +157,12 @@ class Uno {
 
         // Tell room someone left
         if(!wasSpectator) this.emit("toast", {
-            title: `"${allusers[socketID]?.name ?? "User"}" left!`
+            title: `"${server.users[socketID]?.name ?? "User"}" left!`
         })
 
         // All players have left
         if((this.playersBySocket.length - this.spectatorCount) === 0) {
-            // log(`Room [${roomID}] is empty, closing game...`);
+            // server.log(`Room [${roomID}] is empty, closing game...`);
             this.emit("toast", { title: "Game ended" });
             return this.close();
         }
@@ -341,7 +171,7 @@ class Uno {
         else if(socketID === this.host) {
             const newHostID = this.playersBySocket[0];
             this.host = newHostID;
-            this.emit("toast", { title: `"${allusers[newHostID].name}" is now host` });
+            this.emit("toast", { title: `"${server.users[newHostID].name}" is now host` });
         }
 
         // Update remaining clients
@@ -366,13 +196,13 @@ class Uno {
         this.emit("gameState");
 
         // Log
-        log(`🎮 Closed game (${this.roomID})`);
+        server.log(`🎮 Closed game (${this.roomID})`);
     }
 
     // Completely destroys game object
     destroy() {
         this.destroyed = true;
-        delete allgames[this.roomID]; // Delete self
+        delete server.games[this.roomID]; // Delete self
         this.emit("leave");
     }
 
@@ -426,7 +256,7 @@ class Uno {
 
                 // Animation data
                 const tailoredAnimTo = tailoredGame?.animation?.toName;
-                // log('card ', tailoredGame.animation?.card);
+                // server.log('card ', tailoredGame.animation?.card);
                 if(
                     tailoredGame.animation?.card !== undefined &&
                     typeof tailoredAnimTo === 'number' &&
@@ -449,7 +279,7 @@ class Uno {
      * @returns {Boolean} True if user is a spectator
      */
     isSpectating(socketID) {
-        return Boolean(allusers?.[socketID]?.spectating);
+        return Boolean(server.users?.[socketID]?.spectating);
     }
 
     setConfigOption(socket, option, value) {
@@ -480,7 +310,7 @@ class Uno {
         // Spectators OFF
         else if(option === "spectators" && value === false) {
             for(const socketID of this.playersBySocket) {
-                if(allusers[socketID]?.spectating) {
+                if(server.users[socketID]?.spectating) {
                     this.kick(socketID, true, "Option to spectate was disabled");
                 }
             }
@@ -620,7 +450,7 @@ class Uno {
     generatePlayers() {
         const sockets = this.playersBySocket;
         for(let i = 0; i < sockets.length; i++) {
-            if(allusers[sockets?.[i]]?.spectating) continue;
+            if(server.users[sockets?.[i]]?.spectating) continue;
             this.addPlayer(sockets[i]);
         }
     }
@@ -704,9 +534,9 @@ class Uno {
             // const deckTop = this.deck[this.deck.length-1];
             // const playerCards = this.players[pnum].cards;
             // const playerLast = playerCards[playerCards.length-1];
-            // log('###');
-            // log(deckTop, playerLast);
-            // if(!testCards(deckTop, playerLast)) this.nextTurn();
+            // server.log('###');
+            // server.log(deckTop, playerLast);
+            // if(!Uno.testCards(deckTop, playerLast)) this.nextTurn();
 
             // Update state
             // this.updateClients();
@@ -799,7 +629,7 @@ class Uno {
         }
 
         // Test discard pile for valid move
-        if(!testCards(playerCard, this.piletop)) {
+        if(!Uno.testCards(playerCard, this.piletop)) {
             // console.warn(`[Player ${pnum}] Invalid card`);
             return false;
         }
@@ -949,7 +779,7 @@ class Uno {
         // Check if awaiting callout
         else if(lastPlayerID !== turnValue) {
 
-            // log(lastPlayerID, turnValue);
+            // server.log(lastPlayerID, turnValue);
 
             const lastPlayer = this.players?.[lastPlayerID];
             if(lastPlayer?.cards?.length === 1) {
@@ -961,7 +791,7 @@ class Uno {
                     // Clear
                     delete lastPlayer.awaiting_call;
 
-                    // log(round, this.round);
+                    // server.log(round, this.round);
 
                     // Invalid
                     if(
@@ -983,440 +813,3 @@ class Uno {
         if(didDrawCards) return true;
     }
 }
-
-function arrRandom(arr) {
-    return arr[Math.floor(Math.random()*arr.length)]
-}
-
-function capitalizeFirstLetter(string) {
-    return string.charAt(0).toUpperCase() + string.slice(1);
-}
-
-
-// Listeners
-io.on("connection", (socket) => {
-    // Stats
-    serverStats.total_connections++;
-
-    // Set random username/avatar
-    setUser(undefined, true);
-    
-    // Log
-    log(`\u001b[1;32m➜ \u001b[0m ${allusers[socket.id].name} connected (${socket.id})`);
-
-    // Join
-    socket.on("join", ({ roomID, spectate }) => {
-        let roomIDCopy = structuredClone(roomID);
-
-        // ID undefined, needs random ID
-        const needsRandom = (!roomIDCopy);
-        if(needsRandom) roomIDCopy = getRoomUUID();
-
-        // Join
-        joinRoom(roomIDCopy, needsRandom, spectate);
-    })
-
-    socket.on("leave", () => {
-        getGameByUser()?.leave(socket.id, true);
-        socket.emit("leave");
-    });
-
-    socket.on("action", data => {
-        const game = getGameByUser();
-        if(game === undefined || data === undefined) return;
-
-        game.performAction(socket, data);
-    });
-    
-    // Set user profile
-    socket.on("setUser", data => setUser(data));
-    function setUser(newUser, bypassRatelimit=false) {
-        // Errors
-        if(typeof newUser === 'object') {
-            // Invalid data types
-            if(newUser?.name === '' || typeof newUser?.name !== 'string') return;
-
-            const toastInvalidUsername = {
-                title: "Invalid username",
-                msg: `Maximum username length is 32 characters.`
-            };
-
-            // Length requirement
-            if(newUser?.name.length > 32) return socket.emit("toast", toastInvalidUsername);
-
-            // Word blacklist
-            if(word_blacklist !== undefined) {
-                if(word_blacklist.deny.some((word) => newUser.name.includes(word))) {
-                    return socket.emit("toast", toastInvalidUsername);
-                }
-            }
-        }
-
-        const existing = allusers?.[socket.id];
-
-        // Ratelimit
-        const ratelimit = (existing?.changes??0) > 100 ?
-            15000 : // 15 seconds (if user has updated themselves 100+ times)
-            250; // 0.25 seconds
-        if(
-            !bypassRatelimit &&
-            existing?.changes >= 5 &&
-            Date.now() <= (existing?.last_changed??0) + ratelimit
-        ) return socket.emit("toast", {
-            title: "Wait before trying again"
-        })
-
-        // Update user
-        allusers[socket.id] = {
-            name: newUser?.name ?? existing?.name ?? "Player",
-            avatar: newUser?.avatar ?? existing?.avatar ?? arrRandom(data.avatars),
-            socketID: socket.id,
-            changes: (existing?.changes??0) + 1,
-            last_changed: bypassRatelimit ? 0 : Date.now() // Timestamp
-        }
-        if(!bypassRatelimit) socket.emit("assignedUserData", allusers[socket.id]);
-        // if(!bypassRatelimit) socket.emit("toast", {
-        //     title: "Profile updated"
-        // })
-        getGameByUser()?.updateClients();
-    }
-
-    // Join room handler
-    function joinRoom(rawRoomID, nameIsUUID, spectate=false) {
-        // Replace non-breaking hyphens
-        const roomID = rawRoomID.replaceAll("‑", "-").replaceAll("%E2%80%91", "-");
-
-        // ID is not a string or too long
-        const roomLengthMin = 4, roomLengthMax = 32;
-        if(
-            typeof roomID !== 'string' ||
-            roomID.length < roomLengthMin ||
-            roomID.length > roomLengthMax
-        ) {
-            console.warn(`Failed trying to join room: User ID ${socket.id}`);
-            socket.emit("toast", {
-                title: "Error",
-                msg: `Failed trying to join room. Must be between ${roomLengthMin} and ${roomLengthMax} characters.`
-            });
-            return;
-        };
-
-        // Check for existing
-        let game = allgames[roomID];
-        let toastTitle = "Joined game";
-
-        // Create new
-        if(game === undefined) {
-            game = new Uno({
-                roomID,
-                host: socket.id,
-                nameIsUUID
-            });
-            toastTitle = "Created lobby";
-        }
-        else {
-            // Room exists but is closed
-            if(game.roomClosed) {
-                socket.emit("join_failed");
-                socket.emit("toast", {
-                    title: "Invite Expired",
-                    msg: `Game has ended (${roomID})`
-                });
-                return;
-            }
-
-            // Game exists and is already started
-            else if(game.state !== "lobby") {
-                socket.emit("join_failed");
-                socket.emit("toast", {
-                    title: "Whoops",
-                    msg: `Game has already started (${roomID})`
-                });
-                return;
-            }
-        }
-
-        // -- Join existing room -- //
-
-        // Room does not allow spectators
-        if(spectate && !game.config.spectators) {
-            socket.emit("join_failed");
-            socket.emit("toast", { title:"Room does not allow spectators" });
-            return;
-        }
-
-        // Room is full
-        if(game.isFull && !spectate) {
-            socket.emit("join_failed");
-            socket.emit("toast", { title:"Room is full" });
-            return;
-        }
-
-        // Leave all other rooms
-        for(const r of socket.rooms) allgames[r]?.leave(socket.id, false);
-        
-        // Rejoin personal room
-        socket.join(socket.id);
-
-        // Join
-        usersRooms[socket.id] = roomID;
-        socket.join(roomID); // Join
-        allusers[socket.id].spectating = Boolean(spectate);
-
-        // Emit join
-        socket.emit("joined", roomID); // Give client room ID
-        // log(socket.id, ' is in rooms: ', socket.rooms);
-
-        // Toast
-        if(!spectate) socket.emit("toast", {
-            title: toastTitle
-        });
-
-        // Join message
-        const joinMessage =
-            !spectate ?
-                `"${allusers[socket.id].name}" joined!` :
-                `"${allusers[socket.id].name}" is spectating`;
-        socket.to(roomID).emit("toast", {
-            title: joinMessage
-        });
-
-        // Update
-        game.updateClients();
-    }
-
-    // Start game
-    socket.on("start_game", data => {
-        const game = getGameByUser();
-        if(game === undefined) {
-            console.warn(`Warning: Game is undefined. User: [${socket.id}]`);
-            socket.emit("toast", {
-                title: "Error",
-                msg: "Game does not exist. Try making another one."
-            })
-            socket.emit("leave");
-            return;
-        }
-        game.start(socket);
-    })
-
-    socket.on("returnToLobby", () => {
-        const game = getGameByUser();
-        if(game === undefined) return;
-        game.returnToLobby(socket);
-    })
-
-    socket.on("update_config", ({ option, value }) => {
-        const game = getGameByUser();
-        if(game === undefined || typeof option !== 'string') return;
-
-        game.setConfigOption(socket, option, value);
-    })
-
-    socket.on("drawCard", () => {
-        const game = getGameByUser();
-        if(game === undefined) return errorDisconnected();
-        game.drawCard(socket.id);
-    })
-
-    socket.on("playCard", cardID => {
-        const game = getGameByUser();
-        if(game === undefined) return errorDisconnected();;
-        game.playCard(socket.id, cardID);
-    })
-
-    socket.on("endTurn", () => {
-        const game = getGameByUser();
-        if(game === undefined) return errorDisconnected();;
-        game.endTurn(socket.id);
-    })
-
-    socket.on("requestRematch", () => {
-        const game = getGameByUser();
-        if(game === undefined) return errorDisconnected();;
-        game.requestRematch(socket.id);
-    })
-
-    function errorDisconnected() {
-        socket.emit("leave");
-        socket.emit("toast", { title:"You were disconnected" });
-    }
-
-    // Chat message
-    socket.on("chat", (data) => {
-        // Invalid message
-        if(typeof data.msg !== 'string' || data.msg.length < 1) return;
-
-        // Info
-        const roomID = usersRooms[socket.id];
-        data.user = allusers[socket.id];
-        data.socketID = socket.id;
-
-        const game = getGameByUser();
-
-        if(
-            game === undefined ||
-            !game?.config?.enable_chat || // Chat is turned off
-            game?.has_been_public // Game was set to public
-        ) return;
-
-        // Ratelimit
-        // const ratelimit = 100;
-        // if(Date.now() <= (allusers[socket.id]?.last_msg??0) + ratelimit) {
-        //     return socket.emit("toast", {
-        //         msg: "You are being ratelimited"
-        //     })
-        // }
-        // allusers[socket.id].last_msg = Date.now();
-
-        // Log
-        log(`🗨  (${roomID}) ${data.user.name}: ${data.msg}`);
-
-        // Broadcast
-        io.to(roomID).emit("chat_receive", data);
-    });
-
-    // Public lobby list
-    socket.on("request_public_lobbies", () => {
-        const publicLobbies =
-            Object.values(allgames)
-                .filter(game => {
-                    return game?.config?.public_lobby === true &&   // Set to public
-                           game?.nameIsUUID &&                      // Game ID is not picked by user
-                           !game?.roomClosed                        // Game has not ended
-                })
-                .map(game => game.publicClone());
-
-        // Lobby arrays
-        const joinableLobbies = publicLobbies.filter(game => game?.state === "lobby"); // Still in lobby
-        // const spectateLobbies = publicLobbies.filter(game => game?.config?.spectate);
-        
-        // Delay makes it feel like it's doing more work than it is
-        setTimeout(() => {
-            socket.emit("lobby_list", {
-                online_users: Object.keys(allusers).length,
-                joinableLobbies,
-                // spectateLobbies
-            });
-        }, 250);
-    })
-
-    // Disconnect
-    socket.on("disconnect", () => {
-        log(`\u001b[1;31m← \u001b[0m ${allusers[socket.id].name} disconnected (${socket.id})`);
-
-        getGameByUser()?.leave(socket.id);
-
-        // De-register
-        delete allusers[socket.id];
-    });
-
-
-    // socket.on("custom_deck", raw => {
-    //     // Invalid data
-    //     if(
-    //         typeof raw !== 'object' ||          // Not an object
-    //         raw?.cards === undefined ||         // No cards
-    //         !Array.isArray(raw?.cards) ||       // cards property not an array
-    //         raw?.name === undefined ||          // Name is undefined
-    //         typeof raw?.name !== 'string' ||    // Name not a string
-    //         raw?.cards?.length > 240            // Too many cards
-            
-    //         // To add:
-    //         // All cards are objects
-    //         // All card properties are legal
-    //     ) return;
-
-    //     // ID
-    //     const id = crypto.randomUUID();
-    //     customDecks[id] = raw; // Save temporarily
-    //     log(`A custom deck has been submitted [${id}]`);
-
-    //     // Send ID
-    //     socket.emit("custom_deck_success", id); 
-    // })
-
-
-    // Debug
-    if(!isProduction) socket.on("debug", (data) => {
-        socket.emit("debug", {
-            usersRooms,
-            allgames,
-            allusers,
-
-            customDecks
-        })
-    });
-
-
-    // FUNCTIONS
-    function getGameByUser() {
-        return allgames[usersRooms[socket.id]];
-    }
-})
-
-
-// Game cleanup
-const maxGameAge = 172800000; // 48 hours
-const cleanupPeriod = 43200000; // 12 hours
-const cleanupTimer = setInterval(performCleanup, cleanupPeriod);
-
-/** Loops all game object and removes closed games older than maxGameAge */
-function performCleanup() {
-    for(const [roomID, game] of Object.entries(allgames)) {
-        if(!game.roomClosed) continue;
-        if(game.roomClosedTimestamp + maxGameAge < Date.now()) game.destroy();
-    }
-}
-
-
-// API site confirmation
-app.get('/', (req, res) => {
-    const responseJSON = {
-        // Status
-        online_users:   Object.keys(allusers).length,
-        games:          Object.keys(allgames).length,
-        games_active:   Object.entries(allgames).filter(i => !i[1].roomClosed).length,
-        games_closed:   Object.entries(allgames).filter(i => i[1].roomClosed).length,
-
-        // Statistics
-        uptime: getUptime(),
-        serverStats,
-    };
-
-    if(!isProduction) {
-        responseJSON.debug = {
-            usersRooms,
-            allgames,
-            allusers,
-
-            customDecks
-        }
-    }
-
-    res.send(responseJSON);
-
-    function getUptime() {
-        const minutes = serverStats.uptime_ms / 60000;
-        const hours = minutes / 60;
-        const days = hours / 24;
-
-        if(days >= 2) return `${days.toFixed(1)} days`; // Days (more than 48 hours)
-        if(minutes >= 60) return `${hours.toFixed(1)} hours`; // Hours
-        return `${minutes.toFixed(1)} minutes`; // Minutes
-    }
-})
-
-// avatars.json
-app.get('/data.json', (req, res) => {
-    res.setHeader('Content-Type', 'application/json');
-    res.end(JSON.stringify(data));
-})
-
-
-// Listen
-// const port = 3001;
-const port = 443;
-server.listen(port, () => {
-    console.log(`Listening on port \x1b[36m${port}\x1b[0m\n`);
-})

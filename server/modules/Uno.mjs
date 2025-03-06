@@ -111,7 +111,8 @@ export default class Uno {
             if(socket.spectating) continue;
             result[socket.id] = {
                 name: socket.name,
-                avatar: socket.avatar
+                avatar: socket.avatar,
+                socketID: socket.id
             };
         }
         return result;

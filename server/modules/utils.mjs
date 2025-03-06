@@ -66,6 +66,6 @@ export function arrRandom(arr) {
  * @param {String} string 
  * @returns {String}
  */
-// export function capitalizeFirstLetter(string) {
-//     return string.charAt(0).toUpperCase() + string.slice(1);
-// }
+export function capitalizeFirstLetter(string) {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+}

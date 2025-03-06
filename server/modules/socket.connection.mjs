@@ -1,4 +1,4 @@
-import { server, data, word_blacklist, isProduction } from "../server.mjs"
+import { io, server, data, word_blacklist, isProduction } from "../server.mjs"
 import { arrRandom } from "./utils.mjs"
 import Uno from "./Uno.mjs"
 
@@ -15,15 +15,20 @@ function generateRoomUUID() {
 }
 
 /** Socket.io on "connection" */
-const socketConnection = (socket) => {
+const socketConnection = function(socket) {
     // Stats
     server.stats.total_connections++;
 
-    // Set random username/avatar
-    setUser(undefined, true);
-    
     // Log
-    server.log(`\u001b[1;32m➜ \u001b[0m ${server.users[socket.id].name} connected (${socket.id})`);
+    server.log(`\u001b[1;32m➜ \u001b[0m ${socket.name} connected (${socket.id})`);
+
+    // ON READY
+    socket.on("ready", () => {
+        socket.emit("myProfile", {
+            name: socket.name,
+            avatar: socket.avatar
+        });
+    })
 
     // Join
     socket.on("join", ({ roomID, spectate }) => {
@@ -73,32 +78,30 @@ const socketConnection = (socket) => {
             }
         }
 
-        const existing = server.users?.[socket.id];
-
         // Ratelimit
-        const ratelimit = (existing?.changes??0) > 100 ?
+        const ratelimit = (socket?.name_changes??0) > 100 ?
             15000 : // 15 seconds (if user has updated themselves 100+ times)
             250; // 0.25 seconds
         if(
             !bypassRatelimit &&
-            existing?.changes >= 5 &&
-            Date.now() <= (existing?.last_changed??0) + ratelimit
+            socket?.name_changes >= 5 &&
+            Date.now() <= (socket?.name_last_changed??0) + ratelimit
         ) return socket.emit("toast", {
             title: "Wait before trying again"
         })
 
         // Update user
-        server.users[socket.id] = {
-            name: newUser?.name ?? existing?.name ?? "Player",
-            avatar: newUser?.avatar ?? existing?.avatar ?? arrRandom(data.avatars),
+        Object.assign(socket, {
+            name: newUser?.name ?? socket?.name ?? "Player",
+            avatar: newUser?.avatar ?? socket?.avatar ?? arrRandom(data.avatars),
             socketID: socket.id,
-            changes: (existing?.changes??0) + 1,
-            last_changed: bypassRatelimit ? 0 : Date.now() // Timestamp
-        }
-        if(!bypassRatelimit) socket.emit("assignedUserData", server.users[socket.id]);
-        // if(!bypassRatelimit) socket.emit("toast", {
-        //     title: "Profile updated"
-        // })
+            name_changes: (socket?.name_changes??0) + 1,
+            name_last_changed: bypassRatelimit ? 0 : Date.now() // Timestamp
+        })
+        if(!bypassRatelimit) socket.emit("myProfile", {
+            name: socket.name,
+            avatar: socket.avatar
+        });
         getGameByUser()?.updateClients();
     }
 
@@ -130,7 +133,7 @@ const socketConnection = (socket) => {
         if(game === undefined) {
             game = new Uno({
                 roomID,
-                host: socket.id,
+                hostSocket: socket,
                 nameIsUUID
             });
             toastTitle = "Created lobby";
@@ -182,7 +185,7 @@ const socketConnection = (socket) => {
         // Join
         server.usersRooms[socket.id] = roomID;
         socket.join(roomID); // Join
-        server.users[socket.id].spectating = Boolean(spectate);
+        socket.spectating = Boolean(spectate);
 
         // Emit join
         socket.emit("joined", roomID); // Give client room ID
@@ -196,8 +199,8 @@ const socketConnection = (socket) => {
         // Join message
         const joinMessage =
             !spectate ?
-                `"${server.users[socket.id].name}" joined!` :
-                `"${server.users[socket.id].name}" is spectating`;
+                `"${socket.name}" joined!` :
+                `"${socket.name}" is spectating`;
         socket.to(roomID).emit("toast", {
             title: joinMessage
         });
@@ -270,7 +273,10 @@ const socketConnection = (socket) => {
 
         // Info
         const roomID = server.usersRooms[socket.id];
-        data.user = server.users[socket.id];
+        data.user = {
+            name: socket.name,
+            avatar: socket.avatar
+        };
         data.socketID = socket.id;
 
         const game = getGameByUser();
@@ -315,7 +321,7 @@ const socketConnection = (socket) => {
         // Delay makes it feel like it's doing more work than it is
         setTimeout(() => {
             socket.emit("lobby_list", {
-                online_users: Object.keys(server.users).length,
+                online_users: 69,
                 joinableLobbies,
                 // spectateLobbies
             });
@@ -324,12 +330,9 @@ const socketConnection = (socket) => {
 
     // Disconnect
     socket.on("disconnect", () => {
-        server.log(`\u001b[1;31m← \u001b[0m ${server.users[socket.id].name} disconnected (${socket.id})`);
+        server.log(`\u001b[1;31m← \u001b[0m ${socket.name} disconnected (${socket.id})`);
 
         getGameByUser()?.leave(socket.id);
-
-        // De-register
-        delete server.users[socket.id];
     });
 
 

@@ -19,7 +19,9 @@ function hideAll(arr, obfuscate) {
 
 /** Game class and methods (Uno) */
 export default class Uno {
-    constructor({ roomID, host, nameIsUUID }) {
+    #hostSocket;
+
+    constructor({ roomID, hostSocket, nameIsUUID }) {
         // Statistics
         server.stats.total_games++;
 
@@ -49,7 +51,8 @@ export default class Uno {
 
         // Data
         this.roomID = roomID;
-        this.host = host;
+        this.#hostSocket = hostSocket;
+        this.host = hostSocket.id;
         this.nameIsUUID = nameIsUUID; // Will be true unless the UUID was player-chosen
 
         // Player-specific
@@ -72,8 +75,12 @@ export default class Uno {
         // Update
         this.updateClients();
 
+        setTimeout(() => {
+            this.updateClients();
+        }, 2000);
+
         // Log
-        server.log(`🎮 Created game (${this.roomID}) hosted by ${server.users[this.host].name} (${this.host})`);
+        server.log(`🎮 Created game (${this.roomID}) hosted by ${this.#hostSocket.name} (${this.host})`);
     }
 
 
@@ -97,30 +104,33 @@ export default class Uno {
         return (this.playerCount >= this.config.max_players);
     }
 
-    /** Object of all users' profiles (socketID:data pairs) */
+    /** Object of all (non-spectating) users' profiles (socketID:data pairs) */
     get users() {
-        let users = {};
-        for(const PID of this.playersBySocket) {
-            if(server.users[PID].spectating) continue;
-            users[PID] = server.users[PID];
+        let result = {};
+        for(const socket of this.clients) {
+            if(socket.spectating) continue;
+            result[socket.id] = {
+                name: socket.name,
+                avatar: socket.avatar
+            };
         }
-        return users;
+        return result;
     }
 
     /** Returns an array of socket IDs in the game
      * @param {String} roomID 
      * @returns {Array}
      */
-    get playersBySocket() { return [...io.sockets.adapter.rooms.get(this.roomID) ?? []]; }
+    get clients() { return [...io.sockets.adapter.rooms.get(this.roomID) ?? []].map(id => io.sockets.sockets.get(id)); }
 
     /** Gives the number of users who are in play (whether or not the game has started). Spectators excluded. */
     get playerCount() {
-        return this.playersBySocket.filter(PID => !server.users[PID].spectating).length;
+        return this.clients.filter(socket => !socket.spectating).length;
     }
 
     /** Gives current number of spectators */
     get spectatorCount() {
-        return this.playersBySocket.filter(PID => server.users[PID].spectating).length;
+        return this.clients.filter(socket => socket.spectating).length;
     }
 
     /** Player leave game
@@ -157,11 +167,11 @@ export default class Uno {
 
         // Tell room someone left
         if(!wasSpectator) this.emit("toast", {
-            title: `"${server.users[socketID]?.name ?? "User"}" left!`
+            title: `"${socket?.name ?? "User"}" left!`
         })
 
         // All players have left
-        if((this.playersBySocket.length - this.spectatorCount) === 0) {
+        if((this.clients.length - this.spectatorCount) === 0) {
             // server.log(`Room [${roomID}] is empty, closing game...`);
             this.emit("toast", { title: "Game ended" });
             return this.close();
@@ -169,7 +179,7 @@ export default class Uno {
 
         // Transfer ownership to remaining player
         else if(socketID === this.host) {
-            const newHostID = this.playersBySocket[0];
+            const newHostID = this.clients[0].id;
             this.host = newHostID;
             this.emit("toast", { title: `"${server.users[newHostID].name}" is now host` });
         }
@@ -238,8 +248,10 @@ export default class Uno {
         /* Tailor data for each user
         Cards that aren't visible to users are stripped of their
         data before being sent to prevent cheating via devtools */
-        const sockets = this.playersBySocket;
-        for(const socketID of sockets) {
+        const sockets = this.clients;
+        for(const socket of sockets) {
+            const socketID = socket.id;
+
             // Clone game for current player
             let tailoredGame = structuredClone(clone);
 
@@ -269,9 +281,6 @@ export default class Uno {
             // Emit
             io.to(socketID).emit("gameState", tailoredGame);
         }
-        
-        // Emit raw data
-        // this.emit("gameState", clone);
     }
 
     /** Returns a Boolean based on if a provided socketID is spectating or not
@@ -279,7 +288,7 @@ export default class Uno {
      * @returns {Boolean} True if user is a spectator
      */
     isSpectating(socketID) {
-        return Boolean(server.users?.[socketID]?.spectating);
+        return Boolean(io.sockets.sockets.get(socketID)?.spectating);
     }
 
     setConfigOption(socket, option, value) {
@@ -309,8 +318,9 @@ export default class Uno {
 
         // Spectators OFF
         else if(option === "spectators" && value === false) {
-            for(const socketID of this.playersBySocket) {
-                if(server.users[socketID]?.spectating) {
+            for(const socket of this.clients) {
+                const socketID = socket.id;
+                if(io.sockets.sockets.get(socketID)?.spectating) {
                     this.kick(socketID, true, "Option to spectate was disabled");
                 }
             }
@@ -448,10 +458,10 @@ export default class Uno {
 
     /** Runs the addPlayer() method for each connected user */
     generatePlayers() {
-        const sockets = this.playersBySocket;
+        const sockets = this.clients;
         for(let i = 0; i < sockets.length; i++) {
-            if(server.users[sockets?.[i]]?.spectating) continue;
-            this.addPlayer(sockets[i]);
+            if(io.sockets.sockets.get(sockets?.[i])?.spectating) continue;
+            this.addPlayer(sockets[i].id);
         }
     }
 
@@ -502,6 +512,7 @@ export default class Uno {
         if(runUpdateClients) this.updateClients();
     }
 
+    /** Takes cards from underneath the pile and shuffles them back into the deck */
     replenishDeck() {
         if(this.deck.length !== 0) return;
 

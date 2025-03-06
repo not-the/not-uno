@@ -15,9 +15,6 @@ import data from './data.json' assert { type: 'json' }
 // Config
 import word_blacklist from './word_blacklist.json' assert { type: 'json' }
 
-// Express setup
-const app = express();
-app.use(cors());
 
 // Environment
 const isProduction = process.env.NODE_ENV === 'production';
@@ -39,19 +36,41 @@ if(isProduction) {
 }
 
 
+// Express setup
+const app = express();
+app.use(cors()); // Use cors package as middleware
+
 /** Express server */
-const expressServer = isProduction ?
+const webServer = isProduction ?
     https.createServer({
         key: privateKey, cert: certificate
     }, app) : // Production, SSL
     http.createServer(app); // Development
 
+
 /** Socket.io server */
-const io = new Server(expressServer, {
+const io = new Server(webServer, {
     cors: {
         // Frontend origin
         origin: clientOrigin,
         methods: ["GET", "POST"]
+    }
+});
+
+// Socket.io pre-connect middleware
+io.use((socket, next) => {
+    const { name, avatar } = socket.handshake.query;
+
+    if(name) socket.name = name ?? getRandomName();
+    if(avatar) socket.avatar = avatar ?? arrRandom(data.avatars);
+
+    next();
+
+    // copied from app.js. Might convert to an api endpoint
+    function getRandomName() {
+        const adjective = capitalizeFirstLetter(arrRandom(clientData.names.adjectives));
+        const noun = arrRandom(clientData.names.nouns);
+        return `${adjective} ${noun}`;
     }
 });
 
@@ -69,7 +88,7 @@ console.log(
 const server = {
     usersRooms: {},
     games: {},
-    users: {},
+    // users: {},
 
     /** Server statistics since process was started. Resets when server is closed */
     stats: {
@@ -145,6 +164,7 @@ const customDecks = {};
 
 /** Modules */
 import socketConnection from './modules/socket.connection.mjs'
+import { arrRandom, capitalizeFirstLetter } from './modules/utils.mjs'
 export { io, data, word_blacklist, server, isProduction };
 
 
@@ -155,9 +175,10 @@ io.on("connection", socketConnection);
 
 // API site confirmation
 app.get('/', (req, res) => {
+    const clients = io.sockets.clients();
     const responseJSON = {
         // Status
-        online_users:   Object.keys(server.users).length,
+        online_users:   clients.length,
         games:          Object.keys(server.games).length,
         games_active:   Object.entries(server.games).filter(i => !i[1].roomClosed).length,
         games_closed:   Object.entries(server.games).filter(i => i[1].roomClosed).length,
@@ -167,11 +188,12 @@ app.get('/', (req, res) => {
         serverStats: server.stats,
     };
 
+    // Debug
     if(!isProduction) {
         responseJSON.debug = {
-            usersRooms: server.usersRooms,
+            allusers: clients,
             allgames: server.games,
-            allusers: server.users
+            usersRooms: server.usersRooms
         }
     }
 
@@ -188,6 +210,6 @@ app.get('/data.json', (req, res) => {
 // Listen
 // const port = 3001;
 const port = 443;
-expressServer.listen(port, () => {
+webServer.listen(port, () => {
     console.log(`Listening on port \x1b[36m${port}\x1b[0m\n`);
 })

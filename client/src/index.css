@@ -2304,6 +2304,24 @@ h3 > .user .avatar {
 }
 
 
+/* Connection status */
+#connection_indicator {
+    display: inline-block;
+    width: 0.6lh;
+    height: 0.6lh;
+    margin-right: 9px;
+    border-radius: 100%;
+    border: 3px solid rgb(255, 67, 82);
+    
+    background-color: transparent;
+}
+#connection_indicator[aria-checked="true"] {
+    border-color: transparent;
+    background-color: greenyellow;
+}
+
+
+/* Special toasts */
 .connection_lost {
     --warning-red: rgb(175, 52, 68);
     --shadow-color: rgb(87, 19, 28);

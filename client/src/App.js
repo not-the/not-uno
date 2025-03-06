@@ -111,10 +111,7 @@ export default function App() {
     useEffect(() => {
         // Auto join from URL
         if(window.location.hash !== '') joinRoom(window.location.hash.substring(1));
-
-        // Pre-existing username
-        let myUser = store("user_data") ?? { name: getRandomName() };
-        socket.emit("setUser", myUser);
+    
 
         // Joined to room
         socket.on("joined", roomID => {
@@ -145,7 +142,7 @@ export default function App() {
         });
 
         socket.on("gameState", gameStateHandler);
-        function gameStateHandler(data) {  
+        function gameStateHandler(data) {
             // State
             setGame(o => data);
 
@@ -158,7 +155,7 @@ export default function App() {
             else setMenu("game");
         }
 
-        socket.on("assignedUserData", data => {
+        socket.on("myProfile", data => {
             store("user_data", data);
             setProfile(data);
         })
@@ -199,7 +196,7 @@ export default function App() {
             socket.off("join_failed");
             socket.off("toast");
             socket.off("gameState");
-            socket.off("assignedUserData");
+            socket.off("myProfile");
 
             socket.off("debug");
             socket.off("request_custom_deck");
@@ -243,10 +240,10 @@ export default function App() {
             {/* Toasts */}
             <div id="toasts">
                 {/* Connection lost */}
-                {
+                {/* {
                     socketConnectionStatus ? null :
-                    <Toast data={{ title:"⚠ Disconnected", msg:"Can't reach server" } } timed={false} classes="connection_lost" />
-                }
+                    <Toast data={{ title:"⚠ Disconnected", msg:"Can't reach server" } } timed={false} classes="" />
+                } */}
 
                 {/* Spectating */}
                 {

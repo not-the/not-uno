@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { isProduction, socket } from "../socket"
+import { isProduction, socket, socketConnectionStatus } from "../socket"
 
 import LobbyListing from "./LobbyListing"
 
@@ -75,7 +75,14 @@ export default function Home({ setMenu, joinRoom }) {
 
                     {/* Bottom */}
                     <div className="bottom_bar secondary_text">
-                        {serverInfo?.online_users ?? 0} player{serverInfo?.online_users !== 1 ? "s" : ""} online
+                        {/* Connection Indicator */}
+                        <div id="connection_indicator" aria-checked={socketConnectionStatus} />
+
+                        {/* Player count */}
+                        {socketConnectionStatus === true ?
+                            `${serverInfo?.online_users ?? 0} player${serverInfo?.online_users !== 1 ? "s" : ""} online` :
+                            "Server offline"
+                        }
                     </div>
                 </div>
                 <br/>

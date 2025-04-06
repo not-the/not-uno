@@ -326,14 +326,14 @@ export default function Game({ game, setGame, startGame }) {
 
                 // Cards
                 const cardsJSX = player.cards
-                    // .map((entry, index) => ({...entry, index})) // Save original index within cardData object
-                    .sort((a, b) => { // Sort cards by color first, type second
+                    // Sort cards
+                    .sort((a, b) => {
                         const cc = a.color.localeCompare(b.color);
                         if(cc !== 0) return cc; // Color
                         return a.type.localeCompare(b.type); // Type
                     })
-                    .map((cardData) => { // Create JSX
-                        // const cardIndex = cardData.index;
+                    // Create JSX
+                    .map((cardData) => {
                         return <Card
                             data={cardData} key={cardData.ucid}
                             owner={playerIndex} game={game}

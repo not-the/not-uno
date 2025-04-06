@@ -503,6 +503,15 @@ export default class Uno {
         // Animate
         this.animation = { fromName, toName, fromIndex, card };
         this.animation_key++;
+        // maybe make the above code use UCIDs too so there's no need for redundant code
+        // const animFrom = typeof fromName === 'number' ?
+        //     this.players[fromName].cards[fromIndex].ucid : // Player
+        //     fromName; // Location
+        // const animTo = typeof toName === 'number' ?
+        //     this.players[toName].cards[this.players[toName].cards.length-1].ucid : // Player
+        //     toName; // Location
+        // this.animation = { from:animFrom, to:animTo };
+        // this.animation_key++;
 
         // Update
         if(runUpdateClients) this.updateClients();

@@ -243,10 +243,10 @@ const socketConnection = function(socket) {
         game.drawCard(socket.id);
     })
 
-    socket.on("playCard", cardID => {
+    socket.on("playCard", ucid => {
         const game = getGameByUser();
         if(game === undefined) return errorDisconnected();;
-        game.playCard(socket.id, cardID);
+        game.playCard(socket.id, ucid);
     })
 
     socket.on("endTurn", () => {

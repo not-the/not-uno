@@ -1323,6 +1323,24 @@ button.share_button {
 }
 
 
+/* Card animations */
+.player .card {
+    animation: card_static_in 0.2s ease;
+}
+@keyframes card_static_in {
+    0% {
+        opacity: 0;
+        margin: 0 -0.5em;
+    }
+    99% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 1;
+        margin: 0;
+    }
+}
+
 .animation_container {
     overflow: hidden;
     position: fixed;
@@ -2024,6 +2042,15 @@ h3 > .user .avatar {
 
     width: 100%;
     padding: 9px 9px 350px 9px;
+}
+#deck_editor nav {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+
+    background-color: var(--bg-darker);
+    padding: 6px 12px 9px;
+    border-radius: 15px;
 }
 #deck_editor .card {
     font-size: 54pt;

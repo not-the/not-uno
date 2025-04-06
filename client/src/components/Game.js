@@ -57,8 +57,7 @@ export default function Game({ game, setGame, startGame }) {
         function wheelHandler(event) {
             const element = event.currentTarget;
             element.scrollBy({
-                left: event.deltaY,
-                behavior: 'smooth'
+                left: event.deltaY
             })
         }
 
@@ -144,8 +143,8 @@ export default function Game({ game, setGame, startGame }) {
     }
 
     /** Signals the server to place one of your cards in the pile */
-    function playCard(cardID) {
-        socket.emit("playCard", cardID);
+    function playCard(ucid) {
+        socket.emit("playCard", ucid);
     }
 
     /** Requests the server to end your turn */
@@ -326,7 +325,7 @@ export default function Game({ game, setGame, startGame }) {
                 const playerPosition = getPlayerOnscreenPosition(playerIndex);
 
                 const user = game.usersParsed[player.socketID];
-                    
+                const isMe = playerIndex === game.my_num;
 
                 // Classes
                 const classes = `
@@ -354,6 +353,22 @@ export default function Game({ game, setGame, startGame }) {
 
                 const styles = undefined;
 
+                // Cards
+                const cardsJSX = player.cards
+                    // .map((entry, index) => ({...entry, index})) // Save original index within cardData object
+                    .sort((a, b) => a.color > b.color ? 1 : -1) // Sort cards by color first, type second
+                    .map((cardData) => { // Create JSX
+                        // const cardIndex = cardData.index;
+                        return <Card
+                            data={cardData} key={cardData.ucid}
+                            owner={playerIndex} game={game}
+                            onClick={isMe ?
+                                function() { playCard(cardData.ucid) } :
+                                undefined
+                            }
+                        />
+                    })
+
                 return (
                     <div className={classes} key={playerIndex} style={styles}>
                         {/* Disconnected notice */}
@@ -377,16 +392,7 @@ export default function Game({ game, setGame, startGame }) {
 
                         {/* Cards */}
                         <div className="inner" ref={game.turn === playerIndex ? playerMeInner : null}>
-                            {player.cards.map((cardData, cardIndex) => {
-                                return <Card
-                                    data={cardData} key={cardIndex}
-                                    owner={playerIndex} game={game}
-                                    onClick={playerIndex === game.my_num ?
-                                        function() { playCard(cardIndex) } :
-                                        undefined
-                                    }
-                                />
-                            })}
+                            {cardsJSX}
                         </div>
                     </div>
                 )

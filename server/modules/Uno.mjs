@@ -75,10 +75,6 @@ export default class Uno {
         // Update
         this.updateClients();
 
-        setTimeout(() => {
-            this.updateClients();
-        }, 2000);
-
         // Log
         server.log(`🎮 Created game (${this.roomID}) hosted by ${this.#hostSocket.name} (${this.host})`);
     }
@@ -394,7 +390,7 @@ export default class Uno {
         this.pile = []; // Played cards pile
 
         // Turn
-        // Will always the player ID of whoever's turn it is
+        // Will always be the player number of whoever's turn it is
         let startingPlayerID = 0;
         // Random
         if(this.config.who_goes_first === "random") {
@@ -434,15 +430,14 @@ export default class Uno {
         this.updateClients();
     }
 
+    /** Gets the starting deck and returns it */
     getStartingDeckCards() {
-        const inbuilt = data.decks?.[this.config.starting_deck];
+        // Get deck
+        const deckCards = data.decks?.[this.config.starting_deck]?.cards
+        deckCards.forEach((card) => card.ucid = crypto.randomUUID()); // Give cards Unique IDs
 
-        // Inbuilt
-        if(inbuilt) return structuredClone(inbuilt.cards);
-
-        // else {
-        //     throw new Error("custom decks not added")
-        // }
+        // Return
+        return structuredClone(deckCards);
     }
 
     /** Sets game state to lobby */
@@ -620,14 +615,15 @@ export default class Uno {
      * @param {String} action 
      * @returns {Boolean} If the move was unsuccessful, whether it not be the player's turn or the move is invalid, the method will return false
      */
-    playCard(socketID, cardID, actionName, actionChoice, updateClients=true) {
+    playCard(socketID, ucid, actionName, actionChoice, updateClients=true) {
         const pnum = this.getPnumFromSocketID(socketID);
 
         // Valid
         if(!this.isValidTurn(pnum)) return;
 
         // Cards
-        const playerCard = this.players[pnum].cards[cardID];
+        const playerCardIndex = this.players[pnum].cards.findIndex(card => card.ucid === ucid);
+        const playerCard = this.players[pnum].cards[playerCardIndex];
         if(playerCard === undefined) {
             // console.warn(`[Player ${pnum}] Card #${cardID} doesn't exist`);
             return false;
@@ -648,10 +644,12 @@ export default class Uno {
 
         // Pre-move action prompt
         if(actionChoice === undefined) {
+            server.log(playerCardIndex);
+
             // Choose color
             if(playerCard.choose_color === true) {
                 this.action = "choose_color";
-                this.action_params = [socketID, cardID];
+                this.action_params = [socketID, ucid];
                 this.updateClients();
                 return;
             }
@@ -659,7 +657,7 @@ export default class Uno {
             // Choose swap
             else if(playerCard.choose_swap === true && this.players.length !== 1) {
                 this.action = "choose_swap";
-                this.action_params = [socketID, cardID];
+                this.action_params = [socketID, ucid];
                 this.updateClients();
                 return;
             }
@@ -667,7 +665,7 @@ export default class Uno {
             // Target draw
             else if(playerCard.target_draw && this.players.length !== 1) {
                 this.action = "target_draw";
-                this.action_params = [socketID, cardID];
+                this.action_params = [socketID, ucid];
                 this.updateClients();
                 return;
             }
@@ -679,7 +677,7 @@ export default class Uno {
 
         /** Moves the card and ends turn */
         // Play card
-        this.moveCard(pnum, "pile", false, cardID);
+        this.moveCard(pnum, "pile", false, playerCardIndex);
 
         // Enact Action
         if(actionChoice !== undefined) {

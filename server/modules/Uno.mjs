@@ -644,8 +644,6 @@ export default class Uno {
 
         // Pre-move action prompt
         if(actionChoice === undefined) {
-            server.log(playerCardIndex);
-
             // Choose color
             if(playerCard.choose_color === true) {
                 this.action = "choose_color";

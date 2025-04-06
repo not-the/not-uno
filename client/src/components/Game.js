@@ -5,6 +5,7 @@ import { useEffect, useState, useRef } from "react";
 import { socket } from "../socket.js";
 import User from "./User.js";
 import lang from "../lang.js";
+import CardAnimated from "./CardAnimated.js";
 
 
 
@@ -183,36 +184,6 @@ export default function Game({ game, setGame, startGame }) {
     function requestRematch() {
         socket.emit("requestRematch");
     }
-
-    /** Takes in a string ("deck" or "pile") or a player ID & card ID and returns the relevant DOM object */
-    function getCardRect(name, index=(game?.players?.[game?.my_num]?.cards?.length-1)??1) {
-        let loc;
-
-        // Player
-        try {
-            if(typeof name === 'number') loc = document.querySelector(`.player_${name} .card:nth-of-type(${index+1})`);
-            // Deck/pile
-            else loc = document.getElementById(name);
-        } catch (error) {
-            console.error(error);
-        }
-        
-        return loc?.getBoundingClientRect() ?? new DOMRect();
-    }
-
-    const startRect = getCardRect(game.animation?.fromName, game.animation?.fromIndex-1);
-    const endRect = getCardRect(game.animation?.toName);
-    const cardAnimated =
-        game.animation !== undefined ?
-            <Card key={game.animation_key} data={game.animation.card} animated={true} style={{
-                "--start-x": `${startRect.x}px`,
-                "--start-y": `${startRect.y}px`,
-                "--end-x": `${endRect.x}px`,
-                "--end-y": `${endRect.y}px`,
-            }} />
-            :
-            null;
-
 
 
     // HTML
@@ -400,9 +371,7 @@ export default function Game({ game, setGame, startGame }) {
         </main>
 
         {/* Animation overlay */}
-        <div className="animation_container">
-            {cardAnimated}
-        </div>
+        <CardAnimated game={game} />
 
         {/* Dialog */}
         {myTurn ?

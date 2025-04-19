@@ -51,9 +51,8 @@ export default class Uno {
 
         // Data
         this.roomID = roomID;
-        this.#hostSocket = hostSocket;
-        this.host = hostSocket.id;
         this.nameIsUUID = nameIsUUID; // Will be true unless the UUID was player-chosen
+        this.setHost(hostSocket);
 
         // Player-specific
         this.my_num = 0;
@@ -130,6 +129,17 @@ export default class Uno {
         return this.clients.filter(socket => socket.spectating).length;
     }
 
+    /** Changes the host user
+     * @param {*} socket New host's socket object
+     * @param {Boolean} updateClients Whether or not to update connected clients
+     */
+    setHost(socket, updateClients=false) {
+        if(typeof socket !== 'object') throw new Error("Error in Uno.setHost(): socket parameter is invalid");
+
+        this.#hostSocket = socket;
+        this.host = socket.id;
+    }
+
     /** Player leave game
      * @param {*} socket Player's socket
      * @param {Boolean} sendtoast Whether or not to send out a toast
@@ -176,9 +186,9 @@ export default class Uno {
 
         // Transfer ownership to remaining player
         else if(socketID === this.host) {
-            const newHostID = this.clients[0].id;
-            this.host = newHostID;
-            this.emit("toast", { title: `"${server.users[newHostID].name}" is now host` });
+            const newHostSocket = this.clients[0];
+            this.setHost(newHostSocket);
+            this.emit("toast", { title: `"${newHostSocket.name}" is now host` });
         }
 
         // Update remaining clients

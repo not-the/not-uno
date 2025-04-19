@@ -6,24 +6,34 @@ export default function Header() {
 
             {/* Footer */}
             <footer id="footer_main">
-                <div className="inner flex flex_column gap_12px">
+                <div className="inner flex flex_column gap_6px">
                     {/* <a href="https://notkal.com/not-uno" target="_blank" rel="noreferrer"
                         className="button button_primary button_secondary button_mainbg hover_border_shadowed button_border_bg_lighter flex flex_left"
                     >
                         <img src="" alt="" />
                         <span>About</span>
                     </a> */}
-                    <a href="https://notkal.com" target="_blank" rel="noreferrer"
-                        className="button button_primary button_secondary button_mainbg hover_border_shadowed button_border_bg_lighter flex"
+
+                    {/* notkal.com */}
+                    <a
+                        href="https://notkal.com" target="_blank" rel="noreferrer"
+                        className="button button_primary button_secondary button_mainbg hover_border_shadowed button_border_bg_lighter justify_left"
                     >
                         <img src="https://notkal.com/assets/icon.png" alt="" />
                         <span>notkal.com</span>
                     </a>
-                    <a href="https://notkal.com/posts/not-uno-changelog" target="_blank" rel="noreferrer"
-                        className="button button_primary button_secondary button_mainbg hover_border_shadowed button_border_bg_lighter"
+
+                    {/* Support */}
+                    <a
+                        href="https://notkal.com/support" target="_blank" rel="noreferrer"
+                        className="button button_primary button_secondary button_support hover_border_shadowed justify_left"
                     >
-                        <span>Changelog</span>
+                        <img src="/promo/ko-fi-cup-border.png" alt="" />
+                        <span>
+                            Support<br/>
+                        </span>
                     </a>
+                    <span className="center secondary_text" style={{ fontWeight:"400", fontSize:"10pt" }}>Help cover server costs</span>
                 </div>
             </footer>
         </header>

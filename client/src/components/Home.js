@@ -101,6 +101,13 @@ export default function Home({ setMenu, joinRoom }) {
                         <span>?</span>
                         How to play
                     </button>
+
+                    {/* Changelog */}
+                    <a href="https://notkal.com/posts/not-uno-changelog" target="_blank" rel="noreferrer"
+                        className="button button_primary button_secondary button_mainbg hover_border_shadowed button_border_bg_lighter button_mini"
+                    >
+                        <span>Changelog</span>
+                    </a>
                 </footer>
 
                 <br/>

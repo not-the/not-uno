@@ -249,6 +249,7 @@ button kbd {
 .margin_left_auto { margin-left: auto; }
 .margin_center { margin-left: auto; margin-right: auto; }
 .text_align_right { text-align: right; }
+.justify_left { justify-content: left; }
 
 /* Small */
 .small_text {
@@ -2272,6 +2273,13 @@ h3 > .user .avatar {
 }
 #help .card {
     font-size: 80px;
+}
+
+
+/* Ko-fi */
+.button_support {
+    --button-bg: #d9534f;
+    --button-border: #d9534f;
 }
 
 

@@ -175,10 +175,10 @@ io.on("connection", socketConnection);
 
 // API site confirmation
 app.get('/', (req, res) => {
-    const clients = io.sockets.clients();
+    const clientsCount = io.sockets.server.engine.clientsCount;
     const responseJSON = {
         // Status
-        online_users:   clients.length,
+        online_users:   clientsCount,
         games:          Object.keys(server.games).length,
         games_active:   Object.entries(server.games).filter(i => !i[1].roomClosed).length,
         games_closed:   Object.entries(server.games).filter(i => i[1].roomClosed).length,
@@ -191,12 +191,13 @@ app.get('/', (req, res) => {
     // Debug
     if(!isProduction) {
         responseJSON.debug = {
-            allusers: clients,
+            // allusers: clients,
             allgames: server.games,
             usersRooms: server.usersRooms
         }
     }
 
+    // Respond w/ JSON
     res.send(responseJSON);
 })
 

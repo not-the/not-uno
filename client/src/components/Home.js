@@ -4,7 +4,7 @@ import { isProduction, socket, socketConnectionStatus } from "../socket"
 import LobbyListing from "./LobbyListing"
 
 export default function Home({ setMenu, joinRoom }) {
-    const [serverInfo, setServerInfo] = useState(undefined);
+    const [serverInfo, setServerInfo] = useState({});
     const [isLobbyListFetched, setIsLobbyListFetched] = useState(false);
 
     const refreshButton = <div className="refresh_container margin_left_auto" data-list-fetched={isLobbyListFetched}>
@@ -27,8 +27,8 @@ export default function Home({ setMenu, joinRoom }) {
         let refreshLoop = setInterval(requestLobbies, 6000);
 
         // Recieve lobbies
-        socket.on("lobby_list", response => {
-            setServerInfo(response.joinableLobbies.length !== 0 ? response : false);
+        socket.on("lobby_list", (response={}) => {
+            setServerInfo(response);
             setIsLobbyListFetched(true);
 
             // Restart loop
@@ -66,10 +66,10 @@ export default function Home({ setMenu, joinRoom }) {
 
                     {/* List */}
                     <div className="lobbies_list">
-                        {!serverInfo ?
+                        {serverInfo === undefined || serverInfo?.joinableLobbies?.length === 0 ?
                             <p className="center secondary_text">No public lobbies open</p>
                             :
-                            serverInfo.joinableLobbies.map(lobby => <LobbyListing lobby={lobby} joinRoom={joinRoom} />)
+                            serverInfo?.joinableLobbies?.map?.(lobby => <LobbyListing lobby={lobby} joinRoom={joinRoom} />)
                         }
                     </div>
 
@@ -80,7 +80,7 @@ export default function Home({ setMenu, joinRoom }) {
 
                         {/* Player count */}
                         {socketConnectionStatus === true ?
-                            `${serverInfo?.online_users ?? 0} player${serverInfo?.online_users !== 1 ? "s" : ""} online` :
+                            `${serverInfo?.online_users} player${serverInfo?.online_users !== 1 ? "s" : ""} online` :
                             "Server offline"
                         }
                     </div>

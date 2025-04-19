@@ -321,7 +321,7 @@ const socketConnection = function(socket) {
         // Delay makes it feel like it's doing more work than it is
         setTimeout(() => {
             socket.emit("lobby_list", {
-                online_users: 69,
+                online_users: io.sockets.server.engine.clientsCount,
                 joinableLobbies,
                 // spectateLobbies
             });

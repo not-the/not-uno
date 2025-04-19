@@ -2317,6 +2317,7 @@ h3 > .user .avatar {
     opacity: 0;
 }
 
+/* Insight (debug tool) */
 #insight {
     --x: 0px; --y: 0px;
     position: absolute;
@@ -2364,7 +2365,7 @@ h3 > .user .avatar {
     background-color: var(--bg-purple-light);
     border-color: var(--bg-purple-lighter)
 }
-body:has(.spectating_toast) #main_background {
+body:has(.spectating_toast) {
     --bg-main: #2f523c;
     --bg-darker: #16382e;
 }

@@ -181,14 +181,14 @@ function SevenORule({ cycleColor }) {
                 data={{ "color": cycleColor, "type": "7", "choose_swap": true }}
                 reverse={false}
                 title={"Seven"}
-                desc={"7 cards allows you to choose a player to swap hands with."}
+                desc={"7 cards allow you to choose a player to swap hands with."}
             />
 
             <FigureCard
                 data={{ "color": cycleColor, "type": "0", "choose_swap": true }}
                 reverse={true}
                 title={"Zero"}
-                desc={"0 cards force everyone to pass along their hand to the next person, based on the the game's current rotation direction."}
+                desc={"0 cards force everyone to pass along their hand to the next person, based on the game's current rotation direction."}
             />
         </section>
     )

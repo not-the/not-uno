@@ -82,3 +82,8 @@ export function looseIndexOfObj(array, obj) {
     }
     return -1; // No match
 }
+
+/** Removes location.hash from the URL */
+export function clearURLHash() {
+    window.history.replaceState("", document.title, window.location.pathname + window.location.search);
+}

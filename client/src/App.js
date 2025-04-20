@@ -6,7 +6,7 @@ import Help from './components/Help.js'
 import Toast from './components/Toast.js'
 import Chat from './components/Chat.js'
 import ProfileMenu from './components/ProfileMenu.js'
-import { get, store, arrRandom, capitalizeFirstLetter } from './Util.js'
+import { get, store, arrRandom, capitalizeFirstLetter, clearURLHash } from './Util.js'
 
 // Socket.io
 import { socket, isProduction, socketConnectionStatus, serverURL } from './socket.js'
@@ -118,7 +118,7 @@ export default function App() {
             // Left
             if(!roomID) {
                 setMenu("home");
-                window.location.hash = '';
+                clearURLHash();
                 return;
             }
 
@@ -128,7 +128,7 @@ export default function App() {
         // Join failed
         socket.on("join_failed", () => {
             setMenu("home");
-            window.location.hash = '';
+            clearURLHash();
         })
 
         // Leave
@@ -149,7 +149,7 @@ export default function App() {
             // Set menu
             if(data === false) {
                 setMenu(null);
-                window.location.hash = "";
+                clearURLHash();
             }
             else if(data.state === 'lobby') setMenu("lobby");
             else setMenu("game");
@@ -200,8 +200,6 @@ export default function App() {
 
             socket.off("debug");
             socket.off("request_custom_deck");
-
-            window.location.hash = '';
 
             // if(!isProduction) {
             //     document.removeEventListener("mousemove", mousemoveHandler);

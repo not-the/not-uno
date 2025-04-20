@@ -28,6 +28,9 @@
     --bg-purple-light: rgb(59, 61, 143);
     --bg-purple-lighter: rgb(100, 102, 216);
 
+    /* Other colors */
+    --color-support-btn: #d9534f;
+
     /* Text */
     --text: white;
     --secondary-text: #dce0e6;
@@ -163,6 +166,10 @@ hr {
     color: var(--secondary-text);
     margin-left: 6px;
 }
+.smaller {
+    font-weight: 400;
+    font-size: 10pt;
+}
 
 *[data-title] {
     position: relative;
@@ -249,7 +256,7 @@ button kbd {
 .margin_left_auto { margin-left: auto; }
 .margin_center { margin-left: auto; margin-right: auto; }
 .text_align_right { text-align: right; }
-.justify_left { justify-content: left; }
+
 
 /* Small */
 .small_text {
@@ -2011,6 +2018,8 @@ h3 > .user .avatar {
     inset: 0;
     z-index: 3;
     display: flex;
+    flex-direction: column;
+    gap: 24px;
     justify-content: center;
     align-items: center;
 }
@@ -2276,10 +2285,35 @@ h3 > .user .avatar {
 }
 
 
-/* Ko-fi */
+/* Support*/
 .button_support {
-    --button-bg: #d9534f;
-    --button-border: #d9534f;
+    --button-bg: var(--color-support-btn);
+    --button-border: var(--color-support-btn);
+}
+
+.win_screen_support_blurb h4 {
+    /* --shadow-color: var(--color-support-btn); */
+    --shadow-distance: 5px;
+}
+
+.win_screen_support_blurb {
+    position: relative;
+    overflow: hidden !important;
+    border: 3px solid var(--color-support-btn);
+}
+.win_screen_support_blurb > * {
+    z-index: 1;
+}
+.win_screen_support_blurb::before {
+    content: "";
+    background-color: var(--color-support-btn);
+    width: 64px;
+    height: 150px;
+
+    position: absolute;
+    top: 0;
+    left: 0;
+    transform: translateX(-45%) translateY(-40%) rotate(30deg);
 }
 
 
@@ -2471,6 +2505,16 @@ body:has(.spectating_toast) {
         font-size: 12pt;
     }
     h3 > .user .avatar { --size: 20px; }
+
+    /* Support */
+    .win_screen_support_blurb .smaller {  margin-left: 0;  }
+    .win_screen_support_blurb .button_support { margin-left: auto; }
+    .win_screen_support_blurb > .flex_center {
+        margin-left: 0;
+        flex-direction: row;
+        gap: auto;
+        flex-direction: row-reverse;
+    }
 
     /* Card size */
     .card { font-size: 72px; }

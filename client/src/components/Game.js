@@ -1,14 +1,15 @@
 // import Icon from "./Icon.js"
 import Card from "./Card.js"
-import { shuffle, repeat, clamp } from "../Util.js"
-import { useEffect, useState, useRef } from "react";
-import { socket } from "../socket.js";
-import User from "./User.js";
-import lang from "../lang.js";
-import CardAnimated from "./CardAnimated.js";
+import { clamp } from "../Util.js"
+import { useEffect, useState, useRef } from "react"
+import { socket } from "../socket.js"
+import User from "./User.js"
+import lang from "../lang.js"
+import CardAnimated from "./CardAnimated.js"
+import SupportBlurb from "./SupportBlurb.js"
 
 
-
+/** Game screen component */
 export default function Game({ game, setGame, startGame }) {
     // State
     const [optionsOpen, setOptionsOpen] = useState(false);
@@ -442,6 +443,7 @@ export default function Game({ game, setGame, startGame }) {
         {/* Win screen */}
         {game?.winner === undefined ? null :
             <div id="win_screen" className="overlay">
+                {/* Winner blurb */}
                 <div className="inner">
                     <h2 className="border_shadowed">
                         {game.winner === socket.id ?
@@ -485,6 +487,11 @@ export default function Game({ game, setGame, startGame }) {
                         }
                     </div>
                 </div>
+
+
+
+                {/* Support */}
+                <SupportBlurb />
             </div>
         }
 

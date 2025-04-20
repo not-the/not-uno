@@ -33,7 +33,7 @@ export default function Header() {
                             Support<br/>
                         </span>
                     </a>
-                    <span className="center secondary_text" style={{ fontWeight:"400", fontSize:"10pt" }}>Help cover server costs</span>
+                    <span className="center smaller secondary_text">Help cover server costs</span>
                 </div>
             </footer>
         </header>

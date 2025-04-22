@@ -32,7 +32,7 @@ export default function SupportBlurb() {
                         Support<br/>
                     </span>
                 </a>
-                <p className="smaller hover_underline cursor_pointer secondary_text margin_left_auto" role="button" tabIndex="0" style={{ marginTop:"6px", marginRight:"3px" }} onClick={hideSupportBlurbs}>
+                <p className="smaller hover_underline cursor_pointer secondary_text margin_left_auto" role="button" tabIndex="0" style={{ marginTop:"6px", marginRight:"5px" }} onClick={hideSupportBlurbs}>
                     Dismiss
                 </p>
             </div>

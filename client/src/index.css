@@ -1333,19 +1333,19 @@ button.share_button {
 
 /* Card animations */
 .player .card {
-    animation: card_static_in 0.2s ease;
+    animation: card_static_in 0.4s ease;
 }
 @keyframes card_static_in {
     0% {
         opacity: 0;
         margin: 0 -0.5em;
     }
-    99% {
+    95% {
         opacity: 1;
+        margin: 0;
     }
     100% {
         opacity: 1;
-        margin: 0;
     }
 }
 

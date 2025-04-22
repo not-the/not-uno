@@ -65,7 +65,7 @@ function Input({ id, option, configValue, updateConfig, disabled }) {
     if(option.format) configValueFormatted = option.format.split("#").join(configValue);
 
     function set(v) {
-        console.log(id, v);
+        // console.log(id, v);
         // if(disabled) return;
 
         setValue(old => {

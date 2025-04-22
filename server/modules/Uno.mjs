@@ -572,12 +572,13 @@ export default class Uno {
         }
 
         // Move card
+        const ucid = this.deck[0].ucid;
         this.moveCard("deck", pnum, false);
         this.draw_count++;
 
         // Update client
         this.updateClients();
-        io.to(socketID).emit("scroll_cards");
+        io.to(socketID).emit("scroll_cards", ucid);
     }
 
     /** Sends toast to a given socket explaining draw stacking */

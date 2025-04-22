@@ -64,8 +64,8 @@ export default function Game({ game, setGame, startGame }) {
         }
 
         // Scroll cards event
-        socket.on("scroll_cards", () => {
-            just_drew.current = true;
+        socket.on("scroll_cards", (ucid) => {
+            just_drew.current = ucid;
         })
 
         return () => {
@@ -88,13 +88,17 @@ export default function Game({ game, setGame, startGame }) {
         // }
 
         // Drew card, scroll container
-        // console.log("just drew: ", just_drew.current);
         if(just_drew.current) {
+            // Get card element
+            const newestCard = document.getElementById(just_drew.current);
+
+            // Scroll it into view
+            if(newestCard !== null) {
+                newestCard.scrollIntoView({ behavior: 'smooth' });
+                console.log('scrolled');
+            }
+
             just_drew.current = false;
-            if(playerMeInner !== null) playerMeInner.current.scroll({
-                left: playerMeInner.current.scrollWidth,
-                behavior: 'smooth' 
-            });
         }
 
     }, [game])
@@ -133,6 +137,7 @@ export default function Game({ game, setGame, startGame }) {
             ?.[clamp(playerIndex-game.my_num, game.players.length)] ?? "overlimit";
     }
 
+    /** Toggles the pause menu */
     function toggleMenu() {
         setOptionsOpen(old => !old);
     }
@@ -376,7 +381,7 @@ export default function Game({ game, setGame, startGame }) {
         </main>
 
         {/* Animation overlay */}
-        <CardAnimated game={game} />
+        <CardAnimated animation={game.animation} animation_key={game.animation_key} />
 
         {/* Dialog */}
         {myTurn ?

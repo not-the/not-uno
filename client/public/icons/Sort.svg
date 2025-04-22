@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="34" height="34" viewBox="0 0 34 34">
+  <g id="Sort" transform="translate(-599 -1545)">
+    <g id="boundary" transform="translate(599 1545)" fill="none" stroke="rgba(112,112,112,0)" stroke-width="1">
+      <rect width="34" height="34" stroke="none"/>
+      <rect x="0.5" y="0.5" width="33" height="33" fill="none"/>
+    </g>
+    <g id="Left" transform="translate(-2)">
+      <path id="Rectangle_41" data-name="Rectangle 41" d="M1,0H16a0,0,0,0,1,0,0V5a0,0,0,0,1,0,0H1A1,1,0,0,1,0,4V1A1,1,0,0,1,1,0Z" transform="translate(607 1555)" fill="#fff"/>
+      <path id="Polygon_11" data-name="Polygon 11" d="M5.639,1.457a1,1,0,0,1,1.722,0l4.748,8.034A1,1,0,0,1,11.248,11h-9.5A1,1,0,0,1,.892,9.491Z" transform="translate(633 1551) rotate(90)" fill="#fff"/>
+    </g>
+    <g id="Right" transform="translate(1234 3125) rotate(-180)">
+      <path id="Rectangle_41-2" data-name="Rectangle 41" d="M1,0H16a0,0,0,0,1,0,0V5a0,0,0,0,1,0,0H1A1,1,0,0,1,0,4V1A1,1,0,0,1,1,0Z" transform="translate(607 1555)" fill="#fff"/>
+      <path id="Polygon_11-2" data-name="Polygon 11" d="M5.639,1.457a1,1,0,0,1,1.722,0l4.748,8.034A1,1,0,0,1,11.248,11h-9.5A1,1,0,0,1,.892,9.491Z" transform="translate(633 1551) rotate(90)" fill="#fff"/>
+    </g>
+  </g>
+</svg>

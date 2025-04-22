@@ -13,6 +13,7 @@ import SupportBlurb from "./SupportBlurb.js"
 export default function Game({ game, setGame, startGame }) {
     // State
     const [optionsOpen, setOptionsOpen] = useState(false);
+    const [sortCards, setSortCards] = useState(false);
     const just_drew = useRef(false);
 
     // Variables
@@ -103,12 +104,9 @@ export default function Game({ game, setGame, startGame }) {
 
     }, [game])
 
-    // Only works with 4 players
-    // const arrowRotation = (game.turn_rotation_value-1-game.my_num)*90;
-
     // Points in correct direction but arrow does not rotate in correct direction
     const arrowPosString = getPlayerOnscreenPosition(game.turn);
-    console.log(arrowPosString);
+    // console.log(arrowPosString);
     let arrowRotation = 0;
     if(arrowPosString === "left") arrowRotation = 0;
     else if(arrowPosString === "top") arrowRotation = 90;
@@ -140,6 +138,11 @@ export default function Game({ game, setGame, startGame }) {
     /** Toggles the pause menu */
     function toggleMenu() {
         setOptionsOpen(old => !old);
+    }
+
+    /** Toggles card sorting */
+    function toggleSortCards() {
+        setSortCards(old => !old);
     }
 
     // --- Game functions --- //
@@ -331,24 +334,29 @@ export default function Game({ game, setGame, startGame }) {
                 const styles = undefined;
 
                 // Cards
-                const cardsJSX = player.cards
+                let cards = [...player.cards];
+
+                // Sort
+                if(sortCards) {
                     // Sort cards
-                    .sort((a, b) => {
-                        const cc = a.color.localeCompare(b.color);
+                    cards = cards.sort((a, b) => {
+                        const cc = a?.color?.localeCompare?.(b.color);
                         if(cc !== 0) return cc; // Color
-                        return a.type.localeCompare(b.type); // Type
+                        return a?.type?.localeCompare?.(b.type); // Type
                     })
-                    // Create JSX
-                    .map((cardData) => {
-                        return <Card
-                            data={cardData} key={cardData.ucid}
-                            owner={playerIndex} game={game}
-                            onClick={isMe ?
-                                function() { playCard(cardData.ucid) } :
-                                undefined
-                            }
-                        />
-                    })
+                }
+
+                // Cards JSX
+                let cardsJSX = cards.map((cardData) => {
+                    return <Card
+                        data={cardData} key={cardData.ucid}
+                        owner={playerIndex} game={game}
+                        onClick={isMe ?
+                            function() { playCard(cardData.ucid) } :
+                            undefined
+                        }
+                    />
+                })
 
                 return (
                     <div className={classes} key={playerIndex} style={styles}>
@@ -365,14 +373,32 @@ export default function Game({ game, setGame, startGame }) {
                         }
 
                         {/* Upper */}
-                        <h3 className="player_upper border_shadowed">
-                            {<User user={user} postName={
-                                <span className="small">(P{playerIndex+1})</span>
-                            } />}
-                        </h3>
+                        <div className="player_upper border_shadowed flex flex_center_vertically">
+                            {/* Name */}
+                            <h3>
+                                {<User user={user} postName={
+                                    <span className="small">(P{playerIndex+1})</span>
+                                } />}
+                            </h3>
+
+                            {/* Buttons */}
+                            {!isMe ? null :
+                                <div className="player_buttons" data-title="Sort cards">
+                                    {/* Sort cards */}
+                                    <div
+                                        className="card_sort_button cursor_pointer"
+                                        role="checkbox" tabIndex="0"
+                                        aria-checked={sortCards}
+                                        onClick={toggleSortCards}
+                                    >
+                                        <img src="/icons/Sort.svg" alt="Sort Cards" />
+                                    </div>
+                                </div>
+                            }
+                        </div>
 
                         {/* Cards */}
-                        <div className="inner" ref={game.turn === playerIndex ? playerMeInner : null}>
+                        <div className="inner">
                             {cardsJSX}
                         </div>
                     </div>

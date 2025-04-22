@@ -37,7 +37,7 @@
     --link: #7ec1ff;
 
     --accent-blue: #508ddc;
-    --accent-blue-light: #85baff;
+    --accent-blue-light: #95d5ff;
     --accent-green: #9bca4f;
     --warm-shadow: #411a00;
 
@@ -256,6 +256,7 @@ button kbd {
 .margin_left_auto { margin-left: auto; }
 .margin_center { margin-left: auto; margin-right: auto; }
 .text_align_right { text-align: right; }
+.display_block { display: block; }
 
 
 /* Small */
@@ -487,6 +488,7 @@ a.button {
 
 .button_border_bg_lighter { border-color: var(--bg-lighter); }
 .button_border_bg_main { border-color: var(--bg-main); }
+.button_border_blue_lighter { border-color: var(--accent-blue-light); }
 
 
 /* Select */
@@ -1001,18 +1003,47 @@ button.share_button {
     /* scrollbar-width: thin; */
 }
 .player .player_upper {
-    width: fit-content;
+    --shadow-color: rgba(0, 0, 0, 0.5);
+
     margin-bottom: 6px;
 
+    position: relative;
+    z-index: 5;
+}
+.player .player_upper h3 {
     opacity: 0.6;
     transform: scale(0.85);
     transform-origin: bottom left;
     transition: transform 0.35s ease, opacity 0.3s ease;
 }
-.player.current_turn .player_upper {
+.player.current_turn .player_upper h3 {
     opacity: 1;
     transform: unset;
     transition-timing-function: cubic-bezier(.34,1.19,.46,1.62);
+}
+.player .player_buttons {
+    margin-left: auto;
+}
+.card_sort_button {
+    position: relative;
+    opacity: 0.7;
+    transform: scale(0.9);
+    transition: 0.1s ease;
+}
+.card_sort_button[aria-checked="true"] {
+    opacity: 1;
+    transform: unset;
+}
+.card_sort_button[aria-checked="true"]::after {
+    content: "✓";
+    /* background-color: var(--bg-main); */
+    line-height: 100%;
+    font-size: 14pt;
+    font-weight: bolder;
+    padding: 5px 3px 1px 5px;
+    border-radius: 100%;
+    position: absolute;
+    bottom:-5px; right:-5px;
 }
 .player .avatar {
     transform-origin: left center;
@@ -2022,6 +2053,8 @@ h3 > .user .avatar {
     gap: 24px;
     justify-content: center;
     align-items: center;
+
+    padding: 9px;
 }
 .overlay > .inner {
     width: 100%;

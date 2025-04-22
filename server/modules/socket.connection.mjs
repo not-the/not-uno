@@ -48,6 +48,7 @@ const socketConnection = function(socket) {
     });
 
     socket.on("action", data => {
+        /** @type {Uno} */
         const game = getGameByUser();
         if(game === undefined || data === undefined) return;
 
@@ -92,14 +93,14 @@ const socketConnection = function(socket) {
 
         // Update user
         Object.assign(socket, {
-            name: newUser?.name ?? socket?.name ?? "Player",
-            avatar: newUser?.avatar ?? socket?.avatar ?? arrRandom(data.avatars),
-            socketID: socket.id,
-            name_changes: (socket?.name_changes??0) + 1,
-            name_last_changed: bypassRatelimit ? 0 : Date.now() // Timestamp
+            name:               newUser?.name   ?? socket?.name   ?? "Player",
+            avatar:             newUser?.avatar ?? socket?.avatar ?? arrRandom(data.avatars),
+            socketID:           socket.id,
+            name_changes:       (socket?.name_changes??0) + 1,
+            name_last_changed:  bypassRatelimit ? 0 : Date.now() // Timestamp
         })
         if(!bypassRatelimit) socket.emit("myProfile", {
-            name: socket.name,
+            name:   socket.name,
             avatar: socket.avatar
         });
         getGameByUser()?.updateClients();
@@ -126,6 +127,7 @@ const socketConnection = function(socket) {
         };
 
         // Check for existing
+        /** @type {Uno|Undefined} */
         let game = server.games[roomID];
         let toastTitle = "Joined game";
 
@@ -211,6 +213,7 @@ const socketConnection = function(socket) {
 
     // Start game
     socket.on("start_game", data => {
+        /** @type {Uno} */
         const game = getGameByUser();
         if(game === undefined) {
             console.warn(`Warning: Game is undefined. User: [${socket.id}]`);
@@ -225,12 +228,14 @@ const socketConnection = function(socket) {
     })
 
     socket.on("returnToLobby", () => {
+        /** @type {Uno} */
         const game = getGameByUser();
         if(game === undefined) return;
         game.returnToLobby(socket);
     })
 
     socket.on("update_config", ({ option, value }) => {
+        /** @type {Uno} */
         const game = getGameByUser();
         if(game === undefined || typeof option !== 'string') return;
 
@@ -238,24 +243,28 @@ const socketConnection = function(socket) {
     })
 
     socket.on("drawCard", () => {
+        /** @type {Uno} */
         const game = getGameByUser();
         if(game === undefined) return errorDisconnected();
         game.drawCard(socket.id);
     })
 
     socket.on("playCard", ucid => {
+        /** @type {Uno} */
         const game = getGameByUser();
         if(game === undefined) return errorDisconnected();;
         game.playCard(socket.id, ucid);
     })
 
     socket.on("endTurn", () => {
+        /** @type {Uno} */
         const game = getGameByUser();
         if(game === undefined) return errorDisconnected();;
         game.endTurn(socket.id);
     })
 
     socket.on("requestRematch", () => {
+        /** @type {Uno} */
         const game = getGameByUser();
         if(game === undefined) return errorDisconnected();;
         game.requestRematch(socket.id);
@@ -279,6 +288,7 @@ const socketConnection = function(socket) {
         };
         data.socketID = socket.id;
 
+        /** @type {Uno} */
         const game = getGameByUser();
 
         if(

@@ -547,6 +547,7 @@ export default class Uno {
     drawCard(socketID) {
         const pnum = this.getPnumFromSocketID(socketID);
 
+        // Not your turn
         if(!this.isValidTurn(pnum)) return;
 
         // In debt

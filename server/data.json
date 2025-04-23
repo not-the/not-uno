@@ -448,7 +448,7 @@
         "icon": "/icons/Continue.svg",
 
         "type": "dropdown",
-        "dropdown": ["first_player", "random", "winner"]
+        "dropdown": ["winner", "player_one", "random"]
     },
 
     "public_lobby": {

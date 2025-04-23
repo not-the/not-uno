@@ -14,7 +14,7 @@ const lang = {
         "always_play": "Always Play",
 
         "who_goes_first": "Who Goes First",
-        "first_player": "First player",
+        "player_one": "Player 1",
         "random": "Random",
         "winner": "Winner",
 

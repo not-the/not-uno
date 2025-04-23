@@ -39,7 +39,7 @@ export default class Uno {
             draw_stacking: "matching",
             always_play: false,
             xray: false,
-            who_goes_first: "first_player",
+            who_goes_first: "winner",
         
             // allow_continues: false, // Offer to continue game with remaining players after someone wins
 

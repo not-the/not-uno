@@ -33,7 +33,7 @@ export default function Game({ game, setGame, startGame }) {
     // Setup
     useEffect(() => {
         // Keybinds
-        const keyupHandler = (event) => {
+        const keypressHandler = (event) => {
             // Chat box is focused
             if(document.activeElement.tagName === "INPUT") return;
 
@@ -54,7 +54,7 @@ export default function Game({ game, setGame, startGame }) {
             // Close menu
             if(key === "ESCAPE") toggleMenu();
         }
-        document.addEventListener('keyup', keyupHandler);
+        document.addEventListener('keypress', keypressHandler);
 
         // Wheel event
         const playerBottom = document.querySelector(".player.position_bottom > .inner");
@@ -74,7 +74,7 @@ export default function Game({ game, setGame, startGame }) {
         })
 
         return () => {
-            document.removeEventListener('keyup', keyupHandler);
+            document.removeEventListener('keyup', keypressHandler);
             if(playerBottom) playerBottom.removeEventListener("wheel", wheelHandler);
             if(playerTop) playerTop.removeEventListener("wheel", wheelHandler);
             socket.off("scroll_cards");
@@ -100,7 +100,6 @@ export default function Game({ game, setGame, startGame }) {
             // Scroll it into view
             if(newestCard !== null) {
                 newestCard.scrollIntoView({ behavior: 'smooth' });
-                console.log('scrolled');
             }
 
             just_drew.current = false;

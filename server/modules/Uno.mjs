@@ -350,7 +350,9 @@ export default class Uno {
         }
 
         // Wild color options
-        const wildOptions = this.players?.[pnum]?.cards?.[this.action_params?.[1]]?.colors ?? ["red", "blue", "yellow", "green"];
+        const ucid = this.action_params?.[1];
+        const card = this.players?.[pnum]?.cards?.find?.(c => c.ucid === ucid);
+        const wildOptions = card?.colors ?? ["red", "blue", "yellow", "green"];
 
         // Pass action along to playCard method
         if(

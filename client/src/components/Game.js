@@ -458,7 +458,7 @@ export default function Game({ game, setGame, startGame }) {
                 <div className="choice_popup choose_color">
                     <h3 className="border_shadowed">CHOOSE A COLOR</h3>
                     <div className="choose_color_container">
-                        {(game.players?.[game.my_num]?.cards?.[game?.action_params?.[1]]?.colors ?? ["red", "blue", "yellow", "green"]).map(color => {
+                        {(game.players?.[game.my_num]?.cards?.find(c => c.ucid === game?.action_params?.[1])?.colors ?? ["red", "blue", "yellow", "green"]).map(color => {
                             return <div className={`${color} hover_border_shadowed`} role="button" tabIndex="0" onClick={() => action(color)} />
                         })
 

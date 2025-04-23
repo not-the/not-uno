@@ -7,6 +7,7 @@ import User from "./User.js"
 import lang from "../lang.js"
 import CardAnimated from "./CardAnimated.js"
 import SupportBlurb from "./SupportBlurb.js"
+import CardStack from "./CardStack.js"
 
 
 /** Game screen component */
@@ -225,10 +226,8 @@ export default function Game({ game, setGame, startGame }) {
                 {/* Upper */}
                 <div className="upper">
                     <div id="deck">
-                        {/* Player {game.turn+1}'s turn<br/>
-                        Deck ({game.deck.length}) */}
                         <Card data={game.deck[game.deck.length-1]} onClick={() => drawCard()} clickable={game.my_num !== -1} />
-                        <div className="card_stack" style={{ "height": `${game.deck.length/4}px` }} />
+                        <CardStack array={game.deck} />
                     </div>
 
                     {/* Middle */}
@@ -259,10 +258,8 @@ export default function Game({ game, setGame, startGame }) {
 
                     {/* Pile */}
                     <div id="pile">
-                        {/* <br/>
-                        Pile ({game.pile.length}) */}
-
                         <Card data={game.pile[game.pile.length-1]} />
+                        <CardStack array={game.pile} />
                     </div>
                 </div>
 

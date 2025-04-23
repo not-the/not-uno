@@ -926,6 +926,8 @@ button.share_button {
 } */
 
 #pile, #deck {
+    position: relative;
+    height: fit-content;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -1203,7 +1205,9 @@ button.share_button {
 /* Stack */
 .card_stack {
     position: absolute;
-    z-index: -1;
+    bottom: 0;
+    transform: translateY(calc(100% - 12px));
+    z-index: 0;
 
     --bg-main: rgb(179, 195, 204);
     --bg-darker: rgb(146, 165, 189);
@@ -1216,8 +1220,7 @@ button.share_button {
         );
     box-shadow: 0 3px 5px rgba(0, 0, 0, 0.4);
 
-    width: 110px;
-    margin-top: -12px;
+    width: 100%;
     border-radius: 0 0 12px 12px;
 }
 .card:has(+ .card_stack) {
@@ -1236,6 +1239,7 @@ button.share_button {
 
     display: block;
     position: relative;
+    z-index: 1;
     overflow: hidden;
     flex: none;
 
@@ -1386,6 +1390,7 @@ button.share_button {
 .animation_container {
     overflow: hidden;
     position: fixed;
+    z-index: 1;
     inset: 0;
     pointer-events: none;
 }
@@ -1450,7 +1455,7 @@ button.share_button {
     right: 24px;
     /* left: 50%;
     transform: translateX(-50%); */
-    z-index: 4;
+    z-index: 5;
 
     width: 100%;
     max-width: 300px;
@@ -1524,7 +1529,7 @@ button.share_button {
     position: fixed;
     bottom: 24px;
     right: 24px;
-    z-index: 3;
+    z-index: 4;
 
     width: 100%;
     max-width: 290px;
@@ -1582,7 +1587,7 @@ button.share_button {
     position: fixed;
     left: 0;
     bottom: 0;
-    z-index: 4;
+    z-index: 5;
 
     background-color: var(--bg-comp);
     border: 1px solid var(--bg-comp-lighter);
@@ -1694,7 +1699,7 @@ button.share_button {
     position: fixed;
     bottom: 48px;
     left: 24px;
-    z-index: 3;
+    z-index: 4;
 
     background-color: var(--bg-comp);
     padding: 12px;
@@ -1818,7 +1823,7 @@ button.share_button {
     position: fixed;
     top: 50%; left: 50%;
     transform: translate(-50%, -50%);
-    z-index: 5;
+    z-index: 6;
 
     overflow-x: visible;
     overflow-y: auto;
@@ -1852,7 +1857,7 @@ button.share_button {
 .backdrop {
     position: fixed;
     inset: 0;
-    z-index: 2;
+    z-index: 3;
 
     background-color: rgba(0, 0, 0, 0.5);
     backdrop-filter: blur(9px);
@@ -2050,7 +2055,7 @@ h3 > .user .avatar {
 .overlay {
     position: fixed;
     inset: 0;
-    z-index: 3;
+    z-index: 4;
     display: flex;
     flex-direction: column;
     gap: 24px;

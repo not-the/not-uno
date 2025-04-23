@@ -58,10 +58,10 @@ export default function Lobby({ game, startGame, toast, leaveGame }) {
                         <br/>
 
                         {/* Share */}
-                        <div className="button_primary button_lightbg no_interact" style={{  "padding-right": "0px" }}>
+                        <div className="button_primary button_lightbg no_interact">
                             <img src="/icons/person.svg" alt="" className="border_shadowed" />
                             <div>
-                                <span className="border_shadowed" style={{ "text-wrap": "nowrap" }}>
+                                <span className="border_shadowed">
                                     Invite your friends
                                 </span>
 
@@ -116,7 +116,7 @@ export default function Lobby({ game, startGame, toast, leaveGame }) {
                             {game.spectatorCount === 0 ? null :
                                 <div className="secondary_text">
                                     {/* Icon */}
-                                    <img src="/icons/eyeball.svg" alt="" class="icon_inline secondary_text" /> {game.spectatorCount} spectator{game.spectatorCount===1?"":"s"}
+                                    <img src="/icons/eyeball.svg" alt="" className="icon_inline secondary_text" /> {game.spectatorCount} spectator{game.spectatorCount===1?"":"s"}
 
                                     <br/>
                                     <br/>

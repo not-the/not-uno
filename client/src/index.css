@@ -1010,7 +1010,7 @@ button.share_button {
     margin-bottom: 6px;
 
     position: relative;
-    z-index: 1;
+    z-index: 2;
 }
 .player .player_upper h3 {
     opacity: 0.6;

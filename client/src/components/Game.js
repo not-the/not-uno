@@ -109,12 +109,45 @@ export default function Game({ game, setGame, startGame }) {
 
     // Points in correct direction but arrow does not rotate in correct direction
     const arrowPosString = getPlayerOnscreenPosition(game.turn);
-    // console.log(arrowPosString);
-    let arrowRotation = 0;
-    if(arrowPosString === "left") arrowRotation = 0;
-    else if(arrowPosString === "top") arrowRotation = 90;
-    else if(arrowPosString === "right") arrowRotation = 180;
-    else if(arrowPosString === "bottom") arrowRotation = 270;
+
+    /** @type {HTMLElement} */
+    const arrowElement = document.querySelector("#arrow");
+    let rotationOld = arrowElement?.dataset?.rotation ?? 0;
+    rotationOld = Number(rotationOld);
+
+    /** Object containing player positions (keys) and arrow rotation values (values) */
+    const targets = {
+        "left": 0,
+        "top": 90,
+        "right": 180,
+        "bottom": 270
+    }
+    
+    // Target
+    let rotationTarget = targets[arrowPosString] ?? 0;
+
+    // Needed change to rotation
+    let change = ((rotationTarget - rotationOld + 180) % 360) - 180;
+    if(game.direction === 1 && change < 0) change += 360;               // Clockwise
+    else if(game.direction === -1 && change > 0) change -= 360;         // Counter clockwise
+
+    // Set rotation
+    rotationTarget = rotationOld + change;
+
+    // Clockwise
+    // if(game.direction === 1) {
+    //     while(arrowRotation > rotationTarget) {
+    //         rotationTarget += 360;
+    //     }
+    // }
+    // // Counter clockwise
+    // else if(game.direction === -1) {
+    //     while(arrowRotation < rotationTarget) {
+    //         rotationTarget -= 360;
+    //     }
+    // }
+
+
 
     // Rematch count
     const playersWantRematch = game.players.filter(p => p?.wants_rematch === true).length;
@@ -243,9 +276,15 @@ export default function Game({ game, setGame, startGame }) {
 
                         {/* Arrow */}
                         <div className="arrow_container">
-                            <div id="arrow" style={{
-                                "transform": `rotate(${arrowRotation}deg) scale(${myTurn ? "1.1" : "1"})`
-                            }}>
+                            {/* rot {arrowRotation}<br/>
+                            target {rotationTarget} */}
+                            <div
+                                id="arrow"
+                                data-rotation={rotationTarget}
+                                style={{
+                                    "transform": `rotate(${rotationTarget}deg) scale(${myTurn ? "1.1" : "1"})`
+                                }}
+                            >
                                 <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 117 116">
                                     <path id="Arrow" d="M0,58,59,0V28h58V87H59v29Z" fill="#fff"/>
                                 </svg>

@@ -270,6 +270,13 @@ const socketConnection = function(socket) {
         game.requestRematch(socket.id);
     })
 
+    socket.on("kick", (socketIDToKick) => {
+        /** @type {Uno} */
+        const game = getGameByUser();
+        if(game === undefined) return errorDisconnected();;
+        game.kick(socket, socketIDToKick);
+    })
+
     function errorDisconnected() {
         socket.emit("leave");
         socket.emit("toast", { title:"You were disconnected" });

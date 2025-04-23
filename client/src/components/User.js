@@ -2,8 +2,15 @@ import { socket } from "../socket"
 
 export default function User({ user, game, tagline, title, postName, classes="", onClick }) {
 
+    // Kick
+    function kick(socketIDToKick) {
+        socket.emit("kick", socketIDToKick);
+    }
+
+    // User's data
     let userData = user;
     const isMe = userData?.socketID === socket.id;
+    const isHost = userData?.socketID === game?.host;
 
     // System message
     if(user === "system") {
@@ -28,7 +35,7 @@ export default function User({ user, game, tagline, title, postName, classes="",
 
             {/* Crown */}
             <span className="crown">
-                {(game !== undefined && userData?.socketID === game?.host) ? "👑" : ""}
+                {(game !== undefined && isHost) ? "👑" : ""}
             </span>
 
             <div className="right">
@@ -40,13 +47,21 @@ export default function User({ user, game, tagline, title, postName, classes="",
                     {afterName}
                 </div>
 
+                {/* Tagline or message */}
                 <p className="tagline">{tagline}</p>
             </div>
 
             {/* Options */}
-            {/* <button className="user_options">
-                <img src="/icons/Three Dots.svg" alt="Options" />
-            </button> */}
+            <div className="user_buttons">
+                {/* Kick */}
+                {!isMe && game?.host === socket.id && game?.has_been_public ?
+                    <button className="bold hover_underline" onClick={() => kick(userData?.socketID)}>
+                        Kick
+                    </button>
+                    :
+                    null
+                }
+            </div>
         </div>
     )
 }

@@ -246,6 +246,7 @@ button kbd {
 .underline {
     border-bottom: 5px solid white;
 }
+.bold { font-weight: bold; }
 .center { text-align: center; }
 .fullwidth { width: 100%; }
 .cursor_pointer { cursor: pointer; }
@@ -981,10 +982,10 @@ button.share_button {
     max-width: 300px;
 }
 .player {
-    /* position: absolute; */
-
     max-width: 85vw;
+    pointer-events: none;
 }
+.player > * { pointer-events: initial; }
 .player > .inner {
     display: flex;
     gap: 6px;
@@ -1011,7 +1012,9 @@ button.share_button {
 
     position: relative;
     z-index: 2;
+    pointer-events: none;
 }
+.player .player_upper > * { pointer-events: initial; }
 .player .player_upper h3 {
     opacity: 0.6;
     transform: scale(0.85);
@@ -1893,7 +1896,7 @@ body:has(.overlay) .backdrop {
 }
 .user:hover,
 .user:focus-visible {
-    z-index: 1;
+    z-index: 2;
     background-color: rgba(255, 255, 255, 0.15);
     /* backdrop-filter: saturate(150%); */
 }
@@ -1975,31 +1978,22 @@ body:has(.overlay) .backdrop {
     font-size: 18pt;
 }
 
-.user_options {
-    border: 2px solid transparent;
-    padding: 3px 9px 0 9px;
-    border-radius: 6px;
-
-    position: absolute;
-    /* top: -50%; */
-    right: 9px;
-
-    /* opacity: 0; */
-    transition: opacity 0.2s ease;
+.user_buttons {
+    margin-left: auto;
 }
-.user_options:hover,
-.user_options:focus-visible {
-    background-color: var(--bg-lighter);
-    border-color: var(--border-color);
+.user_buttons > button {
+    opacity: 0;
 }
-.user_options img {
-    width: 24px;
-    height: 24px;
+.user:hover > .user_buttons button,
+.user:focus-visible > .user_buttons button {
+    opacity: 0.7;
 }
-
-.user:hover .user_options,
-.user:focus-visible .user_options {
-    opacity: 1;
+.user_buttons > button {
+    padding: 0 9px;
+}
+.user_buttons > button:hover,
+.user_buttons > button:focus-visible {
+    opacity: 1 !important;
 }
 
 
@@ -2461,6 +2455,14 @@ body:has(.spectating_toast) {
 
 
 /* Media queries */
+
+/* Touch screens */
+@media (hover: none) {
+    .user_buttons > button {
+        opacity: 0.7;
+    }
+}
+
 @media only screen and (max-width: 1100px),
             screen and (max-height: 800px) {
 

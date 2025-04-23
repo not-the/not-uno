@@ -198,12 +198,14 @@ export default class Uno {
     /** Kicks a player by their socket ID
      * @param {String} socketID 
      */
-    kick(socketID, toast=true, msg=undefined) {
+    kick(socket, socketIDToKick, toast=true, msg=null) {
+        if(socket !== undefined && socket.id !== this.host) return;
+
         // Toast
-        if(toast) io.to(socketID).emit("toast", { title: "Kicked from game", msg });
+        if(toast) io.to(socketIDToKick).emit("toast", { title: "Kicked from game", msg });
 
         // Leave
-        this.leave(socketID, false);
+        this.leave(socketIDToKick, false);
     }
 
     // Marks game as closed, automatically gets deleted after 24-48 hours
@@ -328,7 +330,7 @@ export default class Uno {
             for(const socket of this.clients) {
                 const socketID = socket.id;
                 if(io.sockets.sockets.get(socketID)?.spectating) {
-                    this.kick(socketID, true, "Option to spectate was disabled");
+                    this.kick(undefined, socketID, true, "Option to spectate was disabled");
                 }
             }
         }

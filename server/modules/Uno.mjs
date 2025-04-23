@@ -433,7 +433,6 @@ export default class Uno {
         this.moveCard("deck", "pile", false); // First card
         this.generatePlayers();
 
-        // if(this.players.length < 2) return console.warn("Not enough players");
         this.state = "ingame";
         this.round++;
 
@@ -466,7 +465,7 @@ export default class Uno {
     generatePlayers() {
         const sockets = this.clients;
         for(let i = 0; i < sockets.length; i++) {
-            if(io.sockets.sockets.get(sockets?.[i])?.spectating) continue;
+            if(sockets?.[i]?.spectating) continue;
             this.addPlayer(sockets[i].id);
         }
     }

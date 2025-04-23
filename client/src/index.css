@@ -676,9 +676,9 @@ select[disabled] {
     --bg-comp: var(--bg-lighter);
     --shadow-color: rgba(0, 0, 0, 0.5);
 
-    background-color: var(--bg-lighter);
-    border: 3px solid white;
-    border-radius: 5px;
+    background-color: #4e7e51;
+    border: 3px solid var(--bg-lighter);
+    border-radius: 8px;
     padding: 5px 24px 5px 80px;
     margin-top: 24px;
 
@@ -689,6 +689,10 @@ select[disabled] {
     opacity: 0.5;
     color: var(--secondary-text);
     pointer-events: none;
+}
+#config .item > * {
+    z-index: 1;
+    position: relative;
 }
 
 #config .item label {
@@ -711,18 +715,20 @@ select[disabled] {
     align-items: center;
 }
 #config .item .desc {
-    color: var(--secondary-text);
+    /* color: var(--secondary-text); */
     font-size: 11pt;
     margin-left: -56px;
+    z-index: 1;
+    position: relative;
 }
 #config .item .decorator {
     position: absolute;
-    inset: 0; top: unset;
-    z-index: -1;
+    inset: 0; bottom: unset;
+    z-index: 0;
 
-    height: 45%;
+    height: 24px;
 
-    background-color: #4d7e51;
+    background-color: var(--bg-lighter);
 }
 
 /* Deck picker */

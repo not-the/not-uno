@@ -1026,7 +1026,7 @@ button.share_button {
 }
 .card_sort_button {
     position: relative;
-    opacity: 0.7;
+    opacity: 0.6;
     transform: scale(0.9);
     transition: 0.1s ease;
 }
@@ -1034,16 +1034,19 @@ button.share_button {
     opacity: 1;
     transform: unset;
 }
-.card_sort_button[aria-checked="true"]::after {
-    content: "✓";
+.card_sort_button::after {
+    content: "x";
     /* background-color: var(--bg-main); */
     line-height: 100%;
     font-size: 14pt;
-    font-weight: bolder;
     padding: 5px 3px 1px 5px;
     border-radius: 100%;
     position: absolute;
     bottom:-5px; right:-5px;
+}
+.card_sort_button[aria-checked="true"]::after {
+    content: "✓";
+    font-weight: bolder;
 }
 .player .avatar {
     transform-origin: left center;

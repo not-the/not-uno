@@ -13,7 +13,7 @@ import SupportBlurb from "./SupportBlurb.js"
 export default function Game({ game, setGame, startGame }) {
     // State
     const [optionsOpen, setOptionsOpen] = useState(false);
-    const [sortCards, setSortCards] = useState(false);
+    const [sortCards, setSortCards] = useState(Boolean(localStorage.getItem("notuno_sort_cards") ?? false));
     const just_drew = useRef(false);
 
     // Variables
@@ -142,7 +142,10 @@ export default function Game({ game, setGame, startGame }) {
 
     /** Toggles card sorting */
     function toggleSortCards() {
-        setSortCards(old => !old);
+        setSortCards(old => {
+            localStorage.setItem("notuno_sort_cards", !old);
+            return !old;
+        });
     }
 
     // --- Game functions --- //
@@ -383,7 +386,7 @@ export default function Game({ game, setGame, startGame }) {
 
                             {/* Buttons */}
                             {!isMe ? null :
-                                <div className="player_buttons" data-title="Sort cards">
+                                <div className="player_buttons" data-title={sortCards ? "Sort cards (Enabled)" : "Sort cards"}>
                                     {/* Sort cards */}
                                     <div
                                         className="card_sort_button cursor_pointer"

@@ -40,13 +40,16 @@ export default function Game({ game, setGame, startGame }) {
             const key = event.key.toUpperCase();
 
             // Keybinds
-            if(key === "E") endTurn();      // End turn
-            // else if(key === "Q") callout(); // Callout
+            if(key === "E") endTurn();          // End turn
+            else if(key === "D") drawCard();    // Draw card
+            // else if(key === "Q") callout();  // Callout
 
-            // Play cards (1-9) - doesn't seem to work
-            // if(!isNaN(Number(key))) {
-            //     playCard(game.my_num, Number(key)-1)
-            // }
+            // Play cards (1-9)
+            const number = Number(key);
+            if(!isNaN(number)) {
+                const ucid = document.querySelector(`.player.me .card:nth-of-type(${number})`)?.id;
+                if(ucid !== undefined) playCard(ucid);
+            }
 
             // Close menu
             if(key === "ESCAPE") toggleMenu();

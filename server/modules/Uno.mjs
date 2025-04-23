@@ -571,6 +571,9 @@ export default class Uno {
             return;
         }
 
+        // Deck is empty
+        if(this.deck.length === 0) return;
+
         // Move card
         const ucid = this.deck[0].ucid;
         this.moveCard("deck", pnum, false);

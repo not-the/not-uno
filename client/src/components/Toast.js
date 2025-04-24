@@ -14,7 +14,7 @@ export default function Toast({ data={}, timed=true, interactive, classes="", af
         <div className={outerClassesArray}>
             <div className={classesArray}>
                 <div className="inner">
-                    <h3 className="border_shadowed">{data.title} ({data.id})</h3>
+                    <h3 className="border_shadowed">{data.title}</h3>
                     {data.msg === undefined ? null :
                         <p>{data?.msg}</p>
                     }

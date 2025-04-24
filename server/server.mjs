@@ -5,11 +5,9 @@ import express from 'express'
 import fs from 'fs'
 import http from 'http'
 import https from 'https'
-import dotenv from 'dotenv'
+import 'dotenv/config'
 import { Server } from 'socket.io'
 import cors from 'cors'
-
-dotenv.config({ path:"./.env" });
 
 // Game data
 import data from './data.json' assert { type: 'json' }

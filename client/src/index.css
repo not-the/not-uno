@@ -859,7 +859,7 @@ select[disabled] {
 }
 .input_container button { min-width: 36px; }
 .input_container input  { min-width: 64px; }
-.input_container select { font-size: 13pt; text-align: left; max-width: max-content; padding: 0; }
+.input_container select { font-size: 13pt; text-align: left; max-width: max-content; padding: 0 5px }
 
 /* REMOVE INPUT ARROWS */
 /* Chrome, Safari, Edge, Opera */
@@ -1480,7 +1480,7 @@ button.share_button {
     background-color: var(--bg-comp);
     border-radius: 9px;
     border: 2px solid var(--bg-comp-lighter);
-    overflow: hidden;
+    /* overflow: hidden; */
     
     /* box-shadow: 0 2px 9px rgba(0, 0, 0, 0.6); */
 }

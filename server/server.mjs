@@ -5,7 +5,7 @@ import express from 'express'
 import fs from 'fs'
 import http from 'http'
 import https from 'https'
-import 'dotenv/config'
+// import 'dotenv/config'
 import { Server } from 'socket.io'
 import cors from 'cors'
 
@@ -26,9 +26,12 @@ const clientOrigin = isProduction ?
 // SSL
 let privateKey, certificate;
 if(isProduction) {
+    const PRIVATE_KEY_LOCATION="/etc/letsencrypt/live/uno-server1.notkal.com/privkey.pem"
+    const CERTIFICATE_LOCATION="/etc/letsencrypt/live/uno-server1.notkal.com/fullchain.pem"
+
     try {
-        privateKey = fs.readFileSync(process.env.PRIVATE_KEY_LOCATION, 'utf8');
-        certificate = fs.readFileSync(process.env.CERTIFICATE_KEY_LOCATION, 'utf8');
+        privateKey = fs.readFileSync(PRIVATE_KEY_LOCATION, 'utf8');
+        certificate = fs.readFileSync(CERTIFICATE_LOCATION, 'utf8');
     } catch (error) {
         console.warn("SSL keys not found. Error below:");
         console.warn(error);

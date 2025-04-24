@@ -25,7 +25,13 @@ export default function Config({ name, game, disabled }) {
 
     return (
         <div className="item" aria-disabled={condition ? "true" : "false"}>
+            {/* Decorator */}
+            <div className="decorator"/>
+
+            {/* Icon */}
             <img src={option.icon} alt="" className="border_shadowed" />
+
+            {/* Inner */}
             <label htmlFor={name}>
                 <div className="inner media_flex">
                     {/* About */}
@@ -49,7 +55,6 @@ export default function Config({ name, game, disabled }) {
                     </div>
                 </div>
             </label>
-            <div className="decorator"/>
         </div>
     )
 }
@@ -101,7 +106,7 @@ function Input({ id, option, configValue, updateConfig, disabled }) {
         return (
             <div className="toggle" aria-disabled={disabled}>
                 <input type="checkbox" name={id} id={id} checked={configValue} onClick={() => set(old => !old)} disabled={disabled} />
-                <span className="border_shadowed" />
+                <span/>
             </div>
         )
     }

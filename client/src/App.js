@@ -63,24 +63,18 @@ export default function App() {
 
     const [toasts, setToasts] = useState([]);
     function toast(data) {
-        setToasts(old => [...old, data]); // Push new toast
+        const id = Math.floor(Math.random() * 100000);
+        setToasts(old => [...old, {...data, id}]); // Push new toast
 
         // Timer
         // Animation
         setTimeout(() => {
+            // Remove toast
             setToasts(old => {
-                let index = old.indexOf(data);
+                let index = old.findIndex(t => t.id === id);
                 return old.toSpliced(index, 1);
-            }); // Remove toast
+            });
         }, 6000);
-
-        // Remove
-        // setTimeout(() => {
-        //     setToasts(old => {
-        //         let index = old.indexOf(data);
-        //         return old.splice(index, 1);
-        //     }); // Remove toast
-        // }, 6200);
     }
 
     // Menu {String}
@@ -276,7 +270,7 @@ export default function App() {
                 }
 
                 {/* Notifications */}
-                {toasts.map((t, index) => <Toast data={t} key={index} timed={t.timed} />)}
+                {toasts.map((t, index) => <Toast data={t} key={t.id} timed={t.timed} />)}
             </div>
 
             {/* Debug tools */}

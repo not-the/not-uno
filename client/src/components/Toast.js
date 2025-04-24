@@ -2,27 +2,33 @@ export default function Toast({ data={}, timed=true, interactive, classes="", af
     const classesArray = [
         "toast",
         "border_shadowed",
-        timed ? "toast_timed" : "",
         interactive ? "can_interact" : "",
         classes
     ].join(" ");
+
+    const outerClassesArray = [
+        "toast_outer",
+        timed ? "toast_timed" : ""
+    ].join(" ");
     return (
-        <div className={classesArray}>
-            <div className="inner">
-                <h3 className="border_shadowed">{data.title}</h3>
-                {data.msg === undefined ? null :
-                    <p>{data?.msg}</p>
+        <div className={outerClassesArray}>
+            <div className={classesArray}>
+                <div className="inner">
+                    <h3 className="border_shadowed">{data.title} ({data.id})</h3>
+                    {data.msg === undefined ? null :
+                        <p>{data?.msg}</p>
+                    }
+
+                    {/* After JSX */}
+                    {afterJSX}
+                </div>
+
+                {
+                    timed ?
+                    <div className="toast_time_bar" style={{ "animationDuration": "6s" }}/>
+                    : null
                 }
-
-                {/* After JSX */}
-                {afterJSX}
             </div>
-
-            {
-                timed ?
-                <div className="toast_time_bar" style={{ "animationDuration": "6s" }}/>
-                : null
-            }
         </div>
     )
 }

@@ -62,17 +62,18 @@ const io = new Server(webServer, {
 
 // Socket.io pre-connect middleware
 io.use((socket, next) => {
-    const { name, avatar } = socket.handshake.query;
+    const name = socket.handshake?.query?.name;
+    const avatar = socket.handshake?.query?.avatar;
 
-    if(name) socket.name = name ?? getRandomName();
-    if(avatar) socket.avatar = avatar ?? arrRandom(data.avatars);
+    socket.name = name ?? getRandomName();
+    socket.avatar = avatar ?? arrRandom(data.avatars);
 
     next();
 
     // copied from app.js. Might convert to an api endpoint
     function getRandomName() {
-        const adjective = capitalizeFirstLetter(arrRandom(clientData.names.adjectives));
-        const noun = arrRandom(clientData.names.nouns);
+        const adjective = capitalizeFirstLetter(arrRandom(data.names.adjectives));
+        const noun = arrRandom(data.names.nouns);
         return `${adjective} ${noun}`;
     }
 });

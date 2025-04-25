@@ -32,6 +32,14 @@ const socketConnection = function(socket) {
 
     // Join
     socket.on("join", ({ roomID, spectate }) => {
+        // Type check
+        if(roomID !== undefined && typeof roomID !== 'string') return;
+        if(spectate !== undefined && typeof spectate !== 'boolean') return;
+
+        // Client is already in the requested room
+        if(socket.rooms.has(roomID)) return;
+
+        // Room ID
         let roomIDCopy = structuredClone(roomID);
 
         // ID undefined, needs random ID

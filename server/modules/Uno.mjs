@@ -20,6 +20,7 @@ function hideAll(arr, obfuscate) {
 /** Game class and methods (Uno) */
 export default class Uno {
     #hostSocket;
+    #rejoin_keys = [];
 
     constructor({ roomID, hostSocket, nameIsUUID }) {
         // Statistics
@@ -140,30 +141,149 @@ export default class Uno {
         this.host = socket.id;
     }
 
+    /** Joins a client to the room
+     * @param {Object} socket Socket to join
+     * @param {Boolean} spectate Whether they want to spectate
+     * @param {String} rejoin_key Key that allows disconnected players to rejoin
+     * @returns {Boolean} Returns false if they can't join, true on success
+     */
+    join(socket, spectate=false, rejoin_key) {
+        if(!socket) return console.warn("Uno.join(): Invalid parameter for 'socket'");
+
+        const roomID = this.roomID;
+
+        // Check rejoin key
+        let allowRejoin = false;
+        if(this.state === "ingame" && this.#rejoin_keys[rejoin_key] !== undefined) allowRejoin = true;
+
+        // Room exists but is closed
+        if(this.roomClosed) {
+            socket.emit("join_failed");
+            socket.emit("toast", {
+                title: "Invite Expired",
+                msg: `Game has ended (${roomID})`
+            });
+            return false;
+        }
+
+        // Game exists and is already started
+        if(!allowRejoin && this.state !== "lobby") {
+            socket.emit("join_failed");
+            socket.emit("toast", {
+                title: "Whoops",
+                msg: `Game has already started (${roomID})`
+            });
+            return false;
+        }
+
+        // Room does not allow spectators
+        if(!allowRejoin && spectate && !this.config.spectators) {
+            socket.emit("join_failed");
+            socket.emit("toast", { title:"Room does not allow spectators" });
+            return false;
+        }
+
+        // Room is full
+        if(!allowRejoin && this.isFull && !spectate) {
+            socket.emit("join_failed");
+            socket.emit("toast", { title:"Room is full" });
+            return;
+        }
+
+        // Leave all other rooms
+        for(const r of socket.rooms) server.games[r]?.leave(socket.id, false);
+        
+        // Rejoin personal room
+        socket.join(socket.id);
+
+        // Join server-side
+        socket.join(roomID);
+        server.usersRooms[socket.id] = roomID;
+        socket.spectating = Boolean(spectate);
+
+        // Create new rejoin key
+        const preliminary_rejoin_key = crypto.randomUUID();
+        socket.rejoin_key = preliminary_rejoin_key;
+
+        // Rejoin
+        if(allowRejoin) {
+            const rejoinOldSocketID = this.#rejoin_keys[rejoin_key];
+            const playerIndex = this.players.findIndex(p => p.socketID === rejoinOldSocketID);
+
+            // Update player
+            this.players[playerIndex].socketID = socket.id;
+
+            // Clean up
+            delete this.players[playerIndex].disconnected;
+            delete this.#rejoin_keys[rejoin_key];
+
+            // Register new key
+            this.#rejoin_keys[preliminary_rejoin_key] = socket.id;
+        }
+
+        // Emit join event to client
+        socket.emit("joined", {
+            roomID: roomID,
+            rejoin_key: preliminary_rejoin_key
+        });
+
+        // Join message
+        const joinMessage =
+            !spectate ?
+                `"${socket.name}" joined!` :
+                `"${socket.name}" is spectating`;
+
+        if(!rejoin_key || this.state !== "ingame") {
+            socket.to(roomID).emit("toast", {
+                title: joinMessage
+            });
+        }
+
+        // Update
+        this.updateClients();
+
+        // Return success
+        return true;
+    }
+
+    /** Player was disconnected. The host will have an option to remove them from the game.
+     * @param {String} socketID
+     */
+    disconnect(socketID) {
+        if(this.state !== "ingame") return this.leave(socketID);
+
+        const pnum = this.getPnumFromSocketID(socketID);
+        if(pnum === -1) return;
+        this.players[pnum].disconnected = true;
+
+        // Close if all players are disconnected
+        if((this.state === "ingame" && !this.players.some(p => !p.disconnected))) this.close();
+
+        // Update
+        this.updateClients();
+    }
+
     /** Player leave game
-     * @param {*} socket Player's socket
+     * @param {String} socketID Player's socket ID
      * @param {Boolean} sendtoast Whether or not to send out a toast
      */
     leave(socketID, sendtoast) {
         // Info
         const roomID = this.roomID;
-        const wasSpectator = this.isSpectating(socketID);
 
         // Get socket
         const socket = io.sockets.sockets.get(socketID);
         if(socket !== undefined) socket.leave(roomID);
 
-        // Remove player from game
-        if(!wasSpectator) this.players.splice(this.getPnumFromSocketID(socketID), 1);
+        // De-register user as being in room
+        const wasSpectator = this.isSpectating(socketID);
+        if(!wasSpectator) delete server.usersRooms[socketID]; // maybe this should be in the disconnect event? but seems to work fine here
 
-        // Mark player as disconnected
-        // if(!wasSpectator) {
-        //     const p = this.players?.[this.getPnumFromSocketID(socketID)];
-        //     if(p !== undefined) p.disconnected = true;
-        // }
-
-        // Re-register user as being in room
-        delete server.usersRooms[socketID];
+        // Remove player
+        if(!wasSpectator) {
+            const pnum = this.getPnumFromSocketID(socketID);
+            this.removePlayer(pnum, socket, false);
+        }
         
         // Tell user they left
         if(socket !== undefined) socket.emit("leave");
@@ -172,10 +292,23 @@ export default class Uno {
             msg: `Room ID: "${roomID}"`
         });
 
+        // Update remaining clients
+        this.updateClients();
+    }
+
+    /** Removes player from this.players and also handles host transfer logic
+     * @param {Number} pnum Player index
+     * @param {Object} socket (Optional) Player's socket
+     * @returns 
+     */
+    removePlayer(pnum, socket, updateClients=true) {
+        // Remove player from game
+        this.players.splice(pnum, 1);
+
         // Tell room someone left
-        if(!wasSpectator) this.emit("toast", {
+        this.emit("toast", {
             title: `"${socket?.name ?? "User"}" left!`
-        })
+        });
 
         // All players have left
         if((this.clients.length - this.spectatorCount) === 0) {
@@ -184,15 +317,20 @@ export default class Uno {
             return this.close();
         }
 
-        // Transfer ownership to remaining player
-        else if(socketID === this.host) {
+        // Transfer ownership to first remaining player
+        else if(!this.clients.some(c => c.id === this.host)) {
             const newHostSocket = this.clients[0];
             this.setHost(newHostSocket);
             this.emit("toast", { title: `"${newHostSocket.name}" is now host` });
         }
 
-        // Update remaining clients
-        this.updateClients();
+        // It was that player's turn
+        if(this.turn === pnum) {
+            this.nextTurn(-1);
+        }
+
+        // Update
+        if(updateClients) this.updateClients();
     }
 
     /** Kicks a player by their socket ID
@@ -208,7 +346,7 @@ export default class Uno {
         this.leave(socketIDToKick, false);
     }
 
-    // Marks game as closed, automatically gets deleted after 24-48 hours
+    /** Marks game as closed, automatically gets deleted after 24-48 hours */
     close() {
         this.roomClosed = true;
         this.roomClosedTimestamp = Date.now();
@@ -218,11 +356,12 @@ export default class Uno {
         server.log(`🎮 Closed game (${this.roomID})`);
     }
 
-    // Completely destroys game object
+    /** Completely destroys game object */
     destroy() {
         this.destroyed = true;
         delete server.games[this.roomID]; // Delete self
         this.emit("leave");
+        server.log(`♻ Cleaned up game (${this.roomID})`);
     }
 
     requestRematch(socketID) {
@@ -470,16 +609,18 @@ export default class Uno {
         const sockets = this.clients;
         for(let i = 0; i < sockets.length; i++) {
             if(sockets?.[i]?.spectating) continue;
-            this.addPlayer(sockets[i].id);
+            this.addPlayer(sockets[i].id, sockets[i].rejoin_key);
         }
     }
 
     /** Adds a new player to the players array and gives them their cards */
-    addPlayer(socketID) {
+    addPlayer(socketID, rejoin_key) {
         this.players.push({
             socketID,
             cards: []
         });
+
+        this.#rejoin_keys[rejoin_key] = socketID;
 
         // Give cards
         const pnum = this.players.length-1;
@@ -589,21 +730,21 @@ export default class Uno {
 
     /** Sends toast to a given socket explaining draw stacking */
     debtToast(socketID) {
-        let message = "";
+        let title = "";
 
         switch (this.config.draw_stacking) {
             case "off":
-                message = "Must end turn";
+                title = "Must end turn";
                 break;
             case "matching":
-                message = `Must stack +${this.piletop.draw} or end turn`;
+                title = `Must stack +${this.piletop.draw} or end turn`;
                 break;
             case "any":
-                message = "Must stack a draw card or end turn";
+                title = "Must stack a draw card or end turn";
                 break;
         }
 
-        io.to(socketID).emit("toast", { title: message });
+        io.to(socketID).emit("toast", { title });
     }
 
     isValidTurn(pnum) {

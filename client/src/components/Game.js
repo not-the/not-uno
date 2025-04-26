@@ -8,6 +8,7 @@ import lang from "../lang.js"
 import CardAnimated from "./CardAnimated.js"
 import SupportBlurb from "./SupportBlurb.js"
 import CardStack from "./CardStack.js"
+import PlayerDisconnectOverlay from "./PlayerDisconnectOverlay.js"
 
 
 /** Game screen component */
@@ -233,6 +234,13 @@ export default function Game({ game, setGame, startGame }) {
         socket.emit("requestRematch");
     }
 
+    /** Requests the server to remove a disconnected player
+     * @param {Number} pnum Player index
+     */
+    function removeDisconnectedPlayer(pnum) {
+        socket.emit("removeDisconnectedPlayer", pnum);
+    }
+
 
     // HTML
     return (
@@ -401,17 +409,12 @@ export default function Game({ game, setGame, startGame }) {
 
                 return (
                     <div className={classes} key={playerIndex} style={styles}>
-                        {/* Disconnected notice */}
-                        {!player.disconnected ? null :
-                            <div className="user_disconnect">
-                                <h3 className="center border_shadowed">
-                                    P{playerIndex+1} disconnected
-                                </h3>
-                                <button className="button_primary button_secondary hover_border_shadowed button_mini margin_center">
-                                    Remove
-                                </button>
-                            </div>
-                        }
+                        {/* User disconnected */}
+                        <PlayerDisconnectOverlay
+                            game={game} player={player} playerIndex={playerIndex}
+                            returnToLobby={returnToLobby}
+                            removeDisconnectedPlayer={removeDisconnectedPlayer}
+                        />
 
                         {/* Upper */}
                         <div className="player_upper border_shadowed flex flex_center_vertically">

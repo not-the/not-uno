@@ -912,6 +912,7 @@ button.share_button {
     top: 18px;
     left: 24px;
     right: 24px;
+    z-index: 1;
 }
 
 /* Loader */
@@ -1073,14 +1074,61 @@ button.share_button {
 }
 
 .user_disconnect {
+    --inset: -24px;
+
     position:absolute;
-    inset: 0;
-    z-index: 1;
-    background-color: rgba(20, 20, 20, 0.9);
-    border-radius: 20px;
+    inset: var(--inset);
+    z-index: 3;
+
+    /* background-color: rgba(20, 20, 20, 0.6); */
+    /* box-shadow: inset 0 0 21px rgba(0, 0, 0, 0.5); */
+    backdrop-filter: blur(9px);
+    padding: var(--inset);
+
     display: flex;
     flex-direction: column;
     justify-content: center;
+
+    animation: user_disconnect 1s ease both;
+}
+.user_disconnect[aria-hidden="true"] {
+    pointer-events: none;
+    animation-direction: reverse;
+}
+@keyframes user_disconnect {
+    0% {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    75% {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+}
+.user_disconnect::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background-color: rgba(0, 0, 0, 0.5);
+    filter: blur(32px);
+    border-radius: 32px;
+}
+
+.player.position_left .user_disconnect {
+    writing-mode: sideways-lr;
+    text-orientation: mixed;
+}
+.player.position_right .user_disconnect {
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+}
+.player.position_left .user_disconnect button,
+.player.position_right .user_disconnect button {
+    width: min-content;
+    height: min-content;
+    margin: auto 24px;
+    padding: 16px 6px;
 }
 
 

@@ -24,17 +24,32 @@ const socketConnection = function(socket) {
 
     // ON READY
     socket.on("ready", () => {
+        // Profile
         socket.emit("myProfile", {
             name: socket.name,
             avatar: socket.avatar
         });
-    })
+
+        // Auto join room
+        const autoJoin = socket.handshake?.query?.autoJoin;
+        if(typeof autoJoin === 'string' && autoJoin.length > 0) {
+            console.log("LES GO");
+            attemptJoin(autoJoin, undefined, socket.handshake?.query?.rejoin_key);
+            delete socket.autoJoin;
+        }
+    });
 
     // Join
-    socket.on("join", ({ roomID, spectate }) => {
+    socket.on("join", ({ roomID, spectate, rejoin_key }) => {
+        attemptJoin(roomID, spectate, rejoin_key)
+    });
+
+    /** Attempts to join a room, or creates a new one if necessary */
+    function attemptJoin(roomID, spectate, rejoin_key) {
         // Type check
         if(roomID !== undefined && typeof roomID !== 'string') return;
         if(spectate !== undefined && typeof spectate !== 'boolean') return;
+        if(typeof rejoin_key !== 'string') rejoin_key = null;
 
         // Client is already in the requested room
         if(socket.rooms.has(roomID)) return;
@@ -43,12 +58,52 @@ const socketConnection = function(socket) {
         let roomIDCopy = structuredClone(roomID);
 
         // ID undefined, needs random ID
-        const needsRandom = (!roomIDCopy);
-        if(needsRandom) roomIDCopy = generateRoomUUID();
+        const nameIsUUID = (!roomIDCopy);
+        if(nameIsUUID) roomIDCopy = generateRoomUUID();
 
-        // Join
-        joinRoom(roomIDCopy, needsRandom, spectate);
-    })
+        // Replace non-breaking hyphens
+        roomIDCopy = roomIDCopy.replaceAll("‑", "-").replaceAll("%E2%80%91", "-");
+
+        // ID is not a string or too long
+        const roomLengthMin = 4, roomLengthMax = 32;
+        if(
+            typeof roomIDCopy !== 'string' ||
+            roomIDCopy.length < roomLengthMin ||
+            roomIDCopy.length > roomLengthMax
+        ) {
+            console.warn(`Failed trying to join room: User ID ${socket.id}`);
+            socket.emit("toast", {
+                title: "Error",
+                msg: `Failed trying to join room. Must be between ${roomLengthMin} and ${roomLengthMax} characters.`
+            });
+            return;
+        };
+
+        // Check for existing
+        /** @type {Uno|Undefined} */
+        let game = server.games[roomIDCopy];
+        let toastTitle = "Joined game";
+
+        // Create new
+        if(game === undefined) {
+            game = new Uno({
+                roomID: roomIDCopy,
+                hostSocket: socket,
+                nameIsUUID
+            });
+            toastTitle = "Created lobby";
+        }
+
+        // -- Try joining existing room -- //
+        const success = game.join(socket, spectate, rejoin_key);
+
+        // Toast
+        if(success && !spectate && (!rejoin_key || game.state !== "ingame")) socket.emit("toast", {
+            title: toastTitle
+        });
+
+        return success;
+    }
 
     socket.on("leave", () => {
         getGameByUser()?.leave(socket.id, true);
@@ -114,110 +169,6 @@ const socketConnection = function(socket) {
         getGameByUser()?.updateClients();
     }
 
-    // Join room handler
-    function joinRoom(rawRoomID, nameIsUUID, spectate=false) {
-        // Replace non-breaking hyphens
-        const roomID = rawRoomID.replaceAll("‑", "-").replaceAll("%E2%80%91", "-");
-
-        // ID is not a string or too long
-        const roomLengthMin = 4, roomLengthMax = 32;
-        if(
-            typeof roomID !== 'string' ||
-            roomID.length < roomLengthMin ||
-            roomID.length > roomLengthMax
-        ) {
-            console.warn(`Failed trying to join room: User ID ${socket.id}`);
-            socket.emit("toast", {
-                title: "Error",
-                msg: `Failed trying to join room. Must be between ${roomLengthMin} and ${roomLengthMax} characters.`
-            });
-            return;
-        };
-
-        // Check for existing
-        /** @type {Uno|Undefined} */
-        let game = server.games[roomID];
-        let toastTitle = "Joined game";
-
-        // Create new
-        if(game === undefined) {
-            game = new Uno({
-                roomID,
-                hostSocket: socket,
-                nameIsUUID
-            });
-            toastTitle = "Created lobby";
-        }
-        else {
-            // Room exists but is closed
-            if(game.roomClosed) {
-                socket.emit("join_failed");
-                socket.emit("toast", {
-                    title: "Invite Expired",
-                    msg: `Game has ended (${roomID})`
-                });
-                return;
-            }
-
-            // Game exists and is already started
-            else if(game.state !== "lobby") {
-                socket.emit("join_failed");
-                socket.emit("toast", {
-                    title: "Whoops",
-                    msg: `Game has already started (${roomID})`
-                });
-                return;
-            }
-        }
-
-        // -- Join existing room -- //
-
-        // Room does not allow spectators
-        if(spectate && !game.config.spectators) {
-            socket.emit("join_failed");
-            socket.emit("toast", { title:"Room does not allow spectators" });
-            return;
-        }
-
-        // Room is full
-        if(game.isFull && !spectate) {
-            socket.emit("join_failed");
-            socket.emit("toast", { title:"Room is full" });
-            return;
-        }
-
-        // Leave all other rooms
-        for(const r of socket.rooms) server.games[r]?.leave(socket.id, false);
-        
-        // Rejoin personal room
-        socket.join(socket.id);
-
-        // Join
-        server.usersRooms[socket.id] = roomID;
-        socket.join(roomID); // Join
-        socket.spectating = Boolean(spectate);
-
-        // Emit join
-        socket.emit("joined", roomID); // Give client room ID
-        // log(socket.id, ' is in rooms: ', socket.rooms);
-
-        // Toast
-        if(!spectate) socket.emit("toast", {
-            title: toastTitle
-        });
-
-        // Join message
-        const joinMessage =
-            !spectate ?
-                `"${socket.name}" joined!` :
-                `"${socket.name}" is spectating`;
-        socket.to(roomID).emit("toast", {
-            title: joinMessage
-        });
-
-        // Update
-        game.updateClients();
-    }
 
     // Start game
     socket.on("start_game", data => {
@@ -253,42 +204,37 @@ const socketConnection = function(socket) {
     socket.on("drawCard", () => {
         /** @type {Uno} */
         const game = getGameByUser();
-        if(game === undefined) return errorDisconnected();
+        if(game === undefined) return;
         game.drawCard(socket.id);
     })
 
     socket.on("playCard", ucid => {
         /** @type {Uno} */
         const game = getGameByUser();
-        if(game === undefined) return errorDisconnected();;
+        if(game === undefined) return;
         game.playCard(socket.id, ucid);
     })
 
     socket.on("endTurn", () => {
         /** @type {Uno} */
         const game = getGameByUser();
-        if(game === undefined) return errorDisconnected();;
+        if(game === undefined) return;
         game.endTurn(socket.id);
     })
 
     socket.on("requestRematch", () => {
         /** @type {Uno} */
         const game = getGameByUser();
-        if(game === undefined) return errorDisconnected();;
+        if(game === undefined) return;
         game.requestRematch(socket.id);
     })
 
     socket.on("kick", (socketIDToKick) => {
         /** @type {Uno} */
         const game = getGameByUser();
-        if(game === undefined) return errorDisconnected();;
+        if(game === undefined) return;
         game.kick(socket, socketIDToKick);
     })
-
-    function errorDisconnected() {
-        socket.emit("leave");
-        socket.emit("toast", { title:"You were disconnected" });
-    }
 
     // Chat message
     socket.on("chat", (data) => {
@@ -357,8 +303,24 @@ const socketConnection = function(socket) {
     socket.on("disconnect", () => {
         server.log(`\u001b[1;31m← \u001b[0m ${socket.name} disconnected (${socket.id})`);
 
-        getGameByUser()?.leave(socket.id);
+        getGameByUser()?.disconnect(socket.id);
     });
+
+    // Remove disconnected player
+    socket.on("removeDisconnectedPlayer", (pnum) => {
+        // Type check
+        if(typeof pnum !== 'number') return;
+
+        /** @type {Uno} */
+        const game = getGameByUser();
+        if(game === undefined) return;
+
+        // Player is connected
+        if(!game?.players?.[pnum].disconnected) return;
+
+        // Remove
+        game?.removePlayer(pnum);
+    })
 
 
     // socket.on("custom_deck", raw => {

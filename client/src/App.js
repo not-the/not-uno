@@ -46,8 +46,14 @@ export default function App() {
 
     function joinRoom(roomID, spectate=false) {
         if(roomID === '') roomID = undefined;
+        
+        // Rejoin key
+        const rejoin_key = localStorage.getItem("notuno_rejoin_key");
 
-        socket.emit("join", { roomID, spectate });
+        // Emit
+        socket.emit("join", { roomID, spectate, rejoin_key });
+
+        // Update UI
         setMenu("joining");
 
         // Mark existing chatCache as old
@@ -78,7 +84,9 @@ export default function App() {
     }
 
     // Menu {String}
-    const [menu, setMenu] = useState("null");
+    const [menu, setMenu] = useState(
+        window.location.hash.substring(1).length !== 0 ? "joining" : "null"
+    );
     const page =
         // Game
         menu === "game" ? <Game game={game} setGame={setGame} startGame={startGame} /> :
@@ -103,12 +111,14 @@ export default function App() {
 
     // Server communication
     useEffect(() => {
-        // Auto join from URL
-        if(window.location.hash !== '') joinRoom(window.location.hash.substring(1));
-    
 
         // Joined to room
-        socket.on("joined", roomID => {
+        socket.on("joined", (data) => {
+            const { roomID, rejoin_key } = data;
+
+            // Store rejoin key
+            localStorage.setItem("notuno_rejoin_key", rejoin_key);
+
             // Left
             if(!roomID) {
                 setMenu("home");
@@ -116,7 +126,8 @@ export default function App() {
                 return;
             }
 
-            if(window.location.hash === '') window.location.hash = `#${roomID}`;
+            // Update URL
+            window.location.hash = `#${roomID}`;
         });
 
         // Join failed
@@ -144,6 +155,7 @@ export default function App() {
             if(data === false) {
                 setMenu(null);
                 clearURLHash();
+                localStorage.removeItem("notuno_rejoin_key");
             }
             else if(data.state === 'lobby') setMenu("lobby");
             else setMenu("game");

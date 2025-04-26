@@ -5,7 +5,7 @@ import express from 'express'
 import fs from 'fs'
 import http from 'http'
 import https from 'https'
-// import 'dotenv/config'
+import 'dotenv/config'
 import { Server } from 'socket.io'
 import cors from 'cors'
 
@@ -62,9 +62,9 @@ const io = new Server(webServer, {
 
 // Socket.io pre-connect middleware
 io.use((socket, next) => {
+    // Profile
     const name = socket.handshake?.query?.name;
     const avatar = socket.handshake?.query?.avatar;
-
     socket.name = name ?? getRandomName();
     socket.avatar = avatar ?? arrRandom(data.avatars);
 
@@ -84,7 +84,10 @@ console.log(
     \x1b[47m\x1b[30m  Starting Not UNO server...  \x1b[0m
     > Environment: \x1b[33m${process.env.NODE_ENV}\x1b[0m
     > Client origin: \x1b[33m${clientOrigin}\x1b[0m
-    ${word_blacklist === undefined ? "> No ./word_blacklist.json provided\n" : ""}`);
+    ${word_blacklist === undefined ?
+        "> No ./word_blacklist.json provided\n" :
+        `> \x1b[33m${word_blacklist?.deny?.length}\x1b[0m blacklisted strings (word_blacklist.json)`
+    }`);
 
 
 
@@ -154,7 +157,9 @@ const server = {
     performCleanup() {
         for(const [roomID, game] of Object.entries(server.games)) {
             if(!game.roomClosed) continue;
-            if(game.roomClosedTimestamp + this.maxGameAge < Date.now()) game.destroy();
+            if(
+                game.roomClosedTimestamp + this.maxGameAge < Date.now() // Over max age
+            ) game.destroy();
         }
     }
 }

@@ -9,14 +9,34 @@ const serverURL = isProduction ?
     "https://uno-server1.notkal.com:443" : // Production endpoint
     'http://localhost:443'; // Development
 
-const userData = store("user_data");
-const socket = io(serverURL, { secure:true, query:userData });
+const handshakeData = {
+    ...store("user_data"),
+    autoJoin: window.location.hash.substring(1),
+    rejoin_key: localStorage.getItem("notuno_rejoin_key")
+};
+const socket = io(serverURL, { secure:true, query:handshakeData });
 
 // Connection state
 let socketConnectionStatus = false; 
-socket.on('connect', () => socketConnectionStatus = true);
-socket.on('reconnect', () => socketConnectionStatus  = true);
-socket.on('disconnect', () => socketConnectionStatus  = false);
+let hasDisconnected = false;
+socket.on('connect', () => {
+    socketConnectionStatus = true;
+
+    // Reconnect
+    if(!hasDisconnected) return;
+
+    // Rejoin
+    const hash = window.location.hash.substring(1);
+    if(hash.length === 0) return;
+    socket.emit("join", {
+        roomID: hash,
+        spectate: false,
+        rejoin_key: localStorage.getItem("notuno_rejoin_key")});
+});
+socket.on('disconnect', () => {
+    socketConnectionStatus  = false;
+    hasDisconnected = true;
+});
 
 // Ready event
 socket.emit("ready");

@@ -452,7 +452,7 @@
     },
 
     "public_lobby": {
-        "icon": "/icons/Door.svg",
+        "icon": "/icons/public_40dp_FFFFFF_FILL0_wght400_GRAD200_opsz40.svg",
         "type": "boolean",
 
         "condition_reason": "Room ID must not be user-defined"
@@ -469,12 +469,14 @@
     },
     "enable_chat": {
         "icon": "/icons/chat.svg",
+        "icon_pad": 2,
         "type": "boolean",
 
         "condition_reason": "Private games only"
     },
     "max_players": {
         "icon": "/icons/person.svg",
+        "icon_pad": 2,
         "type": "number",
         "min": 2, "max": 4
     },
@@ -483,6 +485,7 @@
         "desc": "Everyone's cards are visible",
 
         "icon": "/icons/Magnify.svg",
+        "icon_pad": 2,
         "type": "boolean"
     },
     "infinite_draw": {

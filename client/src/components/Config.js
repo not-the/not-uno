@@ -29,7 +29,7 @@ export default function Config({ name, game, disabled }) {
             <div className="decorator"/>
 
             {/* Icon */}
-            <img src={option.icon} alt="" className="border_shadowed" />
+            <img src={option.icon} alt="" className="border_shadowed" style={{ padding:`${option.icon_pad}px` }} />
 
             {/* Inner */}
             <label htmlFor={name}>

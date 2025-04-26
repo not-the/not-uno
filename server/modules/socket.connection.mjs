@@ -54,7 +54,7 @@ const socketConnection = function(socket) {
         if(typeof rejoin_key !== 'string') rejoin_key = null;
 
         // Client is already in the requested room
-        if(socket.rooms.has(roomID)) return;
+        if(socket.rooms.has(roomID) && socket.spectating === spectate) return;
 
         // Room ID
         let roomIDCopy = structuredClone(roomID);

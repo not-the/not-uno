@@ -239,17 +239,20 @@ const socketConnection = function(socket) {
     })
 
     // Chat message
-    socket.on("chat", (data) => {
+    socket.on("chat", (obj) => {
         // Invalid message
-        if(typeof data.msg !== 'string' || data.msg.length < 1) return;
+        if(typeof obj.msg !== 'string' || obj.msg.length < 1) return;
+
+        // Too long
+        if(obj.msg.length > data.max_chat_length) return socket.emit("toast", { title:"Your message was too long" })
 
         // Info
         const roomID = server.usersRooms[socket.id];
-        data.user = {
+        obj.user = {
             name: socket.name,
             avatar: socket.avatar
         };
-        data.socketID = socket.id;
+        obj.socketID = socket.id;
 
         /** @type {Uno} */
         const game = getGameByUser();
@@ -270,10 +273,10 @@ const socketConnection = function(socket) {
         // server.users[socket.id].last_msg = Date.now();
 
         // Log
-        server.log(`🗨  (${roomID}) ${data.user.name}: ${data.msg}`);
+        server.log(`🗨  (${roomID}) ${obj.user.name}: ${obj.msg}`);
 
         // Broadcast
-        io.to(roomID).emit("chat_receive", data);
+        io.to(roomID).emit("chat_receive", obj);
     });
 
     // Public lobby list

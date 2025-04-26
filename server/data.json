@@ -628,5 +628,7 @@
     "reverse"
 ],
 
-"card_colors": ["black", "red", "yellow", "blue", "green", "cyan", "purple", "orange", "pink"]
+"card_colors": ["black", "red", "yellow", "blue", "green", "cyan", "purple", "orange", "pink"],
+
+"max_chat_length": 128
 }

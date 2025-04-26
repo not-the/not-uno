@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import User from "./User"
 import { socket } from "../socket";
+import { clientData } from "../App";
 
 export default function Chat({
     game,
@@ -141,8 +142,10 @@ export default function Chat({
                 </div>
 
                 <div className="chat_bottom" aria-disabled={!game?.config?.enable_chat}>
-                    <input type="text" name="chat_input" id="chat_input"
+                    <input
+                        type="text" name="chat_input" id="chat_input"
                         placeholder="Send a message..."
+                        maxLength={clientData.max_chat_length ?? null}
                         onChange={event => setChatInput(event.target.value)}
                         onKeyDown={event => { if(event.key === "Enter") sendChat() }}
                         disabled={!game?.config?.enable_chat}

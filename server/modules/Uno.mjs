@@ -303,6 +303,14 @@ export default class Uno {
      * @returns 
      */
     removePlayer(pnum, socket, updateClients=true) {
+
+        // Take player's cards and shuffle them back into the deck
+        if(this.state === "ingame" && Array.isArray(this.deck)) {
+            this.deck = [...this.deck, ...this.players?.[pnum]?.cards??[]];
+            hideAll(this.deck, false);
+            shuffle(this.deck);
+        }
+
         // Remove player from game
         this.players.splice(pnum, 1);
 

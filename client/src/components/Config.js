@@ -40,7 +40,7 @@ export default function Config({ name, game, disabled }) {
                             {lang.en[name] ?? name}
                             {condition ? <span className="small">({disabled_reason})</span> : null}
                         </h4>
-                        <p className="desc">{option.desc}</p>
+                        {option.desc ? <p className="desc">{option.desc}</p> : null}
                     </div>
 
                     {/* Input */}

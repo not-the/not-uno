@@ -596,7 +596,8 @@ export default function Game({ game, setGame, startGame }) {
                             <table className="fullwidth">
                                 {Object.entries(game.config).map(([key, value]) => {
                                     // Skip
-                                    if(value === false || key === "enable_chat" || key === "public_lobby") return null;
+                                    const hidden = ["enable_chat", "public_lobby"];
+                                    if(value === false || hidden.includes(key)) return null;
 
                                     // Row
                                     return (

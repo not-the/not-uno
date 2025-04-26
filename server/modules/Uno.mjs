@@ -30,6 +30,7 @@ export default class Uno {
         this.config = {
             public_lobby: false,
             spectators: true,
+            allow_join_from_same_network: true,
             enable_chat: true,
             max_players: 4,
 

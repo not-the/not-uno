@@ -1,3 +1,5 @@
+import ip from 'ip'
+
 import { io, server, data, word_blacklist, isProduction } from "../server.mjs"
 import { arrRandom } from "./utils.mjs"
 import Uno from "./Uno.mjs"
@@ -276,25 +278,43 @@ const socketConnection = function(socket) {
 
     // Public lobby list
     socket.on("request_public_lobbies", () => {
-        const publicLobbies =
+        const lobbies =
             Object.values(server.games)
-                .filter(game => {
-                    return game?.config?.public_lobby === true &&   // Set to public
-                           game?.nameIsUUID &&                      // Game ID is not picked by user
-                           !game?.roomClosed                        // Game has not ended
-                })
+                .filter(game => !game?.roomClosed) // Game has not ended
                 .map(game => game.publicClone());
 
         // Lobby arrays
-        const joinableLobbies = publicLobbies.filter(game => game?.state === "lobby"); // Still in lobby
+        const publicLobbies = lobbies.filter(game => {
+            return game?.config?.public_lobby === true &&   // Set to public
+            game?.nameIsUUID &&                             // Game ID is not picked by user
+            game?.state === "lobby"                         // Still in lobby
+        });
         // const spectateLobbies = publicLobbies.filter(game => game?.config?.spectate);
+
+        // Local network
+        const localNetworkLobbies = lobbies
+            .filter(game => {
+                // Option disabled
+                if(!game?.config?.allow_join_from_same_network || game?.config?.public_lobby) return false;
+
+                // Test if same subnet
+                const hostAddress = io.sockets.sockets.get(game.host)?.handshake?.address;
+                const sameSubnet = ip.subnet(hostAddress, "255.255.255.0").contains(socket?.handshake?.address);
+
+                // Return
+                return sameSubnet;
+            });
         
         // Delay makes it feel like it's doing more work than it is
         setTimeout(() => {
             socket.emit("lobby_list", {
+                // Online users
                 online_users: io.sockets.server.engine.clientsCount,
-                joinableLobbies,
-                // spectateLobbies
+
+                // Lobbies
+                publicLobbies,
+                localNetworkLobbies,
+                // spectateLobbies,
             });
         }, 250);
     })

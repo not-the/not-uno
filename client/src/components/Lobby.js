@@ -158,10 +158,11 @@ export default function Lobby({ game, startGame, toast, leaveGame }) {
 
                     {/* <div className="config_two_col"> */}
                         <Config name="public_lobby" game={game} />
+                        <Config name="allow_join_from_same_network" game={game} />
                         <Config name="spectators" game={game} />
                         <Config name="enable_chat" game={game} />
-                        <Config name="max_players" game={game} />
                     {/* </div> */}
+                    <Config name="max_players" game={game} />
                 </section>
 
                 {/* Game */}
@@ -169,7 +170,6 @@ export default function Lobby({ game, startGame, toast, leaveGame }) {
                     <h3 className="fancy_title">
                         <span>Modifiers</span>
                     </h3>
-                    {/* <Config name="starting_deck" game={game} /> */}
                     <Config name="starting_cards" game={game} />
                     <Config name="draw_stacking" game={game} />
                     <Config name="who_goes_first" game={game} />

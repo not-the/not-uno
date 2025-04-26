@@ -4,7 +4,7 @@ import { isProduction, socket, socketConnectionStatus } from "../socket"
 import LobbyListing from "./LobbyListing"
 
 export default function Home({ setMenu, joinRoom }) {
-    const [serverInfo, setServerInfo] = useState({});
+    const [serverInfo, setServerInfo] = useState(undefined);
     const [isLobbyListFetched, setIsLobbyListFetched] = useState(false);
 
     const refreshButton = <div className="refresh_container margin_left_auto" data-list-fetched={isLobbyListFetched}>
@@ -66,11 +66,22 @@ export default function Home({ setMenu, joinRoom }) {
 
                     {/* List */}
                     <div className="lobbies_list">
-                        {serverInfo === undefined || serverInfo?.joinableLobbies?.length === 0 ?
+                        {/* Public lobbies */}
+                        {serverInfo === undefined || serverInfo?.publicLobbies?.length === 0 ?
                             <p className="center secondary_text">No public lobbies open</p>
                             :
-                            serverInfo?.joinableLobbies?.map?.(lobby => <LobbyListing lobby={lobby} joinRoom={joinRoom} />)
+                            serverInfo?.publicLobbies?.map?.(lobby => <LobbyListing lobby={lobby} joinRoom={joinRoom} key={lobby.roomID} />)
                         }
+
+                        {/* Local network lobbies */}
+                        {serverInfo === undefined || serverInfo?.localNetworkLobbies?.length === 0 ? null :
+                            <div className="lobbies_header" style={{ paddingBottom:"3px" }}>
+                                <h5 className="no_margin" style={{ color:"var(--bg-lighter)", marginTop: "24px" }}>
+                                    Local network
+                                </h5>
+                            </div>
+                        }
+                        {serverInfo?.localNetworkLobbies?.map?.(lobby => <LobbyListing lobby={lobby} joinRoom={joinRoom} key={lobby.roomID} classes="local_network" />)}
                     </div>
 
                     {/* Bottom */}

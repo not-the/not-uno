@@ -30,6 +30,7 @@
 
     /* Other colors */
     --color-support-btn: #d9534f;
+    --color-local-network: #2a6343;
 
     /* Text */
     --text: white;
@@ -574,10 +575,13 @@ select[disabled] {
 }
 .lobbies_container .bottom_bar {
     position: absolute;
-    bottom: 12px;
-    left: 15px;
-    right: 12px;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 1;
 
+    background-color: var(--bg-darker);
+    padding: 9px 15px;
     font-size: 11pt;
 }
 .lobbies_header {
@@ -602,6 +606,10 @@ select[disabled] {
     flex-direction: column;
     gap: 9px;
 }
+
+.lobby {
+    --hover-border-color: var(--bg-lighter);
+}
 .lobby > .lobby_block {
     background-color: var(--bg-main);
     border: 1px solid transparent;
@@ -615,7 +623,7 @@ select[disabled] {
 }
 .lobby > .lobby_block:hover,
 .lobby > .lobby_block:focus-visible {
-    border-color: var(--bg-lighter);
+    border-color: var(--hover-border-color);
     --shadow-color: rgba(0, 0, 0, 0.3);
     transform: translate(-1px, -1px);
     /* outline: none; */
@@ -633,7 +641,12 @@ select[disabled] {
     width: 20px;
     height: 20px;
 }
-.lobby > .spectate_btn path { fill: var(--secondary-text); }
+/* .lobby > .spectate_btn path { fill: var(--secondary-text); } */
+
+.lobby.local_network > .lobby_block {
+    background-color: var(--color-local-network);
+    /* --secondary-text: #c3e6d2; */
+}
 
 
 
@@ -664,7 +677,7 @@ select[disabled] {
 /* .config_two_col {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-    gap: 12px;
+    column-gap: 12px;
 } */
 
 #config {

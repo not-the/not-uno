@@ -6,6 +6,7 @@ const lang = {
         "draw_stacking": "Draw Stacking",
         "continue": "Continues",
         "public_lobby": "Public",
+        "allow_join_from_same_network": "Local Network",
         "spectators": "Spectators",
         "enable_chat": "Chat",
         "max_players": "Max Players",

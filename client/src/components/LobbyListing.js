@@ -1,7 +1,7 @@
 import lang from "../lang"
 
 
-export default function LobbyListing({ lobby, joinRoom }) {
+export default function LobbyListing({ lobby, joinRoom, classes }) {
     // Mode string
     let modeInfo = lang.en?.[lobby?.config?.starting_deck] ?? lobby?.config?.starting_deck;
     if(lobby?.config?.xray) {
@@ -12,9 +12,14 @@ export default function LobbyListing({ lobby, joinRoom }) {
     // Host socketID
     const host = lobby?.usersParsed[lobby?.host];
 
+    const allClasses = [
+        "lobby flex gap_12px",
+        classes ?? ""
+    ].join(" ");
+
     // JSX
     return (
-        <div className="lobby flex gap_12px">
+        <div className={allClasses}>
             {/* Inner */}
             <div
                 className="lobby_block inner flex gap_12px hover_border_shadowed"

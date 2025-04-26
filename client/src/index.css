@@ -2605,16 +2605,6 @@ body:has(.spectating_toast) {
     }
     h3 > .user .avatar { --size: 20px; }
 
-    /* Support */
-    .win_screen_support_blurb .smaller {  margin-left: 0;  }
-    .win_screen_support_blurb .button_support { margin-left: auto; }
-    .win_screen_support_blurb > .flex_center {
-        margin-left: 0;
-        flex-direction: row;
-        gap: auto;
-        flex-direction: row-reverse;
-    }
-
     /* Card size */
     .card { font-size: 72px; }
     .card_stack { width: 72px; }
@@ -2671,5 +2661,15 @@ body:has(.spectating_toast) {
     #footer_main {
         margin-left: initial;
         width: 100%;
+    }
+
+    /* Support */
+    .win_screen_support_blurb .smaller {  margin-left: 0;  }
+    .win_screen_support_blurb .button_support { margin-left: auto; }
+    .win_screen_support_blurb > .flex_center {
+        margin-left: 0;
+        flex-direction: row;
+        gap: auto;
+        flex-direction: row-reverse;
     }
 }

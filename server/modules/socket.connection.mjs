@@ -297,8 +297,11 @@ const socketConnection = function(socket) {
         // Local network
         const localNetworkLobbies = lobbies
             .filter(game => {
-                // Option disabled
-                if(!game?.config?.allow_join_from_same_network || game?.config?.public_lobby) return false;
+                if(
+                    !game?.config?.allow_join_from_same_network || // Option disabled
+                    game?.config?.public_lobby || // Public instead
+                    game.state !== "lobby" // Already started
+                ) return false;
 
                 // Test if same subnet
                 const hostAddress = io.sockets.sockets.get(game.host)?.handshake?.address;

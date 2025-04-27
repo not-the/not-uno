@@ -54,7 +54,7 @@ export default function User({ user, game, tagline, title, postName, classes="",
             {/* Options */}
             <div className="user_buttons">
                 {/* Kick */}
-                {!isMe && game?.host === socket.id && game?.has_been_public ?
+                {!isMe && game?.host === socket.id ?
                     <button className="bold hover_underline" onClick={() => kick(userData?.socketID)}>
                         Kick
                     </button>

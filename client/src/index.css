@@ -2686,3 +2686,14 @@ body:has(.spectating_toast) {
         flex-direction: row-reverse;
     }
 }
+
+/* iOS / Webkit */
+@supports (-webkit-overflow-scrolling: touch) {
+    /* PWA mode */
+    @media (display-mode: standalone) {
+        #game {
+            padding-bottom: 24px;
+        }
+    }
+}
+

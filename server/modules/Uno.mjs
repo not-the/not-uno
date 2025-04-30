@@ -208,11 +208,14 @@ export default class Uno {
 
         // Rejoin
         if(allowRejoin) {
-            const rejoinOldSocketID = this.#rejoin_keys[rejoin_key];
-            const playerIndex = this.players.findIndex(p => p.socketID === rejoinOldSocketID);
+            const oldSocketID = this.#rejoin_keys[rejoin_key];
+            const playerIndex = this.players.findIndex(p => p.socketID === oldSocketID);
 
             // Update player
             this.players[playerIndex].socketID = socket.id;
+
+            // Update this.host to player's new socketID
+            if(this.host === oldSocketID) this.host = socket.id;
 
             // Clean up
             delete this.players[playerIndex].disconnected;

@@ -2496,7 +2496,7 @@ h3 > .user .avatar {
 
 
 /* Special toasts */
-.connection_lost {
+.connection_lost_toast {
     --warning-red: rgb(175, 52, 68);
     --shadow-color: rgb(87, 19, 28);
 
@@ -2504,8 +2504,10 @@ h3 > .user .avatar {
     border-radius: 6px;
     border-color: rgb(231, 97, 115);
     text-align: center;
+
+    pointer-events: initial;
     
-    animation: toast 0.3s ease 5s backwards;
+    /* animation: toast 0.3s ease 5s backwards; */
 }
 .spectating_toast {
     background-color: var(--bg-purple-light);

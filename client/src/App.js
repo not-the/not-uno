@@ -15,7 +15,13 @@ import DeckEditor from './components/DeckEditor.js'
 
 // Game
 const appdataURL = serverURL + '/data.json';
-const clientData = get(appdataURL);
+let clientData = get(appdataURL);
+
+// data.json fetch failed
+if(clientData === undefined) {
+    console.warn("data.json fetch failed. Details above.");
+    clientData = {};
+}
 
 export { clientData };
 
@@ -25,7 +31,6 @@ export default function App() {
     // Game
     const [game, setGame] = useState(false);
     const [profile, setProfile] = useState({ name:"username", avatar:"balloon" });
-    // const [users, setUsers] = useState({});
 
     /** Emits start_game event */
     function startGame() {
@@ -244,10 +249,23 @@ export default function App() {
             {/* Toasts */}
             <div id="toasts">
                 {/* Connection lost */}
-                {/* {
-                    socketConnectionStatus ? null :
-                    <Toast data={{ title:"⚠ Disconnected", msg:"Can't reach server" } } timed={false} classes="" />
-                } */}
+                {
+                    socketConnectionStatus && Object.keys(clientData).length !== 0 ? null :
+                    <Toast
+                        data={{ title:"⚠ Disconnected", msg:"The server couldn't be reached" } }
+                        timed={false} classes="connection_lost_toast"
+                        afterJSX={<div>
+                            <br/>
+                            <a href="https://notkal.com/#contact" target="_blank" rel="noreferrer" className="button button_primary button_secondary button_support border_shadowed">
+                                Report a problem
+                            </a>
+                            <br/>
+                            <button className="button button_primary button_secondary button_transparent hover_border_shadowed" onClick={() => window.location.reload()}>
+                                Reload
+                            </button>
+                        </div>}
+                    />
+                }
 
                 {/* Spectating */}
                 {

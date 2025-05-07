@@ -158,7 +158,7 @@ const server = {
         for(const [roomID, game] of Object.entries(server.games)) {
             if(!game.roomClosed) continue;
             if(
-                game.roomClosedTimestamp + this.maxGameAge < Date.now() // Over max age
+                (game.roomClosedTimestamp + server.maxGameAge) < Date.now() // Over max age
             ) game.destroy();
         }
     }

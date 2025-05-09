@@ -26,3 +26,9 @@ npm start
 cd ./server
 npm run prod
 ```
+
+**Server Config**
+Create a `.env` file (or define environment variables using your hosting platform)
+
+DISCORD_WEBHOOK_URL - If defined, server events will be logged to this webhook
+WEBHOOK_LOG_MODE - Can be 'all' or 'uncaughtExceptions'. All logs everything that is also sent to server.log(). 'uncaughtExceptions' will only use the webhook for crash events.

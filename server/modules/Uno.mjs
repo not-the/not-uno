@@ -272,18 +272,21 @@ export default class Uno {
             const oldSocketID = this.#rejoin_keys[rejoin_key];
             const playerIndex = this.players.findIndex(p => p.socketID === oldSocketID);
 
-            // Update player
-            this.players[playerIndex].socketID = socket.id;
+            // Make sure player is valid
+            if(playerIndex !== -1 && this.players[playerIndex] !== undefined) {
+                // Update player
+                this.players[playerIndex].socketID = socket.id;
 
-            // Update this.host to player's new socketID
-            if(this.host === oldSocketID) this.host = socket.id;
+                // Update this.host to player's new socketID
+                if(this.host === oldSocketID) this.host = socket.id;
 
-            // Clean up
-            delete this.players[playerIndex].disconnected;
-            delete this.#rejoin_keys[rejoin_key];
+                // Clean up
+                delete this.players[playerIndex].disconnected;
+                delete this.#rejoin_keys[rejoin_key];
 
-            // Register new key
-            this.#rejoin_keys[preliminary_rejoin_key] = socket.id;
+                // Register new key
+                this.#rejoin_keys[preliminary_rejoin_key] = socket.id;
+            }
         }
 
         // Emit join event to client
@@ -987,6 +990,20 @@ export default class Uno {
     swapHands(pnum1, pnum2) {
         const logEntry = this.log("swapHands", ...Array.from(arguments));
 
+        // Type check
+        if(typeof pnum1 !== 'number' || typeof pnum2 !== 'number') {
+            logEntry.amend(false, "Parameter type check failed");
+            return;
+        }
+
+        // Invalid player(s)
+        if(!this.players[pnum1] || !this.players[pnum2]) {
+            console.warn("swapHands: One or both players is undefined");
+            logEntry.amend(false, "One or both players is undefined");
+            return;
+        }
+
+        // Swap
         [
             this.players[pnum1].cards,
             this.players[pnum2].cards,

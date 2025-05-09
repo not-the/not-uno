@@ -375,13 +375,38 @@ const socketConnection = function(socket) {
 
 
     // Debug
-    if(!isProduction) socket.on("debug", (data) => {
-        socket.emit("debug", {
-            usersRooms: server.usersRooms,
-            games: server.games,
-            allusers: server.users
-        })
-    });
+    if(!isProduction) {
+        // Server data
+        socket.on("debug", (data) => {
+            socket.emit("debug", {
+                usersRooms: server.usersRooms,
+                games: server.games,
+                allusers: server.users
+            })
+        });
+
+        // All lobbies
+        socket.on("debug_request_lobbies", (data) => {
+            const lobbies =
+                Object.values(server.games)
+                    .map(game => {
+                        const clone = game.publicClone(false);
+                        clone.log = game.getLog;
+                        return clone;
+                    });
+
+            // Lists
+            const open = lobbies.filter(game => !game.roomClosed);
+            const closed = lobbies.filter(game => game.roomClosed);
+
+            // Respond
+            socket.emit("debug_request_lobbies", {
+                open,
+                closed,
+                serverLogHistory: server.logHistory
+            })
+        });
+    }
 
 
     // FUNCTIONS

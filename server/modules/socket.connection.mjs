@@ -273,7 +273,7 @@ const socketConnection = function(socket) {
         // server.users[socket.id].last_msg = Date.now();
 
         // Log
-        server.log(`🗨  (${roomID}) ${obj.user.name}: ${obj.msg}`);
+        // server.log(`🗨  (${roomID}) ${socket.name}: ${obj.msg}`);
 
         // Broadcast
         io.to(roomID).emit("chat_receive", obj);

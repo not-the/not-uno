@@ -445,7 +445,8 @@
     },
     "who_goes_first": {
         "desc": "How the game decides the first player",
-        "icon": "/icons/Continue.svg",
+        "icon": "/icons/person.svg",
+        "icon_pad": 3,
 
         "type": "dropdown",
         "dropdown": ["winner", "player_one", "random"]
@@ -476,7 +477,7 @@
     },
     "max_players": {
         "icon": "/icons/person.svg",
-        "icon_pad": 2,
+        "icon_pad": 3,
         "type": "number",
         "min": 2, "max": 4
     },

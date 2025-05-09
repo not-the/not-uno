@@ -35,7 +35,6 @@ const socketConnection = function(socket) {
         // Auto join room
         const autoJoin = socket.handshake?.query?.autoJoin;
         if(typeof autoJoin === 'string' && autoJoin.length > 0) {
-            console.log("LES GO");
             attemptJoin(autoJoin, undefined, socket.handshake?.query?.rejoin_key);
             delete socket.autoJoin;
         }
@@ -123,24 +122,23 @@ const socketConnection = function(socket) {
     // Set user profile
     socket.on("setUser", data => setUser(data));
     function setUser(newUser, bypassRatelimit=false) {
-        // Errors
-        if(typeof newUser === 'object') {
-            // Invalid data types
-            if(newUser?.name === '' || typeof newUser?.name !== 'string') return;
+        // Type check
+        if(typeof newUser !== 'object') return;
+        if(newUser.name === '' || typeof newUser.name !== 'string') return;
+        if(typeof newUser?.avatar !== 'string') return;
 
-            const toastInvalidUsername = {
-                title: "Invalid username",
-                msg: `Maximum username length is 32 characters.`
-            };
+        const toastInvalidUsername = {
+            title: "Invalid username",
+            msg: `Maximum username length is 32 characters.`
+        };
 
-            // Length requirement
-            if(newUser?.name.length > 32) return socket.emit("toast", toastInvalidUsername);
+        // Length requirement
+        if(newUser?.name.length > 32) return socket.emit("toast", toastInvalidUsername);
 
-            // Word blacklist
-            if(word_blacklist !== undefined) {
-                if(word_blacklist.deny.some((word) => newUser.name.includes(word))) {
-                    return socket.emit("toast", toastInvalidUsername);
-                }
+        // Word blacklist
+        if(word_blacklist !== undefined) {
+            if(word_blacklist.deny.some((word) => newUser.name.includes(word))) {
+                return socket.emit("toast", toastInvalidUsername);
             }
         }
 
@@ -274,6 +272,7 @@ const socketConnection = function(socket) {
 
         // Log
         // server.log(`🗨  (${roomID}) ${socket.name}: ${obj.msg}`);
+        // game.log("CHAT", socket.name, socket.id);
 
         // Broadcast
         io.to(roomID).emit("chat_receive", obj);
@@ -303,8 +302,11 @@ const socketConnection = function(socket) {
                     game.state !== "lobby" // Already started
                 ) return false;
 
-                // Test if same subnet
+                // Get host's address
                 const hostAddress = io.sockets.sockets.get(game.host)?.handshake?.address;
+                if(hostAddress === undefined) return false;
+
+                // Test if same subnet
                 const sameSubnet = ip.subnet(hostAddress, "255.255.255.0").contains(socket?.handshake?.address);
 
                 // Return

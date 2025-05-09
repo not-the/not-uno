@@ -12,6 +12,7 @@ import { get, store, arrRandom, capitalizeFirstLetter, clearURLHash } from './Ut
 import { socket, isProduction, socketConnectionStatus, serverURL } from './socket.js'
 import Header from './components/Header.js'
 import DeckEditor from './components/DeckEditor.js'
+import DebugPanel from './components/DebugPanel.js'
 
 // Game
 const appdataURL = serverURL + '/data.json';
@@ -66,10 +67,6 @@ export default function App() {
         //     c.old_msg = true;
         //     return c;
         // }));
-    }
-
-    function debugDataRequest() {
-        socket.emit("debug", true);
     }
 
     const [toasts, setToasts] = useState([]);
@@ -232,6 +229,9 @@ export default function App() {
             {/* Chat */}
             <Chat game={game} profile={profile} setUser={setUser} setProfileOpen={setProfileOpen} />
 
+            {/* Chat */}
+            {isProduction ? null : <DebugPanel game={game} profile={profile} joinRoom={joinRoom} />}
+
             {/* Background layer */}
             <div id="main_background"/>
 
@@ -302,44 +302,6 @@ export default function App() {
                 {/* Notifications */}
                 {toasts.map((t, index) => <Toast data={t} key={t.id} timed={t.timed} />)}
             </div>
-
-            {/* Debug tools */}
-            {!isProduction ? <>
-                <div className="debug_panel">
-                    <h4>Debug</h4>
-                    <table>
-                        <tr>
-                            <th>Server</th>
-                            <td>{JSON.stringify(socketConnectionStatus)}</td>
-                        </tr>
-                        <tr>
-                            <th>socketID</th>
-                            <td>{socket?.id}</td>
-                        </tr>
-                        <tr>
-                            <th>my_num</th>
-                            <td>{game?.my_num}</td>
-                        </tr>
-                        <tr>
-                            <th>my_spectating</th>
-                            <td>{String(game.my_spectating)}</td>
-                        </tr>
-                        <tr>
-                            <th>Deck size</th>
-                            <td>{String(game?.deck?.length)}</td>
-                        </tr>
-                    </table>
-                    <br/>
-
-                    <button onClick={debugDataRequest} className="pointer_events_all hover_underline">Request server data (console)</button><br/>
-                    <button onClick={() => console.log(game)} className="pointer_events_all hover_underline">Game object (console)</button>
-                </div>
-
-                {/* Insight debug tooltip */}
-                {/* <div id="insight">
-                    Card information goes here
-                </div> */}
-            </> : null}
         </>
     );
 }

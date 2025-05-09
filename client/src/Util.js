@@ -87,3 +87,24 @@ export function looseIndexOfObj(array, obj) {
 export function clearURLHash() {
     window.history.replaceState("", document.title, window.location.pathname + window.location.search);
 }
+
+/** COPIED FROM SERVER.MJS --- Create a formatted date from Date object. Defaults to current time.
+ * @param {Date} date (Optional) new Date object. Uses the current date is undefined.
+ * @returns {String} Provided date in a readable format
+ */
+export function formattedDate(date=new Date()) {
+    let hours = date.getHours();
+    let minutes = date.getMinutes();
+    let seconds = date.getSeconds();
+
+    const ampm = hours >= 12 ? 'PM' : 'AM';
+    hours = hours % 12;
+    hours = hours ? hours : 12;
+    minutes = minutes < 10 ? '0' + minutes : minutes;
+    seconds = seconds < 10 ? '0' + seconds : seconds;
+
+    const monthYear = date.toISOString().split('T')[0];
+
+    // Combine time and date
+    return `${hours}:${minutes}:${seconds} ${ampm}, ${monthYear}`;
+}

@@ -92,14 +92,15 @@ export default function Chat({
 
     return (<>
 
-        <div className={`chat_container ${chatOpen ? "open" : null}`}>
-            <div id="chat" className="border_shadowed">
+        <div className={`panel_container chat_container ${chatOpen ? "open" : ""}`}>
+            <div id="chat" className="panel border_shadowed">
+
                 {/* Close button */}
                 <button className="close" data-title="Close" onClick={() => setChatOpen(false)}>
                     &lt;
                 </button>
 
-                {/* Chat */}
+                {/* Title */}
                 <h3 className="border_shadowed cursor_pointer" onClick={() => setChatOpen(false)}>Chat</h3>
 
                 {/* Edit profile */}
@@ -162,7 +163,7 @@ export default function Chat({
                     </button>
                 </div>
             </div>
-            <button id="chat_button" className="border_shadowed" onClick={toggleChat}>
+            <button id="chat_button" className="panel_button border_shadowed" onClick={toggleChat}>
                 <img src="/icons/chat.svg" alt="Chat" />
                 <span>{chatUnread > 9 ? "9+" : chatUnread || null}</span>
 

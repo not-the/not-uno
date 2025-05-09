@@ -21,6 +21,7 @@ function hideAll(arr, obfuscate) {
 export default class Uno {
     #hostSocket;
     #rejoin_keys = [];
+    #log = [];
 
     constructor({ roomID, hostSocket, nameIsUUID }) {
         // Statistics
@@ -71,6 +72,7 @@ export default class Uno {
         // this.control_everyone = true; // Currently does nothing
 
         // Register game
+        this.roomCreatedTimestamp = Date.now();
         server.games[roomID] = this;
 
         // Update
@@ -78,6 +80,50 @@ export default class Uno {
 
         // Log
         server.log(`🎮 Created game (${this.roomID}) hosted by ${this.#hostSocket.name} (${this.host})`);
+
+        this.log("Created", roomID).amend(true);
+    }
+
+    
+    /** Debug log */
+    log(id, ...args) {
+        const stringifiedParams = args.map(a => {
+            if(a?.id !== undefined) return "SOCKET"; // Socket object
+            if(a === undefined) return "undefined"; // Undefined
+            return JSON.stringify(a);
+        });
+
+        /** Log entry object */
+        class LogEntry {
+            constructor(id, params, index) {
+                // Timestamp
+                this.timestamp = Date.now();
+
+                // Data
+                this.id = id;
+                this.params = params;
+                this.index = index;
+            }
+
+            /** Amend log entry */
+            amend(success, msg) {
+                this.success = success;
+                this.amendment = msg;
+
+                // Method chaining
+                return this;
+            }
+        }
+
+        // Log
+        const entry = new LogEntry(id, stringifiedParams, this.#log.length);
+        this.#log.push(entry);
+
+        return entry;
+    }
+
+    get getLog() {
+        return this.#log;
     }
 
 
@@ -101,7 +147,7 @@ export default class Uno {
         return (this.playerCount >= this.config.max_players);
     }
 
-    /** Object of all (non-spectating) users' profiles (socketID:data pairs) */
+    /** Object of all users' profiles (socketID:data pairs) */
     get users() {
         let result = {};
         for(const socket of this.clients) {
@@ -136,10 +182,14 @@ export default class Uno {
      * @param {Boolean} updateClients Whether or not to update connected clients
      */
     setHost(socket, updateClients=false) {
+        const logEntry = this.log("setHost", ...Array.from(arguments));
+
         if(typeof socket !== 'object') throw new Error("Error in Uno.setHost(): socket parameter is invalid");
 
         this.#hostSocket = socket;
         this.host = socket.id;
+
+        logEntry.amend(true);
     }
 
     /** Joins a client to the room
@@ -149,7 +199,14 @@ export default class Uno {
      * @returns {Boolean} Returns false if they can't join, true on success
      */
     join(socket, spectate=false, rejoin_key) {
-        if(!socket) return console.warn("Uno.join(): Invalid parameter for 'socket'");
+        const logEntry = this.log("join", ...Array.from(arguments));
+
+        if(!socket) {
+            const msg = "Uno.join(): Invalid parameter for 'socket'";
+            console.warn(msg);
+            logEntry.amend(false, msg);
+            return;
+        }
 
         const roomID = this.roomID;
 
@@ -164,6 +221,7 @@ export default class Uno {
                 title: "Invite Expired",
                 msg: `Game has ended (${roomID})`
             });
+            logEntry.amend(false, "Game has ended");
             return false;
         }
 
@@ -174,6 +232,7 @@ export default class Uno {
                 title: "Whoops",
                 msg: `Game has already started (${roomID})`
             });
+            logEntry.amend(false, "Game already started");
             return false;
         }
 
@@ -181,6 +240,7 @@ export default class Uno {
         if(!allowRejoin && spectate && !this.config.spectators) {
             socket.emit("join_failed");
             socket.emit("toast", { title:"Room does not allow spectators" });
+            logEntry.amend(false, "Room does not allow spectators");
             return false;
         }
 
@@ -188,6 +248,7 @@ export default class Uno {
         if(!allowRejoin && this.isFull && !spectate) {
             socket.emit("join_failed");
             socket.emit("toast", { title:"Room is full" });
+            logEntry.amend(false, "Room is full");
             return;
         }
 
@@ -247,6 +308,7 @@ export default class Uno {
         this.updateClients();
 
         // Return success
+        logEntry.amend(true, `${rejoin_key ? `Rejoined - ` : ""}New rejoin_key: ${String(preliminary_rejoin_key)}`);
         return true;
     }
 
@@ -254,10 +316,20 @@ export default class Uno {
      * @param {String} socketID
      */
     disconnect(socketID) {
-        if(this.state !== "ingame") return this.leave(socketID);
+        const logEntry = this.log("disconnect", ...Array.from(arguments));
+
+        // Not ingame
+        if(this.state !== "ingame") {
+            this.leave(socketID);
+            logEntry.amend(true, "Not ingame");
+            return;
+        }
 
         const pnum = this.getPnumFromSocketID(socketID);
-        if(pnum === -1) return;
+        if(pnum === -1) {
+            logEntry.amend(true, "User wasn't a player (pnum was -1)");
+            return;
+        }
         this.players[pnum].disconnected = true;
 
         // Close if all players are disconnected
@@ -265,6 +337,8 @@ export default class Uno {
 
         // Update
         this.updateClients();
+
+        logEntry.amend(true);
     }
 
     /** Player leave game
@@ -272,6 +346,8 @@ export default class Uno {
      * @param {Boolean} sendtoast Whether or not to send out a toast
      */
     leave(socketID, sendtoast) {
+        const logEntry = this.log("leave", ...Array.from(arguments));
+
         // Info
         const roomID = this.roomID;
 
@@ -298,6 +374,8 @@ export default class Uno {
 
         // Update remaining clients
         this.updateClients();
+
+        logEntry.amend(true);
     }
 
     /** Removes player from this.players and also handles host transfer logic
@@ -306,6 +384,7 @@ export default class Uno {
      * @returns 
      */
     removePlayer(pnum, socket, updateClients=true) {
+        const logEntry = this.log("removePlayer", ...Array.from(arguments));
 
         // Take player's cards and shuffle them back into the deck
         if(this.state === "ingame" && Array.isArray(this.deck)) {
@@ -326,6 +405,7 @@ export default class Uno {
         if((this.clients.length - this.spectatorCount) === 0) {
             // server.log(`Room [${roomID}] is empty, closing game...`);
             this.emit("toast", { title: "Game ended" });
+            logEntry.amend(false, "Game ended");
             return this.close();
         }
 
@@ -343,48 +423,81 @@ export default class Uno {
 
         // Update
         if(updateClients) this.updateClients();
+        logEntry.amend(true);
     }
 
     /** Kicks a player by their socket ID
-     * @param {String} socketID 
+     * @param {Object} socket Socket of the player trying to kick (or undefined to bypass this check)
+     * @param {String} socketIDToKick Socket ID of the player to kick
+     * @param {Boolean} toast Whether or not to send a toast to the kicked player
+     * @param {String} msg Description for kick message
      */
     kick(socket, socketIDToKick, toast=true, msg=null) {
-        if(socket !== undefined && socket.id !== this.host) return;
+        const logEntry = this.log("kick", ...Array.from(arguments));
+        if(socket !== undefined && socket.id !== this.host) {
+            logEntry.amend(false, "Kicking user is not the host");
+            return;
+        }
 
         // Toast
         if(toast) io.to(socketIDToKick).emit("toast", { title: "Kicked from game", msg });
 
         // Leave
         this.leave(socketIDToKick, false);
+        logEntry.amend(true);
     }
 
     /** Marks game as closed, automatically gets deleted after 24-48 hours */
     close() {
+        const logEntry = this.log("close", ...Array.from(arguments));
+
         this.roomClosed = true;
         this.roomClosedTimestamp = Date.now();
         this.emit("gameState");
 
         // Log
         server.log(`🎮 Closed game (${this.roomID})`);
+
+        logEntry.amend(true);
     }
 
     /** Completely destroys game object */
     destroy() {
+        const logEntry = this.log("destroy", ...Array.from(arguments));
+
         this.destroyed = true;
         delete server.games[this.roomID]; // Delete self
         this.emit("leave");
         server.log(`♻ Cleaned up game (${this.roomID})`);
+
+        logEntry.amend(true);
     }
 
+    /** Request a rematch */
     requestRematch(socketID) {
+        const logEntry = this.log("requestRematch", ...Array.from(arguments));
+
+        // Not on win screen
+        if(!this.winner) return logEntry.amend(false, "Not on win screen");
+
+        // Invalid player
         const pnum = this.getPnumFromSocketID(socketID);
-        if(this.players?.[pnum] === undefined) return;
+        if(pnum === -1 || this.players?.[pnum] === undefined) {
+            logEntry.amend(false, "Invalid pnum");
+            return;
+        }
+
+        // Set rematch property
         this.players[pnum].wants_rematch = true;
+
+        // Update
         this.updateClients();
+
+        logEntry.amend(true);
     }
 
     /** Creates a structuredClone of the game, obfuscates the deck, and creates a usersParsed property */
-    publicClone() {
+    publicClone(hideCards=true) {
         let clone = structuredClone(this);
 
         // Flatten data
@@ -395,7 +508,7 @@ export default class Uno {
         for(let p of clone.players) delete p.call_timer;
 
         // Obfuscate deck
-        hideAll(clone.deck, true);
+        if(hideCards) hideAll(clone.deck, true);
 
         return clone;
     }
@@ -452,19 +565,44 @@ export default class Uno {
     }
 
     setConfigOption(socket, option, value) {
-        if(this.host !== socket.id) return socket.emit("Toast", {
-            msg: "Must be the host to change game config"
-        })
+        const logEntry = this.log("setConfigOption", ...Array.from(arguments));
 
-        if(!this.config.hasOwnProperty(option)) return; // Config property doesn't exist
+        // Not the host
+        if(this.host !== socket.id) {
+            const msg = "Must be the host to change game config";
+            socket.emit("Toast", { msg })
+            logEntry.amend(false, msg);
+            return;
+        }
 
+        // Config property doesn't exist
+        if(!this.config.hasOwnProperty(option)) {
+            logEntry.amend(false, "Config property doesn't exist");
+            return;
+        }
+
+        // Get option
         const configData = data.config[option];
-        if(typeof value !== configData.type && configData.type !== "dropdown") return; // New value is wrong data type
+
+        // New value is wrong data type
+        if(typeof value !== configData.type && configData.type !== "dropdown") {
+            logEntry.amend(false, "New value is wrong data type");
+            return;
+        } 
 
         // const customDeckException = (option !== "starting_deck" && !value.startsWith("not_uno_deck"));
         const customDeckException = false;
-        if(configData.type === "dropdown" && (!configData.dropdown.includes(value) && customDeckException)) return; // Dropdown value is invalid
-        if(configData.type === "number" && (value > configData.max || value < configData.min)) return; // Number value is outside min/max range
+        // Dropdown value is invalid
+        if(configData.type === "dropdown" && (!configData.dropdown.includes(value) && customDeckException)) {
+            logEntry.amend(false, "Dropdown value is invalid");
+            return;
+        }
+
+        // Number value is outside min/max range
+        if(configData.type === "number" && (value > configData.max || value < configData.min)) {
+            logEntry.amend(false, "Number value is outside min/max range");
+            return;
+        }
 
         // Set
         this.config[option] = value;
@@ -488,17 +626,27 @@ export default class Uno {
 
         // Update
         this.updateClients();
+
+        logEntry.amend(true);
     }
 
     /** Reruns playCard with the player's action of choice */
     performAction(socket, choice) {
+        const logEntry = this.log("performAction", ...Array.from(arguments));
+
         const pnum = this.getPnumFromSocketID(socket.id);
-        if(this.turn !== pnum) return; // Not your turn
+
+        // Not your turn or invalid player
+        if(pnum === -1 || this.turn !== pnum) {
+            logEntry.amend(false, "Not your turn or invalid player");
+            return;
+        } 
 
         // Cancel
         if(choice === null) {
             delete this.action;
             this.updateClients();
+            logEntry.amend(true, "Action cancelled by player");
             return;
         }
 
@@ -515,12 +663,14 @@ export default class Uno {
         ) {
             this.playCard(...this.action_params, this.action, choice);
         }
+
+        logEntry.amend(true, "Action performed");
     }
 
     /** Returns the index of a given socket id within the players list
-     * @param {*} socketID Socket ID
-     * @param {*} players Players list (optional)
-     * @returns 
+     * @param {String} socketID Socket ID
+     * @param {Array} players Players list (optional)
+     * @returns {Number}
      */
     getPnumFromSocketID(socketID, players=this.players) {
         return players.findIndex(p => p?.socketID === socketID);
@@ -535,14 +685,21 @@ export default class Uno {
      * @param {Object} socket Socket of player who made the request
      */
     start(socket) {
+        const logEntry = this.log("start", ...Array.from(arguments));
+
         // Host
         if(socket.id !== this.host) {
-            socket.emit("toast", { msg: "Only the host can start the game" });
+            const msg = "Only the host can start the game";
+            socket.emit("toast", { msg });
+            logEntry.amend(false, msg);
             return;
         };
 
         // Needs to be either lobby or win screen
-        if(this.state !== "lobby" && this.winner === undefined) return;
+        if(this.state !== "lobby" && this.winner === undefined) {
+            logEntry.amend(false, "Needs to be either lobby or win screen");
+            return;
+        }
 
         // Minimum players
         // if(this.players.length < 2) {
@@ -567,6 +724,9 @@ export default class Uno {
             startingPlayerID = (lastWinnerID === -1 ? 0 : lastWinnerID) ?? 0;
         }
 
+        // Game state
+        this.state = "ingame";
+
         this.turn = startingPlayerID;
 
         this.turn_absolute = 0; // Incremements by one each turn
@@ -582,16 +742,21 @@ export default class Uno {
 
         this.animation_key = 0;
 
+        // Increment round
+        this.round++;
+
         hideAll(this.deck, false);
         shuffle(this.deck); // Shuffle
 
         this.moveCard("deck", "pile", false); // First card
+
+        // Create players and deal cards
         this.generatePlayers();
 
-        this.state = "ingame";
-        this.round++;
-
+        // Update
         this.updateClients();
+
+        logEntry.amend(true);
     }
 
     /** Gets the starting deck and returns it */
@@ -606,14 +771,26 @@ export default class Uno {
 
     /** Sets game state to lobby */
     returnToLobby(socket) {
+        const logEntry = this.log("returnToLobby", ...Array.from(arguments));
+
+        // Already in lobby
+        if(this.state === "lobby") {
+            logEntry.amend(false, "Already in lobby");
+            return;
+        }
+
         // Host
         if(socket.id !== this.host) {
-            socket.emit("toast", { msg: "Only the host can manage the game" });
+            const msg = "Only the host can manage the game";
+            socket.emit("toast", { msg });
+            logEntry.amend(false, msg);
             return;
         };
 
         this.state = "lobby";
         this.updateClients();
+
+        logEntry.amend(true);
     }
 
     /** Runs the addPlayer() method for each connected user */
@@ -627,17 +804,20 @@ export default class Uno {
 
     /** Adds a new player to the players array and gives them their cards */
     addPlayer(socketID, rejoin_key) {
+        // Push new player object
         this.players.push({
             socketID,
             cards: []
         });
 
+        // Register rejoin keys
         this.#rejoin_keys[rejoin_key] = socketID;
 
         // Give cards
         const pnum = this.players.length-1;
         repeat(() => this.moveCard("deck", pnum, false, undefined, false), this.config.starting_cards);
 
+        // Update
         this.updateClients();
     }
 
@@ -648,6 +828,14 @@ export default class Uno {
      * @param {Number} fromIndex 
      */
     moveCard(fromName, toName, hidden, fromIndex, runUpdateClients=true) {
+        const logEntry = this.log("moveCard", ...Array.from(arguments));
+
+        // Not ingame
+        if(this.state !== "ingame") {
+            logEntry.amend(false, "Not ingame");
+            return;
+        }
+
         // Get to/from locations
         let from = typeof fromName === 'number' ?
             this.players[fromName].cards : // Player
@@ -659,12 +847,17 @@ export default class Uno {
         // Take card
         let card = fromIndex === undefined ? from.shift() : from.splice(fromIndex, 1)[0];
 
-        if(card === undefined) return; // Error
+        // Error
+        if(card === undefined) {
+            logEntry.amend(false, "card is undefined");
+            return;
+        }
+
         if(hidden !== undefined) card.hidden = hidden; // Unhide
         to.push(card); // Move
 
         // Empty deck
-        this.replenishDeck();
+        if(this.deck.length === 0) this.replenishDeck();
 
         // Animate
         this.animation = { fromName, toName, fromIndex, card };
@@ -681,11 +874,13 @@ export default class Uno {
 
         // Update
         if(runUpdateClients) this.updateClients();
+
+        logEntry.amend(true);
     }
 
     /** Takes cards from underneath the pile and shuffles them back into the deck */
-    replenishDeck() {
-        if(this.deck.length !== 0) return;
+    replenishDeck() {        
+        const logEntry = this.log("replenishDeck", ...Array.from(arguments));
 
         // Move cards
         this.deck = structuredClone(this.pile.slice(0, -1));
@@ -694,6 +889,8 @@ export default class Uno {
         // Hide/shuffle
         hideAll(this.deck, false);
         shuffle(this.deck);
+
+        logEntry.amend(true);
     }
 
     /** Player draw card
@@ -701,13 +898,26 @@ export default class Uno {
      * @returns 
      */
     drawCard(socketID) {
+        const logEntry = this.log("drawCard", ...Array.from(arguments));
+
+        // Not ingame
+        if(this.state !== "ingame") {
+            logEntry.amend(false, "Not ingame");
+            return;
+        }
+
+        // Player number
         const pnum = this.getPnumFromSocketID(socketID);
 
         // Not your turn
-        if(!this.isValidTurn(pnum)) return;
+        if(!this.isValidTurn(pnum)) {
+            logEntry.amend(false, "Not your turn");
+            return;
+        }
 
         // In debt
         if(this.draw_debt > 0) {
+            logEntry.amend(undefined, `In debt (${this.draw_debt})`);
             return this.debtToast(socketID);
         }
 
@@ -724,6 +934,7 @@ export default class Uno {
             // Update state
             // this.updateClients();
 
+            logEntry.amend(undefined, "1 draw limit");
             return;
         }
 
@@ -738,6 +949,8 @@ export default class Uno {
         // Update client
         this.updateClients();
         io.to(socketID).emit("scroll_cards", ucid);
+
+        logEntry.amend(true);
     }
 
     /** Sends toast to a given socket explaining draw stacking */
@@ -772,6 +985,8 @@ export default class Uno {
      * @param {Number} pnum2 Second player's ID
      */
     swapHands(pnum1, pnum2) {
+        const logEntry = this.log("swapHands", ...Array.from(arguments));
+
         [
             this.players[pnum1].cards,
             this.players[pnum2].cards,
@@ -779,14 +994,20 @@ export default class Uno {
             this.players[pnum2].cards,
             this.players[pnum1].cards,
         ];
+
+        logEntry.amend(true);
     }
 
     /** Every player passes their hands along in the current rotation direction */
     passHands() {
+        const logEntry = this.log("passHands", ...Array.from(arguments));
+
         const direction = this.direction;
         const hands = this.players.map(p => p.cards);
         rotateArr(hands);
         for(const i in this.players) this.players[i].cards = hands[i];
+
+        logEntry.amend(true);
     }
 
     /** Player play card (attempt to put into discard pile)
@@ -796,6 +1017,14 @@ export default class Uno {
      * @returns {Boolean} If the move was unsuccessful, whether it not be the player's turn or the move is invalid, the method will return false
      */
     playCard(socketID, ucid, actionName, actionChoice, updateClients=true) {
+        const logEntry = this.log("playCard", ...Array.from(arguments));
+
+        // Not ingame
+        if(this.state !== "ingame") {
+            logEntry.amend(false, "Not ingame");
+            return;
+        }
+
         const pnum = this.getPnumFromSocketID(socketID);
 
         // Valid
@@ -804,22 +1033,35 @@ export default class Uno {
         // Cards
         const playerCardIndex = this.players[pnum].cards.findIndex(card => card.ucid === ucid);
         const playerCard = this.players[pnum].cards[playerCardIndex];
+
+        // Valid turn
+        else if(!this.isValidTurn(pnum)) {
+            logEntry.amend(false, "Not your turn");
+            return;
+        }
+
+        // Card is undefined
         if(playerCard === undefined) {
-            // console.warn(`[Player ${pnum}] Card #${cardID} doesn't exist`);
-            return false;
-        };
+            logEntry.amend(false, "playerCard is undefined");
+            return;
+        }
+
+
 
         // Card does not deflect debt
         const needsMatching = this.config.draw_stacking === "matching";
         const isMatching = playerCard.draw === this.piletop.draw;
         if(this.draw_debt > 0 && (!playerCard.draw || (needsMatching && !isMatching))) {
-            return this.debtToast(socketID);
+            this.debtToast(socketID);
+            logEntry.amend(false, "Card does not deflect debt");
+            return;
         }
 
         // Test discard pile for valid move
         if(!Uno.testCards(playerCard, this.piletop)) {
             // console.warn(`[Player ${pnum}] Invalid card`);
-            return false;
+            logEntry.amend(false, "Card doesn't match pile");
+            return;
         }
 
         // Pre-move action prompt
@@ -829,6 +1071,7 @@ export default class Uno {
                 this.action = "choose_color";
                 this.action_params = [socketID, ucid];
                 this.updateClients();
+                logEntry.amend(undefined, `Awaiting action (${this.action})`);
                 return;
             }
 
@@ -837,6 +1080,7 @@ export default class Uno {
                 this.action = "choose_swap";
                 this.action_params = [socketID, ucid];
                 this.updateClients();
+                logEntry.amend(undefined, `Awaiting action (${this.action})`);
                 return;
             }
 
@@ -845,6 +1089,7 @@ export default class Uno {
                 this.action = "target_draw";
                 this.action_params = [socketID, ucid];
                 this.updateClients();
+                logEntry.amend(undefined, `Awaiting action (${this.action})`);
                 return;
             }
         }
@@ -881,6 +1126,7 @@ export default class Uno {
         if(playerCard.reverse && this.players.length === 2) {
             this.draw_count = 0;
             if(updateClients) this.updateClients();
+            logEntry.amend(true, "2 player reverse");
             return;
         }
 
@@ -895,6 +1141,8 @@ export default class Uno {
         // Update state
         // setGame(modifiedGame);
         if(updateClients) this.updateClients();
+
+        logEntry.amend(true);
     }
 
 
@@ -907,10 +1155,26 @@ export default class Uno {
 
     /** Player action - Choose to end turn */
     endTurn(socketID) {
-        if(this.draw_count === 0 && this.draw_debt === 0) return;
+        const logEntry = this.log("endTurn", ...Array.from(arguments));
 
+        // Not ingame
+        if(this.state !== "ingame") {
+            logEntry.amend(false, "Not ingame");
+            return;
+        }
+
+        // Can't end turn yet
+        if(this.draw_count === 0 && this.draw_debt === 0) {
+            logEntry.amend(false, "Can't end turn yet");
+            return;
+        }
+
+        // Not your turn
         const pnum = this.getPnumFromSocketID(socketID);
-        if(!this.isValidTurn(pnum)) return;
+        if(!this.isValidTurn(pnum)) {
+            logEntry.amend(false, "Not your turn");
+            return;
+        }
 
         // End turn, unless drawing with "Always Play" enabled
         const continueturn = (this.config.always_play && this.draw_debt !== 0);
@@ -919,6 +1183,8 @@ export default class Uno {
         // Update clients
         this.updateClients();
         if(didDrawCards) io.to(socketID).emit("scroll_cards");
+
+        logEntry.amend(true);
     }
 
     /** Starts next turn
@@ -927,6 +1193,8 @@ export default class Uno {
      * @param {Boolean} keepTurn Does not end current player's turn but still enacts draw cards, etc
      */
     nextTurn(skip=0, playerCard={}, keepTurn) {
+        const logEntry = this.log("nextTurn", ...Array.from(arguments));
+
         const lastPlayerID = this.turn;
         const turnValue = ((1 + skip) * this.direction);
 
@@ -996,6 +1264,8 @@ export default class Uno {
                 }, timerMS);
             }
         }
+
+        logEntry.amend(true);
 
         // Did draw cards, return true
         if(didDrawCards) return true;

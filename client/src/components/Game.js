@@ -498,11 +498,11 @@ export default function Game({ game, setGame, startGame }) {
                 <div className="choice_popup choose_swap">
                     <h3>Give +{2} to:</h3>
                     <div className="users_list">
-                        {Object.entries(game.usersParsed).map(([socketID, user], index) => {
+                        {Object.entries(game.usersParsed).map(([socketID, user], pnum) => {
                             // Exclude self
                             return socketID === socket.id ? null
                             :
-                            <User key={index} user={user} game={game} tagline={`P${index+1}`} onClick={() => action(index)} classes="cursor_pointer" />
+                            <User key={pnum} user={user} game={game} tagline={`P${pnum+1}`} onClick={() => action(pnum)} classes="cursor_pointer" />
                         })}
                     </div>
 

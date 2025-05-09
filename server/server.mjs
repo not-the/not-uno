@@ -78,18 +78,6 @@ io.use((socket, next) => {
     }
 });
 
-// Startup message
-console.log(
-    `
-    \x1b[47m\x1b[30m  Starting Not UNO server...  \x1b[0m
-    > Environment: \x1b[33m${process.env.NODE_ENV}\x1b[0m
-    > Client origin: \x1b[33m${clientOrigin}\x1b[0m
-    ${word_blacklist === undefined ?
-        "> No ./word_blacklist.json provided\n" :
-        `> \x1b[33m${word_blacklist?.deny?.length}\x1b[0m blacklisted strings (word_blacklist.json)`
-    }`);
-
-
 
 /** Server object (unrelated to express/socket.io, scroll up for those) */
 const server = {
@@ -122,19 +110,38 @@ const server = {
         }
     },
 
+
+    logHistory: [],
+
     /** Console logging shorthand w/ fancy formatting and timestamps
-     * @param {*} message Message to log to console
+     * @param {String} message Message to log to console
      */
-    log(message) {
-        console.log(
-            `\u001b[1;36m[${formattedDate()}]\u001b[0m ${message}`
-        )
-    
-        function formattedDate() {
-            const currentDate = new Date();
-            let hours = currentDate.getHours();
-            let minutes = currentDate.getMinutes();
-            let seconds = currentDate.getSeconds();
+    log(message, includeTimestamp=true) {
+        // Timestamp
+        const timestamp = !includeTimestamp ? "" : `\u001b[1;36m[${formattedDate()}]\u001b[0m `;
+
+        const full = `${timestamp}${message}`;
+
+        // Console
+        console.log(full);
+
+        // History
+        this.logHistory.push({
+            timestamp: Date.now(),
+            message,
+        })
+
+        // Discord
+        if(process.env.WEBHOOK_LOG_MODE === "all" && process.env.DISCORD_WEBHOOK_URL) this.webhook(message);
+
+        /** Create a formatted date from Date object. Defaults to current time.
+         * @param {Date} date (Optional) new Date object. Uses the current date is undefined.
+         * @returns {String} Provided date in a readable format
+         */
+        function formattedDate(date=new Date()) {
+            let hours = date.getHours();
+            let minutes = date.getMinutes();
+            let seconds = date.getSeconds();
     
             const ampm = hours >= 12 ? 'PM' : 'AM';
             hours = hours % 12;
@@ -142,10 +149,10 @@ const server = {
             minutes = minutes < 10 ? '0' + minutes : minutes;
             seconds = seconds < 10 ? '0' + seconds : seconds;
     
-            const date = currentDate.toISOString().split('T')[0];
+            const monthYear = date.toISOString().split('T')[0];
     
             // Combine time and date
-            return `${hours}:${minutes}:${seconds} ${ampm}, ${date}`;
+            return `${hours}:${minutes}:${seconds} ${ampm}, ${monthYear}`;
         }
     },
 
@@ -161,8 +168,71 @@ const server = {
                 (game.roomClosedTimestamp + server.maxGameAge) < Date.now() // Over max age
             ) game.destroy();
         }
+    },
+
+    /** Sends a message */
+    webhook(msg) {
+        // URL
+        const webhookURL = process.env.DISCORD_WEBHOOK_URL;
+        if(!webhookURL) return; // Not specified
+
+        // JSON data
+        const data = JSON.stringify({
+            content: msg.replace(/\033\[[0-9;]*m/g, "") // Remove console formatting codes
+        });
+
+        const url = new URL(webhookURL);
+
+        // https request
+        const options = {
+            hostname: url.hostname,
+            path: url.pathname + url.search,
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Content-Length': Buffer.byteLength(data)
+            }
+        }
+        const req = https.request(options, (res) => {
+            res.on("data", d => process.stdout.write(d));
+        });
+
+        // Error
+        req.on('error', err => console.error(err));
+
+        // Send
+        req.write(data);
+        req.end();
     }
 }
+
+
+// Startup message
+server.log(
+    `
+    \x1b[47m\x1b[30m  Starting Not UNO server...  \x1b[0m
+    > Environment: \x1b[33m${process.env.NODE_ENV}\x1b[0m
+    > Client origin: \x1b[33m${clientOrigin}\x1b[0m
+    ${word_blacklist === undefined ?
+        "> No ./word_blacklist.json provided\n" :
+        `> \x1b[33m${word_blacklist?.deny?.length}\x1b[0m blacklisted strings (word_blacklist.json)`
+    }`, false);
+
+
+// Crash handler
+process.on("uncaughtException", error => {
+    // Log
+    console.error(error);
+
+    // Write crash log to file here
+    // ...
+    
+    // Webhook
+    if(process.env.WEBHOOK_LOG_MODE === "uncaughtExceptions") {
+        server.webhook(`[Server] uncaughtException\n\`\`\`${JSON.stringify(error, Object.getOwnPropertyNames(error))}\`\`\``);
+    }
+});
+
 
 // Game cleanup
 const cleanupTimer = setInterval(server.performCleanup, server.cleanupPeriod);
@@ -174,6 +244,7 @@ const customDecks = {};
 /** Modules */
 import socketConnection from './modules/socket.connection.mjs'
 import { arrRandom, capitalizeFirstLetter } from './modules/utils.mjs'
+// import { hostname } from 'os'
 export { io, data, word_blacklist, server, isProduction };
 
 

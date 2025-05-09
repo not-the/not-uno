@@ -2,6 +2,7 @@
 
 
 # NOT UNO
+.env
 server/word_blacklist.json
 
 

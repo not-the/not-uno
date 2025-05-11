@@ -26,11 +26,14 @@ const socketConnection = function(socket) {
 
     // ON READY
     socket.on("ready", () => {
-        // Profile
-        socket.emit("myProfile", {
+        const profile = {
             name: socket.name,
             avatar: socket.avatar
-        });
+        }
+        if(socket.elevated) profile.elevated = true;
+
+        // Profile
+        socket.emit("myProfile", profile);
 
         // Auto join room
         const autoJoin = socket.handshake?.query?.autoJoin;
@@ -72,7 +75,7 @@ const socketConnection = function(socket) {
             roomIDCopy.length < roomLengthMin ||
             roomIDCopy.length > roomLengthMax
         ) {
-            console.warn(`Failed trying to join room: User ID ${socket.id}`);
+            server.log(`Failed trying to join room: User ID ${socket.id}`);
             socket.emit("toast", {
                 title: "Error",
                 msg: `Failed trying to join room. Must be between ${roomLengthMin} and ${roomLengthMax} characters.`
@@ -175,7 +178,7 @@ const socketConnection = function(socket) {
         /** @type {Uno} */
         const game = getGameByUser();
         if(game === undefined) {
-            console.warn(`Warning: Game is undefined. User: [${socket.id}]`);
+            server.log(`Warning: Game is undefined. User: [${socket.id}]`);
             socket.emit("toast", {
                 title: "Error",
                 msg: "Game does not exist. Try making another one."
@@ -377,9 +380,9 @@ const socketConnection = function(socket) {
 
 
     // Debug
-    if(!isProduction) {
+    if(!isProduction || (socket.elevated && process.env.DEBUG_ACCESS_KEY)) {
         // Server data
-        socket.on("debug", (data) => {
+        socket.on("debug", () => {
             socket.emit("debug", {
                 usersRooms: server.usersRooms,
                 games: server.games,
@@ -388,7 +391,7 @@ const socketConnection = function(socket) {
         });
 
         // All lobbies
-        socket.on("debug_request_lobbies", (data) => {
+        socket.on("debug_request_lobbies", () => {
             const lobbies =
                 Object.values(server.games)
                     .map(game => {

@@ -9,10 +9,14 @@ const serverURL = isProduction ?
     "https://uno-server1.notkal.com:443" : // Production endpoint
     'http://localhost:443'; // Development
 
+
+const URLKey = new URL(window.location).searchParams.get("key");
+
 const handshakeData = {
     ...store("user_data"),
     autoJoin: window.location.hash.substring(1),
-    rejoin_key: localStorage.getItem("notuno_rejoin_key")
+    rejoin_key: localStorage.getItem("notuno_rejoin_key"),
+    key: URLKey
 };
 const socket = io(serverURL, { secure:true, query:handshakeData });
 

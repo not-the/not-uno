@@ -37,7 +37,7 @@ export default function DebugPanel({ game, joinRoom }) {
 
         let refreshLoop = setInterval(() => {
             const isDebugOpenByClass = document.querySelector(".debug_container").classList.contains("open");
-            if(!isDebugOpenByClass) return console.log("gaming");
+            if(!isDebugOpenByClass) return;
             debugRequestLobbies();
         }, 1000);
 

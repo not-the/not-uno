@@ -163,6 +163,7 @@ export default function App() {
             else setMenu("game");
         }
 
+        // Profile
         socket.on("myProfile", data => {
             store("user_data", data);
             setProfile(data);
@@ -230,7 +231,7 @@ export default function App() {
             <Chat game={game} profile={profile} setUser={setUser} setProfileOpen={setProfileOpen} />
 
             {/* Chat */}
-            {isProduction ? null : <DebugPanel game={game} profile={profile} joinRoom={joinRoom} />}
+            {!profile.elevated ? null : <DebugPanel game={game} profile={profile} joinRoom={joinRoom} />}
 
             {/* Background layer */}
             <div id="main_background"/>

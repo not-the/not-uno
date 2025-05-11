@@ -67,6 +67,12 @@ io.use((socket, next) => {
     socket.name = name ?? getRandomName();
     socket.avatar = avatar ?? arrRandom(data.avatars);
 
+    // Elevate
+    if(socket.handshake?.query?.key === process.env.DEBUG_ACCESS_KEY) {
+        socket.elevated = true;
+        socket.emit("elevated");
+    }
+
     next();
 
     // copied from app.js. Might convert to an api endpoint

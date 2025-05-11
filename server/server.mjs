@@ -5,7 +5,6 @@ import express from 'express'
 import fs from 'fs'
 import http from 'http'
 import https from 'https'
-import 'dotenv/config'
 import { Server } from 'socket.io'
 import cors from 'cors'
 

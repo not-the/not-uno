@@ -19,8 +19,7 @@ import word_blacklist from './word_blacklist.json' assert { type: 'json' }
 const isProduction = process.env.NODE_ENV === 'production';
 const clientOrigin = isProduction ?
     "https://uno.notkal.com" :  // Production website
-    'http://localhost:3000';    // Development
-
+    process.env.DEVELOPMENT_CLIENT_ORIGIN ?? "http://localhost:3000";    // Development
 
 // SSL
 let privateKey, certificate;

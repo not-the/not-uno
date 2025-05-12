@@ -24,7 +24,7 @@ export default function SupportBlurb() {
             {/* Button */}
             <div className="margin_left_auto flex flex_center flex_column">
                 <a
-                    href="https://notkal.com/support" target="_blank" rel="noreferrer"
+                    href="https://support.notkal.com/" target="_blank" rel="noreferrer"
                     className="button button_primary button_secondary button_support hover_border_shadowed button_mini"
                 >
                     <img src="/promo/ko-fi-cup-border.png" alt="" />

@@ -25,12 +25,12 @@ export default function Header() {
 
                     {/* Support */}
                     <a
-                        href="https://notkal.com/support" target="_blank" rel="noreferrer"
+                        href="https://support.notkal.com/" target="_blank" rel="noreferrer"
                         className="button button_primary button_secondary button_support hover_border_shadowed justify_left"
                     >
                         <img src="/promo/ko-fi-cup-border.png" alt="" />
                         <span>
-                            Support<br/>
+                            Support
                         </span>
                     </a>
                     <span className="center smaller secondary_text">Help cover server costs</span>

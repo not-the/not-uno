@@ -381,6 +381,8 @@ const socketConnection = function(socket) {
 
     // Debug
     if(socket.elevated && process.env.DEBUG_ACCESS_KEY) {
+        server.log(`👑 "${socket.name}" is elevated (${socket.id})`);
+
         // Server data
         socket.on("debug", () => {
             socket.emit("debug", {

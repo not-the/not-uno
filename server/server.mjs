@@ -7,13 +7,13 @@ import http from 'http'
 import https from 'https'
 import { Server } from 'socket.io'
 import cors from 'cors'
+import axios from 'axios'
 
 // Game data
 import data from './data.json' assert { type: 'json' }
 
 // Config
 import word_blacklist from './word_blacklist.json' assert { type: 'json' }
-
 
 // Environment
 const isProduction = process.env.NODE_ENV === 'production';
@@ -40,7 +40,9 @@ if(isProduction) {
 
 // Express setup
 const app = express();
-app.use(cors()); // Use cors package as middleware
+app.use(cors({
+    credentials: true
+})); // Use cors package as middleware
 
 /** Express server */
 const webServer = isProduction ?
@@ -285,6 +287,62 @@ app.get('/', (req, res) => {
     // Respond w/ JSON
     res.send(responseJSON);
 })
+
+// Discord OAuth2
+app.get("/auth/discord", async (req, res) => {
+    const url = process.env.DISCORD_AUTH_URL;
+
+    res.redirect(url);
+});
+app.get("/auth/discord/callback", async (req, res) => {
+    if(!req?.query?.code) return console.warn("Discord auth callback: Code is undefined");
+
+    const { code } = req.query;
+
+    // Request
+    const params = new URLSearchParams({
+        client_id: process.env.DISCORD_APP_CLIENT_ID,
+        client_secret: process.env.DISCORD_APP_CLIENT_SECRET,
+        grant_type: 'authorization_code',
+        code: code,
+        redirect_uri: process.env.DISCORD_REDIRECT_URI
+    });
+
+    // Headers
+    const headers = {
+        'Content-Type':     'application/x-www-form-urlencoded',
+        'Accept-Encoding':  'application/x-www-form-urlencoded'
+    };
+
+    try {
+        // Discord API
+        const response = await axios.post('https://discord.com/api/oauth2/token',
+            params,
+            { headers }
+        );
+
+        // Get user info
+        const userResponse = await axios.get('https://discord.com/api/users/@me', {
+            headers: {
+                Authorization: `Bearer ${response.data.access_token}`,
+                ...headers
+            }
+        })
+
+        console.log(userResponse);
+        console.log(userResponse.data.global_name);
+        console.log(`https://cdn.discordapp.com/avatars/${userResponse.data.id}/${userResponse.data.avatar}`);
+
+        // Redirect
+        if(userResponse.data.id === process.env.DEBUG_DISCORD_USER_ID) {
+            res.redirect(`http://localhost:3000/?key=${process.env.DEBUG_ACCESS_KEY}`);
+            server.log("Authenticated debug user");
+        }
+        else res.redirect(`http://localhost:3000/`);
+    } catch (error) {
+        console.warn(error);   
+    }
+});
 
 // avatars.json
 app.get('/data.json', (req, res) => {

@@ -34,6 +34,16 @@ export default function Header() {
                         </span>
                     </a>
                     <span className="center smaller secondary_text">Help cover server costs</span>
+
+                    {/* Discord Login */}
+                    <a
+                        href="http://localhost:443/auth/discord"
+                        className="button button_primary button_secondary hover_border_shadowed justify_left"
+                    >
+                        <span>
+                            Login
+                        </span>
+                    </a>
                 </div>
             </footer>
         </header>

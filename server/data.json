@@ -443,6 +443,12 @@
 
         "type": "boolean"
     },
+    "jump_in": {
+        "desc": "If your card is identical to the one in the pile you can play it at any time",
+        "icon": "/icons/Continue.svg",
+
+        "type": "boolean"
+    },
     "who_goes_first": {
         "desc": "How the game decides the first player",
         "icon": "/icons/person.svg",

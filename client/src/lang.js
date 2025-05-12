@@ -13,6 +13,7 @@ const lang = {
         "xray": "Hands Down",
         "infinite_draw": "Infinite Draw",
         "always_play": "Always Play",
+        "jump_in": "Jump-in",
 
         "who_goes_first": "Who Goes First",
         "player_one": "Player 1",

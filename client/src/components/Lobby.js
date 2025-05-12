@@ -176,6 +176,7 @@ export default function Lobby({ game, startGame, toast, leaveGame }) {
                     <Config name="xray" game={game} />
                     <Config name="infinite_draw" game={game} />
                     <Config name="always_play" game={game} />
+                    {/* <Config name="jump_in" game={game} /> */}
                     {/* <Config name="continue" game={game} disabled={true} /> */}
                 </section>
 

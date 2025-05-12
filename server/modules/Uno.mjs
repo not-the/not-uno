@@ -37,12 +37,13 @@ export default class Uno {
 
             starting_deck: "classic",
             starting_cards: 7,
+            who_goes_first: "winner",
 
-            infinite_draw: false,
             draw_stacking: "matching",
+            infinite_draw: false,
             always_play: false,
             xray: false,
-            who_goes_first: "winner",
+            // jump_in: false,
         
             // allow_continues: false, // Offer to continue game with remaining players after someone wins
 
@@ -141,6 +142,19 @@ export default class Uno {
        ) return true;
        return false;
    }
+
+   /** Tests whether two cards have matching type AND color
+    * @param {Object} card_a 
+    * @param {Object} card_b 
+    * @returns {Boolean}
+    */
+//    static areCardsSame(card_a, card_b) {
+//         if(
+//             card_a.type === card_b.type &&
+//             card_a.color === card_b.color
+//         ) return true;
+//         return false;
+//    }
 
     /** Boolean representing whether the game has reached max players */
     get isFull() {
@@ -1047,12 +1061,25 @@ export default class Uno {
         // Valid
         if(!this.isValidTurn(pnum)) return;
 
+        // Jump-in modifier
+        // const validJumpIn = this.config.jump_in;
+
         // Cards
         const playerCardIndex = this.players[pnum].cards.findIndex(card => card.ucid === ucid);
         const playerCard = this.players[pnum].cards[playerCardIndex];
 
+        // Jump-in
+        // if(validJumpIn) {
+        //     // Allow player to jump in card matches pile
+        //     if(Uno.areCardsSame(playerCard, this.piletop)) {
+        //         // Continue from the player that just went
+        //         this.turn = pnum;
+        //     }
+        // }
+
         // Valid turn
-        else if(!this.isValidTurn(pnum)) {
+        // else
+        if(!this.isValidTurn(pnum)) {
             logEntry.amend(false, "Not your turn");
             return;
         }

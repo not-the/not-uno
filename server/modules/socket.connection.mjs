@@ -380,7 +380,7 @@ const socketConnection = function(socket) {
 
 
     // Debug
-    if(!isProduction || (socket.elevated && process.env.DEBUG_ACCESS_KEY)) {
+    if(socket.elevated && process.env.DEBUG_ACCESS_KEY) {
         // Server data
         socket.on("debug", () => {
             socket.emit("debug", {

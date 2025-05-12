@@ -158,7 +158,7 @@ export default function Lobby({ game, startGame, toast, leaveGame }) {
 
                     {/* <div className="config_two_col"> */}
                         <Config name="public_lobby" game={game} />
-                        <Config name="allow_join_from_same_network" game={game} />
+                        <Config name="visible_over_same_network" game={game} />
                         <Config name="spectators" game={game} />
                         <Config name="enable_chat" game={game} />
                     {/* </div> */}

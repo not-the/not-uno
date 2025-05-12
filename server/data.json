@@ -464,7 +464,7 @@
 
         "condition_reason": "Room ID must not be user-defined"
     },
-    "allow_join_from_same_network": {
+    "visible_over_same_network": {
         "// desc": "This lobby will appear to devices on the same network",
 
         "icon": "/icons/language_40dp_FFFFFF_FILL0_wght400_GRAD200_opsz40.svg",

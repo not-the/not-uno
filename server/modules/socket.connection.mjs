@@ -300,7 +300,7 @@ const socketConnection = function(socket) {
         const localNetworkLobbies = lobbies
             .filter(game => {
                 if(
-                    !game?.config?.allow_join_from_same_network || // Option disabled
+                    !game?.config?.visible_over_same_network || // Option disabled
                     game?.config?.public_lobby || // Public instead
                     game.state !== "lobby" // Already started
                 ) return false;

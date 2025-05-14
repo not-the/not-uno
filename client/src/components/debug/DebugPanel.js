@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 // import User from "./User"
-import { isProduction, socket, socketConnectionStatus } from "../socket";
-import { clientData } from "../App";
-import DebugLobbyListing from "./debug/DebugLobbyListing";
-import { formattedDate } from "../Util";
+import { isProduction, socket, socketConnectionStatus } from "../../socket";
+import { clientData } from "../../App";
+import DebugLobbyListing from "./DebugLobbyListing";
+import { formattedDate } from "../../Util";
 
 export default function DebugPanel({ game, joinRoom }) {
     // State
@@ -118,6 +118,8 @@ export default function DebugPanel({ game, joinRoom }) {
                     <summary>Server log</summary>
                     <div className="inner debug_log smaller">
                         <br/>
+
+                        {/* Unique keys needed */}
                         {[ ...(lobbies?.serverLogHistory ?? []) ].reverse().map(entry => {
                             return <div className="item" style={{ lineHeight:"1.9" }} key={entry.timestamp}>
                                 <span className="debug_block secondary_text" style={{ display:"inline" }}>

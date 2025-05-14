@@ -12,7 +12,7 @@ import { get, store, arrRandom, capitalizeFirstLetter, clearURLHash } from './Ut
 import { socket, isProduction, socketConnectionStatus, serverURL } from './socket.js'
 import Header from './components/Header.js'
 import DeckEditor from './components/DeckEditor.js'
-import DebugPanel from './components/DebugPanel.js'
+import DebugPanel from './components/debug/DebugPanel.js'
 
 // Game
 const appdataURL = serverURL + '/data.json';

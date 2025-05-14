@@ -249,25 +249,6 @@ export default function App() {
 
             {/* Toasts */}
             <div id="toasts">
-                {/* Connection lost */}
-                {
-                    socketConnectionStatus && Object.keys(clientData).length !== 0 ? null :
-                    <Toast
-                        data={{ title:"⚠ Disconnected", msg:"The server couldn't be reached" } }
-                        timed={false} classes="connection_lost_toast"
-                        afterJSX={<div>
-                            <br/>
-                            <a href="https://notkal.com/#contact" target="_blank" rel="noreferrer" className="button button_primary button_secondary button_support border_shadowed">
-                                Report a problem
-                            </a>
-                            <br/>
-                            <button className="button button_primary button_secondary button_transparent hover_border_shadowed" onClick={() => window.location.reload()}>
-                                Reload
-                            </button>
-                        </div>}
-                    />
-                }
-
                 {/* Spectating */}
                 {
                     game.my_spectating ?

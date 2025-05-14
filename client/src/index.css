@@ -2637,22 +2637,17 @@ h3 > .user .avatar {
     border-color: transparent;
     background-color: greenyellow;
 }
+.offline_blurb {
+    background-color: rgb(97, 26, 32);
+    border: 2px solid rgb(143, 36, 45);
+    padding: 9px;
+    border-radius: 12px;
+    margin: 12px 0 6px;
+    animation: toast 0.5s ease 3s both;
+}
 
 
 /* Special toasts */
-.connection_lost_toast {
-    --warning-red: rgb(175, 52, 68);
-    --shadow-color: rgb(87, 19, 28);
-
-    background-color: var(--warning-red);
-    border-radius: 6px;
-    border-color: rgb(231, 97, 115);
-    text-align: center;
-
-    pointer-events: initial;
-    
-    animation: toast 0.3s ease 3s backwards;
-}
 .spectating_toast {
     background-color: var(--bg-purple-light);
     border-color: var(--bg-purple-lighter)
@@ -2789,6 +2784,11 @@ body:has(.spectating_toast) {
 @media only screen and (max-width: 640px) {
     .media_flex {
         flex-direction: column;
+    }
+
+    /* Home */
+    .lobbies_container > .bottom_bar {
+        align-items: flex-start !important;
     }
 
     /* Lobby */

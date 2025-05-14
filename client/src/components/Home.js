@@ -12,7 +12,12 @@ export default function Home({ setMenu, joinRoom }) {
         <img src="/icons/Loader.svg" alt="Waiting..." className="loader_spin" />
 
         {/* // Button */}
-        <button className="button_primary button_secondary button_mini button_mainbg button_border_bg_lighter hover_border_shadowed position_relative" onClick={requestLobbies}>Refresh</button>
+        <button
+            className="button_primary button_secondary button_mini button_mainbg button_border_bg_lighter hover_border_shadowed position_relative"
+            onClick={requestLobbies}
+        >
+            Refresh
+        </button>
     </div>
 
     function requestLobbies() {
@@ -85,14 +90,32 @@ export default function Home({ setMenu, joinRoom }) {
                     </div>
 
                     {/* Bottom */}
-                    <div className="bottom_bar secondary_text">
-                        {/* Connection Indicator */}
-                        <div id="connection_indicator" aria-checked={socketConnectionStatus} />
+                    <div className="bottom_bar secondary_text flex media_flex" style={{ alignItems:"end" }}>
+                        {/* Status */}
+                        <div>
+                            {/* Indicator */}
+                            <div id="connection_indicator" aria-checked={socketConnectionStatus} />
 
-                        {/* Player count */}
-                        {socketConnectionStatus === true ?
-                            `${serverInfo?.online_users} player${serverInfo?.online_users !== 1 ? "s" : ""} online` :
-                            "Server offline"
+                            {/* Player count */}
+                            {socketConnectionStatus === true ?
+                                `${serverInfo?.online_users} player${serverInfo?.online_users !== 1 ? "s" : ""} online`
+                                :
+                                "Server offline"
+                            }
+                        </div>
+
+                        {/* Offline blurb */}
+                        {socketConnectionStatus === true ? null :
+                            <div className="margin_left_auto">
+                                <div className="offline_blurb flex gap_12px">
+                                    <a href="https://notkal.com/#contact" target="_blank" rel="noreferrer" className="button button_primary button_secondary button_support hover_border_shadowed button_mini">
+                                        Report a problem
+                                    </a>
+                                    <button className="button button_primary button_secondary button_transparent hover_border_shadowed button_mini" onClick={() => window.location.reload()}>
+                                        Reload
+                                    </button>
+                                </div>
+                            </div>
                         }
                     </div>
                 </div>

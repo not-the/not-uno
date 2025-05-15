@@ -127,7 +127,7 @@ export default function DebugPanel({ game, joinRoom }) {
                                 </span>
                                 <span className="text" style={{ whiteSpace:"pre" }}>
                                     {/* Remove console formatting codes */}
-                                    {entry.message.replace(/\033\[[0-9;]*m/g, "")}
+                                    {entry.cleanMessage}
                                 </span>
                             </div>
                         })}

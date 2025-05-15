@@ -8,6 +8,10 @@ import https from 'https'
 import { Server } from 'socket.io'
 import cors from 'cors'
 
+// Modules
+import socketConnection from './modules/socket.connection.mjs'
+import { arrRandom, capitalizeFirstLetter, formattedDate } from './modules/utils.mjs'
+
 // Game data
 import data from './data.json' assert { type: 'json' }
 
@@ -133,31 +137,11 @@ const server = {
         this.logHistory.push({
             timestamp: Date.now(),
             message,
+            cleanMessage: message.replace(/\033\[[0-9;]*m/g, "") // Message with console formatting codes removed
         })
 
         // Discord
         if(process.env.WEBHOOK_LOG_MODE === "all" && process.env.DISCORD_WEBHOOK_URL) this.webhook(message);
-
-        /** Create a formatted date from Date object. Defaults to current time.
-         * @param {Date} date (Optional) new Date object. Uses the current date is undefined.
-         * @returns {String} Provided date in a readable format
-         */
-        function formattedDate(date=new Date()) {
-            let hours = date.getHours();
-            let minutes = date.getMinutes();
-            let seconds = date.getSeconds();
-    
-            const ampm = hours >= 12 ? 'PM' : 'AM';
-            hours = hours % 12;
-            hours = hours ? hours : 12;
-            minutes = minutes < 10 ? '0' + minutes : minutes;
-            seconds = seconds < 10 ? '0' + seconds : seconds;
-    
-            const monthYear = date.toISOString().split('T')[0];
-    
-            // Combine time and date
-            return `${hours}:${minutes}:${seconds} ${ampm}, ${monthYear}`;
-        }
     },
 
     // Cleanup config
@@ -224,18 +208,8 @@ server.log(
 
 
 // Crash handler
-process.on("uncaughtException", error => {
-    // Log
-    console.error(error);
-
-    // Write crash log to file here
-    // ...
-    
-    // Webhook
-    if(process.env.WEBHOOK_LOG_MODE === "uncaughtExceptions") {
-        server.webhook(`[Server] uncaughtException\n\`\`\`${JSON.stringify(error, Object.getOwnPropertyNames(error))}\`\`\``);
-    }
-});
+import processUncaughtException from './modules/process.uncaughtException.mjs'
+process.on("uncaughtException", processUncaughtException);
 
 
 // Game cleanup
@@ -245,12 +219,8 @@ const cleanupTimer = setInterval(server.performCleanup, server.cleanupPeriod);
 const customDecks = {};
 
 
-/** Modules */
-import socketConnection from './modules/socket.connection.mjs'
-import { arrRandom, capitalizeFirstLetter } from './modules/utils.mjs'
-// import { hostname } from 'os'
+// Export
 export { io, data, word_blacklist, server, isProduction };
-
 
 
 // Listeners

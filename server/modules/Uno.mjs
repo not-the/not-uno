@@ -855,11 +855,17 @@ export default class Uno {
 
         // Get to/from locations
         let from = typeof fromName === 'number' ?
-            this.players[fromName].cards : // Player
+            this.players[fromName]?.cards : // Player
             this[fromName]; // Location
         let to = typeof toName === 'number' ?
-            this.players[toName].cards : // Player
+            this.players[toName]?.cards : // Player
             this[toName]; // Location
+
+        // Invalid location
+        if(from === undefined || to === undefined) {
+            logEntry.amend(false, `${from === undefined ? "from was undefined" : ""}, ${to === undefined ? "to was undefined" : ""}`);
+            return;
+        }
 
         // Take card
         let card = fromIndex === undefined ? from.shift() : from.splice(fromIndex, 1)[0];

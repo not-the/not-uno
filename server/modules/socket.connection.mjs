@@ -275,6 +275,7 @@ const socketConnection = function(socket) {
 
         // Log
         // server.log(`🗨  (${roomID}) ${socket.name}: ${obj.msg}`);
+        server.log(`🗨  (${roomID}) ${socket.name}: [message]`);
         // game.log("CHAT", socket.name, socket.id);
 
         // Broadcast

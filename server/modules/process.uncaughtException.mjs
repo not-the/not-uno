@@ -46,6 +46,6 @@ The error is below, followed by server.logHistory, then a list of game objects",
     
     // Webhook
     if(process.env.WEBHOOK_LOG_MODE === "uncaughtExceptions") {
-        server.webhook(`[Server] uncaughtException\n\`\`\`${JSON.stringify(error, Object.getOwnPropertyNames(error))}\`\`\``);
+        server.webhook(`[Server] uncaughtException\n\`\`\`${JSON.stringify(error.stack)}\`\`\``);
     }
 }

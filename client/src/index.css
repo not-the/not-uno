@@ -703,8 +703,9 @@ select[disabled] {
     padding-bottom: 200px;
 }
 #config .item {
+    --config-shadow-color: rgba(0, 0, 0, 0.4);
     --bg-comp: var(--bg-lighter);
-    --shadow-color: rgba(0, 0, 0, 0.5);
+    --shadow-color: var(--config-shadow-color);
 
     background-color: #4e7e51;
     border: 3px solid var(--bg-lighter);
@@ -719,6 +720,9 @@ select[disabled] {
     opacity: 0.5;
     color: var(--secondary-text);
     pointer-events: none;
+}
+#config .item[aria-disabled="true"] .border_shadowed {
+    --shadow-color: rgba(0, 0, 0, 0.35);
 }
 #config .item > * {
     z-index: 2 !important;
@@ -737,8 +741,9 @@ select[disabled] {
     height: 40px;
 }
 #config .item h4 {
-    margin-bottom: 9px;
+    --shadow-color: var(--config-shadow-color);
     --shadow-distance: 4px;
+    margin-bottom: 9px;
 }
 #config .item .inner {
     display: flex;

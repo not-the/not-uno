@@ -530,7 +530,7 @@ export default function Game({ game, setGame, startGame }) {
                     <User user={game.usersParsed[game.winner]} classes="big_user" />
                     <br/>
 
-                    <p className={`${playersWantRematch === 0 ? "secondary_text" : "bounce"} center`}>
+                    <p className={`${playersWantRematch === 0 ? "secondary_text" : "bounce"} center`} key={playersWantRematch}>
                         {
                             game.players.length !== 1 ?
                             `${playersWantRematch}/${game.players.length-1} players have requested a rematch` :

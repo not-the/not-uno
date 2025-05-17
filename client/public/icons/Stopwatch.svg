@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 30 30">
+  <g id="Stopwatch" transform="translate(-599.227 -1577.227)">
+    <path id="Clock" d="M11.5,23A11.5,11.5,0,0,1,3.368,3.368,11.5,11.5,0,0,1,19.632,19.632,11.424,11.424,0,0,1,11.5,23ZM10.857,3.286a1,1,0,0,0-1,1v8.679a.993.993,0,0,0,.059.337,1,1,0,0,0,.578,1.091l6.427,2.861a1,1,0,0,0,1.32-.507l.523-1.174a1,1,0,0,0-.507-1.32l-5.114-2.277V4.286a1,1,0,0,0-1-1Z" transform="translate(602.227 1583.227)" fill="#fff"/>
+    <rect id="Button" width="9" height="3" rx="1" transform="translate(609.227 1578.227)" fill="#fff"/>
+    <rect id="Side_button" data-name="Side button" width="4" height="4" rx="1" transform="translate(622.52 1584.106) rotate(45)" fill="#fff"/>
+    <rect id="Square" width="30" height="30" transform="translate(599.227 1577.227)" fill="none"/>
+  </g>
+</svg>

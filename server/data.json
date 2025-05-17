@@ -503,32 +503,34 @@
     },
 
     "require_call": {
-        "desc": "Whether or not you must call out when you have one card",
+        "desc": "Require calling out when you have one card left",
 
-        "icon": "/icons/Infinity.svg",
+        "icon": "/icons/Chat Exclamation.svg",
+        "icon_pad": 2,
         "type": "boolean"
-    },
-    "call_penalty": {
-        "desc": "Type of penalty for not calling last card",
-
-        "icon": "/icons/Infinity.svg",
-        "type": "dropdown",
-        "dropdown": ["draw", "forfeit"]
-    },
-    "call_draw_penalty": {
-        "desc": "Cards to draw if you fail to callout your last card",
-
-        "icon": "/icons/Infinity.svg",
-        "type": "number",
-        "min": 1, "max": 16
     },
     "call_timer": {
         "desc": "Additional callout time after your turn ends",
 
-        "icon": "/icons/Infinity.svg",
+        "icon": "/icons/Stopwatch.svg",
         "type": "number",
         "format": "#s",
         "min": 0, "max": 15, "step": 0.5
+    },
+    "call_penalty": {
+        "desc": "Type of penalty for not calling last card",
+
+        "icon": "/icons/skip.png",
+        "icon_pad": 2,
+        "type": "dropdown",
+        "dropdown": ["off", "draw", "forfeit"]
+    },
+    "call_draw_penalty": {
+        "desc": "Cards to draw if you fail to call your last card",
+
+        "icon": "/icons/Draw Stacking.svg",
+        "type": "number",
+        "min": 1, "max": 16
     }
 },
 
@@ -646,5 +648,9 @@
 
 "card_colors": ["black", "red", "yellow", "blue", "green", "cyan", "purple", "orange", "pink"],
 
-"max_chat_length": 128
+"max_chat_length": 128,
+"reaction_cooldown": 500,
+"reactions": [
+    "😂", "💖", "💤", "👍", "👎", "😬", "😢"
+]
 }

@@ -229,6 +229,13 @@ const socketConnection = function(socket) {
         if(game === undefined) return;
         game.endTurn(socket.id);
     })
+    
+    socket.on("callout", () => {
+        /** @type {Uno} */
+        const game = getGameByUser();
+        if(game === undefined) return;
+        game.callout(socket.id);
+    })
 
     socket.on("requestRematch", () => {
         /** @type {Uno} */
@@ -242,6 +249,24 @@ const socketConnection = function(socket) {
         const game = getGameByUser();
         if(game === undefined) return;
         game.kick(socket, socketIDToKick);
+    })
+
+    // Emote message
+    socket.on("emote", (msg) => {
+        /** @type {Uno} */
+        const game = getGameByUser();
+        if(game === undefined) return;
+
+        // Invalid reaction
+        if(!data.reactions.includes(msg)) return;
+
+        // Prevent spam
+        const now = Date.now();
+        if(now <= socket.last_emote + data.reaction_cooldown) return;
+        socket.last_emote = now;
+
+        // Send
+        game.emote(socket.id, msg, undefined, socket);
     })
 
     // Chat message

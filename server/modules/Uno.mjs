@@ -22,6 +22,7 @@ export default class Uno {
     #hostSocket;
     #rejoin_keys = [];
     #log = [];
+    #calloutID = 0;
 
     constructor({ roomID, hostSocket, nameIsUUID }) {
         // Statistics
@@ -48,12 +49,12 @@ export default class Uno {
             // allow_continues: false, // Offer to continue game with remaining players after someone wins
 
             require_call: false,
+            call_timer: 3, // In seconds
             call_penalty: "draw",
-            call_draw_penalty: 2,
-            call_timer: 3 // In seconds
+            call_draw_penalty: 2
         }
 
-        // Data
+        // Room
         this.roomID = roomID;
         this.nameIsUUID = nameIsUUID; // Will be true unless the UUID was player-chosen
         this.setHost(hostSocket);
@@ -389,6 +390,11 @@ export default class Uno {
             msg: `Room ID: "${roomID}"`
         });
 
+        // Tell room someone left
+        this.emit("toast", {
+            title: `"${socket?.name ?? "User"}" left!`
+        });
+
         // Update remaining clients
         this.updateClients();
 
@@ -412,11 +418,6 @@ export default class Uno {
 
         // Remove player from game
         this.players.splice(pnum, 1);
-
-        // Tell room someone left
-        this.emit("toast", {
-            title: `"${socket?.name ?? "User"}" left!`
-        });
 
         // All players have left
         if((this.clients.length - this.spectatorCount) === 0) {
@@ -797,7 +798,7 @@ export default class Uno {
         }
 
         // Host
-        if(socket.id !== this.host) {
+        if(socket && socket.id !== this.host) {
             const msg = "Only the host can manage the game";
             socket.emit("toast", { msg });
             logEntry.amend(false, msg);
@@ -1245,7 +1246,7 @@ export default class Uno {
     nextTurn(skip=0, playerCard={}, keepTurn) {
         const logEntry = this.log("nextTurn", ...Array.from(arguments));
 
-        const lastPlayerID = this.turn;
+        const lastPlayerID = structuredClone(this.turn);
         const turnValue = ((1 + skip) * this.direction);
 
         let didDrawCards = false;
@@ -1283,41 +1284,148 @@ export default class Uno {
         if(this.config.draw_stacking === "off" && this.draw_debt > 0) this.endTurn(this.players[this.turn].socketID);
 
         // Check if awaiting callout
-        else if(lastPlayerID !== turnValue) {
-
-            // server.log(lastPlayerID, turnValue);
-
+        else if(this.config.require_call) {
             const lastPlayer = this.players?.[lastPlayerID];
-            if(lastPlayer?.cards?.length === 1) {
-
-                const round = structuredClone(this.round);
-                const timerMS = this.config.call_timer * 1000;
-                lastPlayer.awaiting_call = true;
-                setTimeout(() => {
-                    // Clear
-                    delete lastPlayer.awaiting_call;
-
-                    // server.log(round, this.round);
-
-                    // Invalid
-                    if(
-                        !this.config.require_call ||            // Not required
-                        this.config.call_draw_penalty === 0 ||  // Penalty is 0
-                        this.winner !== undefined ||            // Win screen
-                        round !== this.round                    // Even was from previous round
-                    ) return;
-
-                    // Penalty
-                    this.drawMultipleCards(lastPlayerID, this.config.call_draw_penalty);
-                    this.emit("toast", { title:`A player failed to call "last card" in time` });
-                        this.updateClients();
-                }, timerMS);
-            }
+            if(lastPlayer !== undefined) this.waitForCallout(lastPlayerID);
         }
 
         logEntry.amend(true);
 
         // Did draw cards, return true
         if(didDrawCards) return true;
+    }
+
+    /** Wait for callout */
+    waitForCallout(pnum) {
+        const logEntry = this.log("waitForCallout", ...Array.from(arguments));
+
+        // Player
+        const player = this.players[pnum];
+
+        // Must have 1 card left
+        if(player?.cards?.length !== 1) {
+            // delete player.pre_call;
+            logEntry.amend(false, "Player does not have 1 card");
+            return;
+        }
+
+        // Already pre-called
+        // if(player.pre_call) {
+        //     delete player.pre_call;
+        //     logEntry.amend(undefined, "Player pre-called");
+        //     return;
+        // }
+
+        const round = structuredClone(this.round);
+        const calloutID = ++this.#calloutID;
+        player.awaiting_call = calloutID;
+
+        this.updateClients();
+
+        logEntry.amend(undefined, "Waiting...");
+
+        // Timer
+        const timerMS = this.config.call_timer * 1000;
+        setTimeout(() => {
+            // Outdate timeout
+            if(calloutID !== player.awaiting_call) {
+                logEntry.amend(false, "calloutID didn't match");
+                return;
+            }
+
+            // Called in time
+            if(!player.awaiting_call) {
+                logEntry.amend(true, "Called in time");
+                return;
+            }
+
+            // Clear
+            delete player.awaiting_call;
+
+            // Invalid
+            if(
+                this.winner !== undefined || // Win screen
+                round !== this.round         // Timer was from previous round
+            ) {
+                logEntry.amend(false, "Timeout was from previous round");
+                return;
+            }
+
+            // Penalty
+            if(this.config.call_penalty !== "off") {
+                // Draw cards
+                if(this.config.call_penalty === "draw") {
+                    this.drawMultipleCards(pnum, this.config.call_draw_penalty);
+                    this.emit("toast", { title:`"${this.users[player.socketID].name}" failed to call last card in time (+${this.config.call_draw_penalty})` });
+                }
+
+                // Forfeit
+                else if(this.config.call_penalty === "forfeit") {
+                    this.removePlayer(pnum);
+                    if(this.players.length <= 1) this.returnToLobby();
+                    this.emit("toast", { title:"Forfeit", msg:"Someone failed to call last card and forfeit the game"});
+                }
+            }
+
+            // Update
+            this.updateClients();
+            logEntry.amend(true, "Done");
+        }, timerMS);
+    }
+
+    /** Callout last card */
+    callout(socketID) {
+        const logEntry = this.log("callout", ...Array.from(arguments));
+
+        // pnum
+        const pnum = this.getPnumFromSocketID(socketID);
+
+        // Invalid pnum
+        if(pnum === -1) {
+            logEntry.amend(false, "pnum was -1");
+            return;
+        }
+
+        // Player
+        const player = this.players[pnum];
+
+        // Already pre-called
+        // if(player.pre_call && !player.awaiting_call) {
+        //     logEntry.amend(false, "Player already pre-called");
+        //     return;
+        // }
+        // Preemptive call
+        // else if(player.cards.length <= 2) player.pre_call = true;
+
+        // Already called
+        if(!player.awaiting_call/* && !player.pre_call*/) {
+            logEntry.amend(false, "Not waiting for call");
+            return;
+        }
+
+        delete player.awaiting_call;
+
+        // Bubble
+        this.emote(socketID, "UNO!", 1);
+
+        // Update
+        this.updateClients();
+        logEntry.amend(true);
+    }
+
+    /** Player emote */
+    emote(socketID, msg="?", style=null, socket) {
+        // Missing parameters
+        if(!socketID) return;
+
+        console.log(socketID);
+
+        // Emit
+        this.emit(`emote_from_${socketID}`, {
+            socketID,
+            style,
+            msg,
+            id: crypto.randomUUID()
+        });
     }
 }

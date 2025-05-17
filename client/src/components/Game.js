@@ -9,6 +9,8 @@ import CardAnimated from "./CardAnimated.js"
 import SupportBlurb from "./SupportBlurb.js"
 import CardStack from "./CardStack.js"
 import PlayerDisconnectOverlay from "./PlayerDisconnectOverlay.js"
+import EmoteReactions from "./EmoteReactions.js"
+import EmoteBubble from "./EmoteBubble.js"
 
 
 /** Game screen component */
@@ -21,8 +23,8 @@ export default function Game({ game, setGame, startGame }) {
     // Variables
     const myTurn = game.turn === game.my_num;
     const isHost = game.host === socket.id;
-    const awaiting_call = Boolean(game?.players?.[game?.my_num]?.awaiting_call);
-    const disableLastCard = !myTurn && !awaiting_call;
+    const awaiting_call = Boolean(game?.players?.[game?.my_num]?.awaiting_call) && !game.winner;
+    const disableLastCard = !(myTurn || awaiting_call);
     const hightlightEndTurn = 
         (
             (
@@ -43,7 +45,7 @@ export default function Game({ game, setGame, startGame }) {
             // Keybinds
             if(key === "E") endTurn();          // End turn
             else if(key === "D") drawCard();    // Draw card
-            // else if(key === "Q") callout();  // Callout
+            else if(key === "Q") callout();  // Callout
 
             // Play cards (1-9)
             const number = Number(key);
@@ -78,6 +80,7 @@ export default function Game({ game, setGame, startGame }) {
             document.removeEventListener('keyup', keypressHandler);
             if(playerBottom) playerBottom.removeEventListener("wheel", wheelHandler);
             if(playerTop) playerTop.removeEventListener("wheel", wheelHandler);
+
             socket.off("scroll_cards");
         }
     }, []);
@@ -255,6 +258,9 @@ export default function Game({ game, setGame, startGame }) {
                     {/* <kbd>ESC</kbd> */}
                 </button>
 
+                {/* Emotes */}
+                {/* <EmoteReactions /> */}
+
                 {/* Spectators */}
                 {game.spectatorCount === 0 ? null :
                     <p className="secondary_text">
@@ -314,21 +320,7 @@ export default function Game({ game, setGame, startGame }) {
 
                 {/* Lower */}
                 <div className="lower">
-                    {/* <button
-                        id="last_card"
-                        className="button_primary button_secondary button_lightbg hover_border_shadowed position_relative"
-                        onClick={callout}
-                        disabled={disableLastCard}
-                        data-timer={awaiting_call}
-                        style={{
-                            "--duration": `${game.config.call_timer}s`
-                        }}
-                    >
-                        <div className="under progress" />
-                        <span>Last card</span>
-                        <div className="over progress" />
-                        <kbd>Q</kbd>
-                    </button> */}
+                    {/* End turn */}
                     <button className="button_primary button_secondary button_lightbg hover_border_shadowed position_relative" onClick={endTurn} disabled={hightlightEndTurn}>
                         <span>
                             {
@@ -344,6 +336,25 @@ export default function Game({ game, setGame, startGame }) {
                         }
                         <kbd>E</kbd>
                     </button>
+
+                    {/* Callout */}
+                    {!game.config.require_call ? null :
+                        <button
+                            id="last_card"
+                            className="button_primary button_secondary button_lightbg hover_border_shadowed position_relative"
+                            onClick={callout}
+                            disabled={disableLastCard}
+                            data-timer={awaiting_call}
+                            style={{
+                                "--duration": `${game.config.call_timer}s`
+                            }}
+                        >
+                            <div className="under progress" />
+                            <span>Last card</span>
+                            <div className="over progress" />
+                            <kbd>Q</kbd>
+                        </button>
+                    }
                 </div>
             </div>
 
@@ -420,10 +431,13 @@ export default function Game({ game, setGame, startGame }) {
                         <div className="player_upper border_shadowed flex flex_center_vertically">
                             {/* Name */}
                             <h3>
-                                {<User user={user} postName={
-                                    <span className="small">(P{playerIndex+1})</span>
-                                } />}
+                                {<User
+                                    user={user}
+                                    postName={<span className="small">(P{playerIndex+1})</span>}
+                                />}
                             </h3>
+
+                            <EmoteBubble socketID={user?.socketID} />
 
                             {/* Buttons */}
                             {!isMe ? null :

@@ -5,6 +5,7 @@ import User from "./User.js"
 import Config from "./Config.js"
 import ConfigDeck from "./ConfigDeck.js"
 import { clientData } from "../App";
+import EmoteBubble from "./EmoteBubble.js";
 // import lang from "../lang.js";
 
 export default function Lobby({ game, startGame, toast, leaveGame }) {
@@ -130,6 +131,7 @@ export default function Lobby({ game, startGame, toast, leaveGame }) {
                                         key={index} user={user} game={game}
                                         title={`ID: ${user.socketID}
                                         ${user.socketID === game.host ? " (Host)":""}`}
+                                        postName={<EmoteBubble socketID={user?.socketID} />}
                                     />
                                 })}
                             </div>
@@ -180,18 +182,15 @@ export default function Lobby({ game, startGame, toast, leaveGame }) {
                     {/* <Config name="continue" game={game} disabled={true} /> */}
                 </section>
 
-
-                {/* <Config name="call_penalty" game={game} /> */}
-
-                {/* <section>
+                <section>
                     <h3 className="fancy_title">
                         <span>Callouts</span>
                     </h3>
                     <Config name="require_call" game={game} />
-
-                    <Config name="call_draw_penalty" game={game} />
                     <Config name="call_timer" game={game} />
-                </section> */}
+                    <Config name="call_penalty" game={game} />
+                    <Config name="call_draw_penalty" game={game} />
+                </section>
             </div>
         </>
     )

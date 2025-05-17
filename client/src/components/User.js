@@ -1,4 +1,6 @@
+import { useEffect, useState } from "react";
 import { socket } from "../socket"
+import UserAvatar from "./UserAvatar";
 
 export default function User({ user, game, tagline, title, postName, classes="", onClick }) {
 
@@ -31,7 +33,7 @@ export default function User({ user, game, tagline, title, postName, classes="",
     return (
         <div className={className} data-title={title} onClick={onClick}>
             {/* Avatar */}
-            <img src={`/avatars/${userData?.avatar ?? "balloon"}.png`} alt="" className="avatar" />
+            <UserAvatar avatar={userData?.avatar} />
 
             {/* Crown */}
             <span className="crown">

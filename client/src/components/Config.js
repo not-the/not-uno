@@ -10,9 +10,11 @@ export default function Config({ name, game, disabled }) {
     // Data from server
     const options = clientData.config;
     const conditionals = {
-        "public_lobby": () => !game?.nameIsUUID,
-        "enable_chat": () => game?.has_been_public,
-        "call_draw_penalty": () => !game?.config?.require_call
+        "public_lobby": () => !game.nameIsUUID,
+        "enable_chat": () => game.has_been_public,
+        "call_penalty": () => !game.config.require_call,
+        "call_timer": () => !game.config.require_call,
+        "call_draw_penalty": () => !game.config.require_call || game.config.call_penalty !== "draw",
     }
     
     const option = options[name];

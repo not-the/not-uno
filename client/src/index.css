@@ -41,6 +41,7 @@
     --accent-blue-light: #95d5ff;
     --accent-green: #9bca4f;
     --warm-shadow: #411a00;
+    --cool-shadow: #181854;
 
     /* Cards */
     --red: #c83636;
@@ -57,7 +58,7 @@
 
     /* Misc */
     --container-width: 640px;
-    --shadow-color: #181854;
+    --shadow-color: var(--cool-shadow);
     --shadow-distance: 6px;
     --shadow-border: 1px;
 }
@@ -484,7 +485,7 @@ a.button {
     padding: 6px 12px;
 }
 
-/* Colors */
+/* Colored Buttons */
 .button_transparent { background-color: transparent; }
 .button_green { background-color: var(--accent-green); }
 .button_mainbg { background-color: var(--bg-main); }
@@ -1530,6 +1531,11 @@ button.share_button {
     background-color: var(--red);
 }
 .card.back p {
+    font-size: 26pt !important;
+    transform: translateY(-1px) rotate(-8deg);
+}
+.card.back p,
+.text_gradient_a {
     background: -webkit-linear-gradient(-20deg, rgb(255, 252, 78), rgb(255, 147, 6));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -1813,6 +1819,7 @@ button.share_button {
 .panel_button:focus-visible {
     --shadow-distance: 6px;
     transform: translate(-1px, -1px);
+    z-index: 4;
     /* --shadow-color: var(--bg-comp-lighter);
     border-color: white; */
 }
@@ -2089,6 +2096,94 @@ body:has(.overlay) .backdrop {
 .user_buttons > button:hover,
 .user_buttons > button:focus-visible {
     opacity: 1 !important;
+}
+
+/* Emotes */
+.reactions {
+    display: flex;
+    background-color: var(--bg-darker);
+    border-radius: 12px;
+    padding: 3px;
+}
+.reactions[aria-disabled="true"] > .item {
+    opacity: 0.6;
+    cursor: unset;
+}
+.reactions > .item {
+    min-width: 32px;
+    font-size: 13pt;
+    padding: 5px;
+}
+.reactions > .item:hover,
+.reactions > .item:focus-visible {
+    background-color: var(--bg-main);
+    border-radius: 9px;
+    box-shadow: 0 1px 6px rgba(0, 0, 0, 0.3);
+}
+.emote_bubble {
+    position: absolute;
+    bottom: calc(100% + 6px);
+    left: 32px;
+
+    word-break: keep-all;
+
+    /* pointer-events: none; */
+}
+.emote_bubble > .inner {
+    --emote-bg: rgb(152, 208, 245);
+    --border-radius: 26px;
+
+    min-width: 72px;
+
+    text-align: center;
+    font-size: 32pt;
+    overflow: hidden;
+    position: relative;
+
+    background-color: var(--emote-bg);
+    color: black;
+    border: 5px solid var(--emote-bg);
+    padding: 0px 2px 4px 2px;
+    border-radius: var(--border-radius) var(--border-radius) var(--border-radius) 3px;
+    box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.5);
+
+    animation: emote 3s cubic-bezier(0.075, 0.82, 0.165, 1) forwards;
+    transform-origin: bottom left;
+}
+@keyframes emote {
+    0% {
+        transform: translate(-6px, 6px) scale(0.8);
+    }
+    16% { transform: unset; }
+    95% { transform: unset; opacity: 1; }
+    100% {
+        transform: translateX(3px) scale(0.8);
+        opacity: 0;
+    }
+}
+.emote_bubble > .inner > .progress {
+    position: absolute;
+    inset: 0; top: unset;
+    z-index: -1;
+
+    background-color: white;
+    border-radius: calc(var(--border-radius) / 3);
+
+    --duration: 3s;
+    animation: var(--duration) emote_progress forwards linear;
+}
+@keyframes emote_progress {
+    from { height: 100%; }
+    to {
+        height: 0%;
+    }
+}
+.emote_bubble.emote_last_card > .inner {
+    /* font-size: 32pt; */
+    padding: 2px 16px;
+    color: rgb(255, 209, 6);
+    font-weight: bold;
+    --shadow-color: var(--cool-shadow);
 }
 
 
@@ -2415,7 +2510,7 @@ h3 > .user .avatar {
 }
 
 
-/* Support*/
+/* Support */
 .button_support {
     --button-bg: var(--color-support-btn);
     --button-border: var(--color-support-btn);

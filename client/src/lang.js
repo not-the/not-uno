@@ -34,10 +34,13 @@ const lang = {
 
         "choose_color": "Choose color",
 
-        "require_call": "Callouts Required",
-        "call_penalty": "Callout Penalty",
-        "call_draw_penalty": "Callout Draw Cards",
-        "call_timer": "Callout Time"
+        "require_call": "Must Call \"Last Card\"",
+        "call_penalty": "Penalty",
+        "call_draw_penalty": "Penalty > Draw Cards",
+        "call_timer": "Callout Time",
+
+        "draw": "Draw cards",
+        "forfeit": "Forfeit"
     }
 }
 

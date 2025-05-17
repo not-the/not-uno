@@ -154,7 +154,7 @@ export default function Game({ game, setGame, startGame }) {
 
 
     // Rematch count
-    const playersWantRematch = game.players.filter(p => p?.wants_rematch === true).length;
+    const playersWantRematch = game.players.filter(p => p?.wants_rematch === true);
 
     
     /** Returns a string (bottom, left, right, or top) based on a player ID
@@ -259,7 +259,7 @@ export default function Game({ game, setGame, startGame }) {
                 </button>
 
                 {/* Emotes */}
-                {/* <EmoteReactions /> */}
+                <EmoteReactions />
 
                 {/* Spectators */}
                 {game.spectatorCount === 0 ? null :
@@ -541,13 +541,19 @@ export default function Game({ game, setGame, startGame }) {
                         }
                     </h2>
 
+                    {/* Winner */}
                     <User user={game.usersParsed[game.winner]} classes="big_user" />
                     <br/>
 
-                    <p className={`${playersWantRematch === 0 ? "secondary_text" : "bounce"} center`} key={playersWantRematch}>
+                    {/* Rematch request count */}
+                    <p className={`flex flex_center gap_12px ${playersWantRematch.length === 0 ? "secondary_text" : "bounce"} center`} key={playersWantRematch.length}>
+                        {/* <div className="avatar_stack">
+                            {playersWantRematch.map(p => <UserAvatar avatar={game.usersParsed?.[p.socketID]?.avatar} />)}
+                        </div> */}
+
                         {
                             game.players.length !== 1 ?
-                            `${playersWantRematch}/${game.players.length-1} players have requested a rematch` :
+                            `${playersWantRematch.length}/${game.players.length-1} players have requested a rematch` :
                             "Very impressive"
                         }
                     </p><br/>

@@ -184,7 +184,7 @@ export default function Lobby({ game, startGame, toast, leaveGame }) {
 
                 <section>
                     <h3 className="fancy_title">
-                        <span>Callouts</span>
+                        <span>Callouts (WIP)</span>
                     </h3>
                     <Config name="require_call" game={game} />
                     <Config name="call_timer" game={game} />

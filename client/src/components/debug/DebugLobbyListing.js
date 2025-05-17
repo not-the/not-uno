@@ -174,7 +174,7 @@ export default function DebugLobbyListing({ lobby, joinRoom, classes, game }) {
                                 <table>
                                     {
                                         Object.entries(lobby).map(([key, value]) => {
-                                            const keyBlacklist = ["config", "players", "log"];
+                                            const keyBlacklist = ["config", "log"];
                                             if(keyBlacklist.includes(key)) return null;
 
                                             return <tr>

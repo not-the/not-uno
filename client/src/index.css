@@ -964,8 +964,22 @@ button.share_button {
     display: flex;
     justify-content: center;
     align-items: center;
-
-    height: 100dvh;
+}
+/* Ads */
+.ad_container {
+    display: flex;
+    justify-content: center;
+    max-height: 110px;
+    overflow: auto;
+}
+.ad_container .adsbygoogle {
+    background-color: var(--bg-darker);
+}
+.ad_disable_btn {
+    position: absolute;
+    top:6px; left: 6px;
+    z-index: 1;
+    color: var(--secondary-text);
 }
 
 .menu_bar {

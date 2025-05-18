@@ -11,6 +11,7 @@ import EmoteReactions from "./EmoteReactions.js"
 import EmoteBubble from "./EmoteBubble.js"
 import GameMenu from "./GameMenu.js"
 import WinScreen from "./WinScreen.js"
+import Advertisement from "./Advertisement.js"
 
 
 /** Game screen component */
@@ -244,14 +245,11 @@ export default function Game({ game, setGame, startGame }) {
     return (<>
         {/* Game container */}
         <div id="game_wrapper">
-        <main id="game">
-            {/* Menu */}
-            <div className="menu_bar flex flex_center_vertically gap_12px">
-                {/* Button */}
-                <button className="button_primary button_secondary button_micro button_mainbg button_border_bg_lighter hover_border_shadowed" id="menu_button" onClick={toggleMenu}>
-                    <span>Menu</span>
-                    {/* <kbd>ESC</kbd> */}
-                </button>
+            {/* Advertisement */}
+            <div className="ad_container">
+                <Advertisement adSlot={"4276337064"} />
+            </div>
+
             {/* Game */}
             <main id="game">
                 {/* Menu */}

@@ -38,71 +38,72 @@ export default function Lobby({ game, startGame, toast, leaveGame, setProfileOpe
             {/* Upper */}
             <main id="lobby" className="container">
 
-                <div className="cols_container media_flex">
+                <div className="cols_container media_flex_wide">
                     {/* Left */}
-                    <div className="col">
-                        <h3 className="border_shadowed">
-                            Lobby<span className="small">(Room {game.roomID})</span>
-                        </h3>
+                    <div className="col left_col">
+                        {/* Lobby info */}
+                        <div className="lobby_info">
+                            <h3 className="border_shadowed">
+                                Lobby<span className="small">(Room {game.roomID})</span>
+                            </h3>
 
-                        {/* Start */}
-                        <button className="button_primary button_green border_shadowed"
-                            onClick={startGame}
-                            disabled={socket?.id !== game?.host}
-                            data-title={startButtonTooltip}
-                        >
-                            <img src="/icons/play.svg" alt="" className="border_shadowed" />
-                            <span className="border_shadowed">
-                                START
-                            </span>
-                        </button>
-                        <br/>
-
-                        {/* Share */}
-                        <div className="button_primary button_lightbg no_interact">
-                            <img src="/icons/person.svg" alt="" className="border_shadowed" />
-                            <div>
+                            {/* Start */}
+                            <button className="button_primary button_green border_shadowed"
+                                onClick={startGame}
+                                disabled={socket?.id !== game?.host}
+                                data-title={startButtonTooltip}
+                            >
+                                <img src="/icons/play.svg" alt="" className="border_shadowed" />
                                 <span className="border_shadowed">
-                                    Invite your friends
+                                    START
                                 </span>
+                            </button>
+                            <br/>
 
-                                {/* Buttons */}
-                                <div className="flex gap_6px">
-                                    {/* Share sheet */}
-                                    <button className="button_primary button_secondary share_button button_lightbg hover_border_shadowed"
-                                        onClick={shareRoom}
-                                    >
-                                        {/* Replace with non-breaking hyphens */}
-                                        <span>{game.roomID.replaceAll("-", "‑")}</span>
+                            {/* Share */}
+                            <div className="button_primary button_lightbg no_interact">
+                                <img src="/icons/person.svg" alt="" className="border_shadowed" />
+                                <div>
+                                    <span className="border_shadowed">
+                                        Invite your friends
+                                    </span>
 
-                                        <img src="/icons/Share.svg" alt="" className="float_right parent_invert" />
-                                    </button>
+                                    {/* Buttons */}
+                                    <div className="flex gap_6px">
+                                        {/* Share sheet */}
+                                        <button className="button_primary button_secondary share_button button_lightbg hover_border_shadowed"
+                                            onClick={shareRoom}
+                                        >
+                                            {/* Replace with non-breaking hyphens */}
+                                            <span>{game.roomID.replaceAll("-", "‑")}</span>
 
-                                    {/* Copy to clipboard */}
-                                    <button
-                                        className="button_primary button_secondary share_button button_lightbg button_micro"
-                                        data-title="Copy link to clipboard"
-                                        onClick={copyRoom}
-                                    >
-                                        <img src="/icons/content_copy_20dp_FFFFFF_FILL0_wght600_GRAD200_opsz20.svg" alt="Copy link to clipboard" className="parent_invert" />
-                                    </button>
+                                            <img src="/icons/Share.svg" alt="" className="float_right parent_invert" />
+                                        </button>
+
+                                        {/* Copy to clipboard */}
+                                        <button
+                                            className="button_primary button_secondary share_button button_lightbg button_micro"
+                                            data-title="Copy link to clipboard"
+                                            onClick={copyRoom}
+                                        >
+                                            <img src="/icons/content_copy_20dp_FFFFFF_FILL0_wght600_GRAD200_opsz20.svg" alt="Copy link to clipboard" className="parent_invert" />
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
+                            <br/>
+
+                            {/* Leave */}
+                            <button className="button_primary button_secondary button_lightbg hover_border_shadowed"
+                                onClick={leaveGame}
+                            >
+                                <span>
+                                    {!game.my_spectating ? "Leave" : "Stop spectating"}
+                                </span>
+                            </button>
                         </div>
                         <br/>
 
-                        {/* Leave */}
-                        <button className="button_primary button_secondary button_lightbg hover_border_shadowed"
-                            onClick={leaveGame}
-                        >
-                            <span>
-                                {!game.my_spectating ? "Leave" : "Stop spectating"}
-                            </span>
-                        </button>
-                    </div>
-
-                    {/* Right */}
-                    <div className="col players_col">
                         {/* Players */}
                         <div>
                             {/* Title */}
@@ -138,61 +139,63 @@ export default function Lobby({ game, startGame, toast, leaveGame, setProfileOpe
                             </div>
                         </div>
                     </div>
+
+                    {/* Right */}
+                    <div id="config" className="col right_col">
+                        {/* Options */}
+                        {/* Deck */}
+                        <section>
+                            <h3 className="fancy_title">
+                                <span>Deck</span>
+                            </h3>
+                            
+                            {/* Decks */}
+                            <ConfigDeck game={game} />
+                        </section>
+
+                        {/* Lobby */}
+                        <section>
+                            <h3 className="fancy_title">
+                                <span>Room Options</span>
+                            </h3>
+
+                            {/* <div className="config_two_col"> */}
+                                <Config name="public_lobby" game={game} />
+                                <Config name="visible_over_same_network" game={game} />
+                                <Config name="spectators" game={game} />
+                                <Config name="enable_chat" game={game} />
+                            {/* </div> */}
+                            <Config name="max_players" game={game} />
+                        </section>
+
+                        {/* Game */}
+                        <section>
+                            <h3 className="fancy_title">
+                                <span>Modifiers</span>
+                            </h3>
+                            <Config name="starting_cards" game={game} />
+                            <Config name="draw_stacking" game={game} />
+                            <Config name="who_goes_first" game={game} />
+                            <Config name="xray" game={game} />
+                            <Config name="infinite_draw" game={game} />
+                            <Config name="always_play" game={game} />
+                            {/* <Config name="jump_in" game={game} /> */}
+                            {/* <Config name="continue" game={game} disabled={true} /> */}
+                        </section>
+
+                        <section>
+                            <h3 className="fancy_title">
+                                <span>Callouts (WIP)</span>
+                            </h3>
+                            <Config name="require_call" game={game} />
+                            <Config name="call_timer" game={game} />
+                            <Config name="call_penalty" game={game} />
+                            <Config name="call_draw_penalty" game={game} />
+                        </section>
+                    </div>
+
                 </div>
             </main>
-
-            {/* Options */}
-            <div id="config" className="container">
-                {/* Deck */}
-                <section>
-                    <h3 className="fancy_title">
-                        <span>Deck</span>
-                    </h3>
-                    
-                    {/* Decks */}
-                    <ConfigDeck game={game} />
-                </section>
-
-                {/* Lobby */}
-                <section>
-                    <h3 className="fancy_title">
-                        <span>Room Options</span>
-                    </h3>
-
-                    {/* <div className="config_two_col"> */}
-                        <Config name="public_lobby" game={game} />
-                        <Config name="visible_over_same_network" game={game} />
-                        <Config name="spectators" game={game} />
-                        <Config name="enable_chat" game={game} />
-                    {/* </div> */}
-                    <Config name="max_players" game={game} />
-                </section>
-
-                {/* Game */}
-                <section>
-                    <h3 className="fancy_title">
-                        <span>Modifiers</span>
-                    </h3>
-                    <Config name="starting_cards" game={game} />
-                    <Config name="draw_stacking" game={game} />
-                    <Config name="who_goes_first" game={game} />
-                    <Config name="xray" game={game} />
-                    <Config name="infinite_draw" game={game} />
-                    <Config name="always_play" game={game} />
-                    {/* <Config name="jump_in" game={game} /> */}
-                    {/* <Config name="continue" game={game} disabled={true} /> */}
-                </section>
-
-                <section>
-                    <h3 className="fancy_title">
-                        <span>Callouts (WIP)</span>
-                    </h3>
-                    <Config name="require_call" game={game} />
-                    <Config name="call_timer" game={game} />
-                    <Config name="call_penalty" game={game} />
-                    <Config name="call_draw_penalty" game={game} />
-                </section>
-            </div>
         </>
     )
 }

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { socket } from "../socket"
 import UserAvatar from "./UserAvatar";
 
-export default function User({ user, game, tagline, title, postName, classes="", onClick }) {
+export default function User({ user, game, tagline, title, postName, classes="", onClick, setProfileOpen }) {
 
     // Kick
     function kick(socketIDToKick) {
@@ -57,11 +57,19 @@ export default function User({ user, game, tagline, title, postName, classes="",
             <div className="user_buttons">
                 {/* Kick */}
                 {!isMe && game?.host === socket.id ?
-                    <button className="bold hover_underline" onClick={() => kick(userData?.socketID)}>
+                    <button className="button bold hover_underline" onClick={() => kick(userData?.socketID)}>
                         Kick
                     </button>
                     :
                     null
+                }
+                {/* Edit profile */}
+                {!isMe || !setProfileOpen ? null :
+                    <img
+                        src="/icons/edit_24dp_FFFFFF_FILL0_wght400_GRAD200_opsz24.svg" alt="" role="button" tabIndex="0"
+                        className="button user_inner_button"
+                        onClick={() => setProfileOpen(true)}
+                    />
                 }
             </div>
         </div>

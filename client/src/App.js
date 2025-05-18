@@ -29,9 +29,12 @@ export { clientData };
 /** App */
 export default function App() {
 
-    // Game
+    // Game state
     const [game, setGame] = useState(false);
     const [profile, setProfile] = useState({ name:"username", avatar:"balloon" });
+
+    // UI state
+    const [profileOpen, setProfileOpen] = useState(false);
 
     /** Emits start_game event */
     function startGame() {
@@ -93,7 +96,7 @@ export default function App() {
         // Game
         menu === "game" ? <Game game={game} setGame={setGame} startGame={startGame} /> :
         // Lobby
-        menu === "lobby" ? <Lobby game={game} setGame={setGame} startGame={startGame} leaveGame={leaveGame} toast={toast} /> :
+        menu === "lobby" ? <Lobby game={game} setGame={setGame} startGame={startGame} leaveGame={leaveGame} toast={toast} setProfileOpen={setProfileOpen} /> :
         // Joining...
         menu === "joining" ? <Joining game={game} setMenu={setMenu} /> :
         // Deck editor
@@ -102,8 +105,6 @@ export default function App() {
         menu === "help" ? <Help setMenu={setMenu} /> :
         // Home
         <Home setMenu={setMenu} joinRoom={joinRoom} />; // Home
-
-    const [profileOpen, setProfileOpen] = useState(false);
 
     function getRandomName() {
         const adjective = capitalizeFirstLetter(arrRandom(clientData.names.adjectives));

@@ -8,7 +8,7 @@ import { clientData } from "../App";
 import EmoteBubble from "./EmoteBubble.js";
 // import lang from "../lang.js";
 
-export default function Lobby({ game, startGame, toast, leaveGame }) {
+export default function Lobby({ game, startGame, toast, leaveGame, setProfileOpen }) {
 
     const playerMax = game.config.max_players;
     const playerCount = Object.keys(game.usersParsed).length;
@@ -132,6 +132,7 @@ export default function Lobby({ game, startGame, toast, leaveGame }) {
                                         title={`ID: ${user.socketID}
                                         ${user.socketID === game.host ? " (Host)":""}`}
                                         postName={<EmoteBubble socketID={user?.socketID} />}
+                                        setProfileOpen={setProfileOpen}
                                     />
                                 })}
                             </div>

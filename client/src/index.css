@@ -1027,16 +1027,16 @@ button.share_button {
 }
 .player {
     max-width: 85vw;
+    min-width: 20vw;
     pointer-events: none;
 }
 .player > * { pointer-events: initial; }
 .player > .inner {
     display: flex;
     gap: 6px;
+    justify-content: center;
 
-    /* position: absolute; */
-
-    width: unset !important;
+    width: unset;
     max-width: 100%;
     overflow-x: auto;
 

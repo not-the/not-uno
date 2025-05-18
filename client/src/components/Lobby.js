@@ -142,7 +142,6 @@ export default function Lobby({ game, startGame, toast, leaveGame, setProfileOpe
 
                     {/* Right */}
                     <div id="config" className="col right_col">
-                        {/* Options */}
                         {/* Deck */}
                         <section>
                             <h3 className="fancy_title">
@@ -153,18 +152,17 @@ export default function Lobby({ game, startGame, toast, leaveGame, setProfileOpe
                             <ConfigDeck game={game} />
                         </section>
 
-                        {/* Lobby */}
+                        {/* Room Options */}
                         <section>
                             <h3 className="fancy_title">
                                 <span>Room Options</span>
                             </h3>
 
-                            {/* <div className="config_two_col"> */}
-                                <Config name="public_lobby" game={game} />
-                                <Config name="visible_over_same_network" game={game} />
-                                <Config name="spectators" game={game} />
-                                <Config name="enable_chat" game={game} />
-                            {/* </div> */}
+                            <Config name="public_lobby" game={game} />
+                            <Config name="visible_over_same_network" game={game} />
+                            <Config name="spectators" game={game} />
+                            <Config name="enable_chat" game={game} />
+                            <Config name="reactions" game={game} />
                             <Config name="max_players" game={game} />
                         </section>
 

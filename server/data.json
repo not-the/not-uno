@@ -481,6 +481,11 @@
 
         "condition_reason": "Private games only"
     },
+    "reactions": {
+        "icon": "/icons/Reaction.svg",
+        "icon_pad": 1,
+        "type": "boolean"
+    },
     "max_players": {
         "icon": "/icons/person.svg",
         "icon_pad": 3,

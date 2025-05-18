@@ -26,7 +26,7 @@ export default function Config({ name, game, disabled }) {
     }
 
     return (
-        <div className="item" aria-disabled={condition ? "true" : "false"}>
+        <div className="item" aria-disabled={condition ? "true" : "false"} key={name}>
             {/* Decorator */}
             <div className="decorator"/>
 
@@ -104,6 +104,8 @@ function Input({ id, option, configValue, updateConfig, disabled }) {
             </>
         )
     }
+
+    // Toggle
     else if(type === "boolean") {
         return (
             <div className="toggle" aria-disabled={disabled}>
@@ -113,6 +115,7 @@ function Input({ id, option, configValue, updateConfig, disabled }) {
         )
     }
 
+    // Dropdown
     else if(type === "dropdown") {
         return (
             <select name={id} id={id} value={configValue} onChange={event => set(event.target.value)} disabled={disabled}>

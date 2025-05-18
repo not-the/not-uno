@@ -34,6 +34,7 @@ export default class Uno {
             spectators: true,
             visible_over_same_network: true,
             enable_chat: true,
+            reactions: true,
             max_players: 4,
 
             starting_deck: "classic",
@@ -1418,7 +1419,8 @@ export default class Uno {
         // Missing parameters
         if(!socketID) return;
 
-        console.log(socketID);
+        // Reactions disabled
+        if(!this.config.reactions && socket) return;
 
         // Emit
         this.emit(`emote_from_${socketID}`, {

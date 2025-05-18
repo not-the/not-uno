@@ -241,8 +241,7 @@ export default function Game({ game, setGame, startGame }) {
 
 
     // HTML
-    return (
-        <>
+    return (<>
         {/* Game container */}
         <main id="game">
             {/* Menu */}
@@ -254,7 +253,7 @@ export default function Game({ game, setGame, startGame }) {
                 </button>
 
                 {/* Emotes */}
-                <EmoteReactions />
+                {game.config.reactions ? <EmoteReactions /> : null}
 
                 {/* Spectators */}
                 {game.spectatorCount === 0 ? null :
@@ -534,7 +533,5 @@ export default function Game({ game, setGame, startGame }) {
         {!optionsOpen ? null :
             <GameMenu game={game} isHost={isHost} toggleMenu={toggleMenu} leaveGame={leaveGame} returnToLobby={returnToLobby} />
         }
-
-        </>
-    );
+    </>);
 }

@@ -9,6 +9,7 @@ const lang = {
         "visible_over_same_network": "Local Network",
         "spectators": "Spectators",
         "enable_chat": "Chat",
+        "reactions": "Reactions",
         "max_players": "Max Players",
         "xray": "Hands Down",
         "infinite_draw": "Infinite Draw",

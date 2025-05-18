@@ -948,10 +948,18 @@ button.share_button {
 
 
 /* Game */
-#game {
+#game_wrapper {
     position: absolute;
     inset: 0;
     overflow: hidden;
+    height: 100dvh;
+
+    display: flex;
+    flex-direction: column;
+}
+#game {
+    position: relative;
+    height: 100%;
 
     display: flex;
     justify-content: center;
@@ -961,7 +969,7 @@ button.share_button {
 }
 
 .menu_bar {
-    position: fixed;
+    position: absolute;
     top: 18px;
     left: 24px;
     right: 24px;
@@ -2126,6 +2134,8 @@ body:has(.overlay) .backdrop {
     background-color: var(--bg-darker);
     border-radius: 12px;
     padding: 3px;
+
+    overflow-x: auto;
 }
 .reactions[aria-disabled="true"] > .item {
     opacity: 0.6;

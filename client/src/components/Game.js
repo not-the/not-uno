@@ -243,6 +243,7 @@ export default function Game({ game, setGame, startGame }) {
     // HTML
     return (<>
         {/* Game container */}
+        <div id="game_wrapper">
         <main id="game">
             {/* Menu */}
             <div className="menu_bar flex flex_center_vertically gap_12px">
@@ -251,212 +252,222 @@ export default function Game({ game, setGame, startGame }) {
                     <span>Menu</span>
                     {/* <kbd>ESC</kbd> */}
                 </button>
-
-                {/* Emotes */}
-                {game.config.reactions ? <EmoteReactions /> : null}
-
-                {/* Spectators */}
-                {game.spectatorCount === 0 ? null :
-                    <p className="secondary_text">
-                        {/* Icon */}
-                        <img src="/icons/eyeball.svg" alt="" class="icon_inline secondary_text" /> {game.spectatorCount} spectator{game.spectatorCount===1?"":"s"}
-                    </p>
-                }
-            </div>
-
-            {/* Center */}
-            <div id="game_center">
-                {/* Upper */}
-                <div className="upper">
-                    <div id="deck">
-                        <Card data={game.deck[game.deck.length-1]} onClick={() => drawCard()} clickable={game.my_num !== -1} />
-                        <CardStack array={game.deck} />
-                    </div>
-
-                    {/* Middle */}
-                    <div className="middle border_shadowed" data-my-turn={myTurn}>
-                        {/* Rotation */}
-                        <div id="rotation" style={{
-                            "transform": `rotate(${game.turn_rotation_value*45}deg) scale(${game.direction}, 1)`
-                        }}>
-                            ↻
-                        </div>
-
-                        {/* Arrow */}
-                        <div className="arrow_container">
-                            {/* rot {arrowRotation}<br/>
-                            target {rotationTarget} */}
-                            <div
-                                id="arrow"
-                                data-rotation={rotationTarget}
-                                style={{
-                                    "transform": `rotate(${rotationTarget}deg) scale(${myTurn ? "1.1" : "1"})`
-                                }}
-                            >
-                                <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 117 116">
-                                    <path id="Arrow" d="M0,58,59,0V28h58V87H59v29Z" fill="#fff"/>
-                                </svg>
-                            </div>
-                        </div>
-
-                        {/* Extra */}
-                        <div className="turn">
-                            P{game.turn+1}
-                        </div>
-                    </div>
-
-                    {/* Pile */}
-                    <div id="pile">
-                        <Card data={game.pile[game.pile.length-1]} />
-                        <CardStack array={game.pile} />
-                    </div>
-                </div>
-
-                {/* Lower */}
-                <div className="lower">
-                    {/* End turn */}
-                    <button className="button_primary button_secondary button_lightbg hover_border_shadowed position_relative" onClick={endTurn} disabled={hightlightEndTurn}>
-                        <span>
-                            {
-                                game.config.always_play && game.draw_debt !== 0 ?
-                                "Draw cards" :
-                                "End turn"
-                            }
-                        </span>
-                        {/*!myTurn || */game.draw_debt === 0 ? null :
-                            <div className="debt_indicator">
-                                +{game.draw_debt}
-                            </div>
-                        }
-                        <kbd>E</kbd>
+            {/* Game */}
+            <main id="game">
+                {/* Menu */}
+                <div className="menu_bar flex flex_center_vertically gap_12px">
+                    {/* Button */}
+                    <button className="button_primary button_secondary button_micro button_mainbg button_border_bg_lighter hover_border_shadowed" id="menu_button" onClick={toggleMenu}>
+                        <span>Menu</span>
+                        {/* <kbd>ESC</kbd> */}
                     </button>
 
-                    {/* Callout */}
-                    {!game.config.require_call ? null :
-                        <button
-                            id="last_card"
-                            className="button_primary button_secondary button_lightbg hover_border_shadowed position_relative"
-                            onClick={callout}
-                            disabled={disableLastCard}
-                            data-timer={awaiting_call}
-                            style={{
-                                "--duration": `${game.config.call_timer}s`
-                            }}
-                        >
-                            <div className="under progress" />
-                            <span>Last card</span>
-                            <div className="over progress" />
-                            <kbd>Q</kbd>
-                        </button>
+                    {/* Emotes */}
+                    {game.config.reactions ? <EmoteReactions /> : null}
+
+                    {/* Spectators */}
+                    {game.spectatorCount === 0 ? null :
+                        <p className="secondary_text">
+                            {/* Icon */}
+                            <img src="/icons/eyeball.svg" alt="" class="icon_inline secondary_text" /> {game.spectatorCount} spectator{game.spectatorCount===1?"":"s"}
+                        </p>
                     }
                 </div>
-            </div>
 
-            {/* Players */}
-            {game.players.map((player, playerIndex) => {
-
-                // Positioning
-                const playerPosition = getPlayerOnscreenPosition(playerIndex);
-
-                const user = game.usersParsed[player.socketID];
-                const isMe = playerIndex === game.my_num;
-
-                // Classes
-                const classes = `
-                player
-                player_${playerIndex}
-                position_${playerPosition}
-                ${playerIndex === game.my_num ? "me" : ""}
-                ${game.turn === playerIndex ? "current_turn" : ""}
-                `;
-
-                // CIRCULAR POSITIONING
-                // const angle = clamp(
-                //     (360 / (game.players.length)) + (playerIndex*90) - 90,
-                //     360
-                // );
-                // const x = Math.cos(angle) * (window.innerWidth/2) + (window.innerWidth/2);
-                // const y = Math.sin(angle) * (window.innerHeight/2) + (window.innerHeight/2);
-                // const styles = {
-                //     "left": x,
-                //     "bottom": y,
-                //     "transform": `translateX(-50%) rotate(${angle}deg)`
-                // };
-
-                // console.log(angle);
-
-                const styles = undefined;
-
-                // Cards
-                let cards = [...player.cards];
-
-                // Sort
-                if(sortCards) {
-                    // Sort cards
-                    cards = cards.sort((a, b) => {
-                        const cc = a?.color?.localeCompare?.(b.color);
-                        if(cc !== 0) return cc; // Color
-                        return a?.type?.localeCompare?.(b.type); // Type
-                    })
-                }
-
-                // Cards JSX
-                let cardsJSX = cards.map((cardData) => {
-                    return <Card
-                        data={cardData} key={cardData.ucid}
-                        owner={playerIndex} game={game}
-                        onClick={isMe ?
-                            function() { playCard(cardData.ucid) } :
-                            undefined
-                        }
-                    />
-                })
-
-                return (
-                    <div className={classes} key={playerIndex} style={styles}>
-                        {/* User disconnected */}
-                        <PlayerDisconnectOverlay
-                            game={game} player={player} playerIndex={playerIndex}
-                            returnToLobby={returnToLobby}
-                            removeDisconnectedPlayer={removeDisconnectedPlayer}
-                        />
-
-                        {/* Upper */}
-                        <div className="player_upper border_shadowed flex flex_center_vertically">
-                            {/* Name */}
-                            <h3>
-                                {<User
-                                    user={user}
-                                    postName={<span className="small">(P{playerIndex+1})</span>}
-                                />}
-                            </h3>
-
-                            <EmoteBubble socketID={user?.socketID} />
-
-                            {/* Buttons */}
-                            {!isMe ? null :
-                                <div className="player_buttons" data-title={sortCards ? "Sort cards (Enabled)" : "Sort cards"}>
-                                    {/* Sort cards */}
-                                    <div
-                                        className="card_sort_button cursor_pointer"
-                                        role="checkbox" tabIndex="0"
-                                        aria-checked={sortCards}
-                                        onClick={toggleSortCards}
-                                    >
-                                        <img src="/icons/Sort.svg" alt="Sort Cards" />
-                                    </div>
-                                </div>
-                            }
+                {/* Center */}
+                <div id="game_center">
+                    {/* Upper */}
+                    <div className="upper">
+                        <div id="deck">
+                            <Card data={game.deck[game.deck.length-1]} onClick={() => drawCard()} clickable={game.my_num !== -1} />
+                            <CardStack array={game.deck} />
                         </div>
 
-                        {/* Cards */}
-                        <div className="inner">
-                            {cardsJSX}
+                        {/* Middle */}
+                        <div className="middle border_shadowed" data-my-turn={myTurn}>
+                            {/* Rotation */}
+                            <div id="rotation" style={{
+                                "transform": `rotate(${game.turn_rotation_value*45}deg) scale(${game.direction}, 1)`
+                            }}>
+                                ↻
+                            </div>
+
+                            {/* Arrow */}
+                            <div className="arrow_container">
+                                {/* rot {arrowRotation}<br/>
+                                target {rotationTarget} */}
+                                <div
+                                    id="arrow"
+                                    data-rotation={rotationTarget}
+                                    style={{
+                                        "transform": `rotate(${rotationTarget}deg) scale(${myTurn ? "1.1" : "1"})`
+                                    }}
+                                >
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 117 116">
+                                        <path id="Arrow" d="M0,58,59,0V28h58V87H59v29Z" fill="#fff"/>
+                                    </svg>
+                                </div>
+                            </div>
+
+                            {/* Extra */}
+                            <div className="turn">
+                                P{game.turn+1}
+                            </div>
+                        </div>
+
+                        {/* Pile */}
+                        <div id="pile">
+                            <Card data={game.pile[game.pile.length-1]} />
+                            <CardStack array={game.pile} />
                         </div>
                     </div>
-                )
-            })}
-        </main>
+
+                    {/* Lower */}
+                    <div className="lower">
+                        {/* End turn */}
+                        <button className="button_primary button_secondary button_lightbg hover_border_shadowed position_relative" onClick={endTurn} disabled={hightlightEndTurn}>
+                            <span>
+                                {
+                                    game.config.always_play && game.draw_debt !== 0 ?
+                                    "Draw cards" :
+                                    "End turn"
+                                }
+                            </span>
+                            {/*!myTurn || */game.draw_debt === 0 ? null :
+                                <div className="debt_indicator">
+                                    +{game.draw_debt}
+                                </div>
+                            }
+                            <kbd>E</kbd>
+                        </button>
+
+                        {/* Callout */}
+                        {!game.config.require_call ? null :
+                            <button
+                                id="last_card"
+                                className="button_primary button_secondary button_lightbg hover_border_shadowed position_relative"
+                                onClick={callout}
+                                disabled={disableLastCard}
+                                data-timer={awaiting_call}
+                                style={{
+                                    "--duration": `${game.config.call_timer}s`
+                                }}
+                            >
+                                <div className="under progress" />
+                                <span>Last card</span>
+                                <div className="over progress" />
+                                <kbd>Q</kbd>
+                            </button>
+                        }
+                    </div>
+                </div>
+
+                {/* Players */}
+                {game.players.map((player, playerIndex) => {
+
+                    // Positioning
+                    const playerPosition = getPlayerOnscreenPosition(playerIndex);
+
+                    const user = game.usersParsed[player.socketID];
+                    const isMe = playerIndex === game.my_num;
+
+                    // Classes
+                    const classes = `
+                    player
+                    player_${playerIndex}
+                    position_${playerPosition}
+                    ${playerIndex === game.my_num ? "me" : ""}
+                    ${game.turn === playerIndex ? "current_turn" : ""}
+                    `;
+
+                    // CIRCULAR POSITIONING
+                    // const angle = clamp(
+                    //     (360 / (game.players.length)) + (playerIndex*90) - 90,
+                    //     360
+                    // );
+                    // const x = Math.cos(angle) * (window.innerWidth/2) + (window.innerWidth/2);
+                    // const y = Math.sin(angle) * (window.innerHeight/2) + (window.innerHeight/2);
+                    // const styles = {
+                    //     "left": x,
+                    //     "bottom": y,
+                    //     "transform": `translateX(-50%) rotate(${angle}deg)`
+                    // };
+
+                    // console.log(angle);
+
+                    const styles = undefined;
+
+                    // Cards
+                    let cards = [...player.cards];
+
+                    // Sort
+                    if(sortCards) {
+                        // Sort cards
+                        cards = cards.sort((a, b) => {
+                            const cc = a?.color?.localeCompare?.(b.color);
+                            if(cc !== 0) return cc; // Color
+                            return a?.type?.localeCompare?.(b.type); // Type
+                        })
+                    }
+
+                    // Cards JSX
+                    let cardsJSX = cards.map((cardData) => {
+                        return <Card
+                            data={cardData} key={cardData.ucid}
+                            owner={playerIndex} game={game}
+                            onClick={isMe ?
+                                function() { playCard(cardData.ucid) } :
+                                undefined
+                            }
+                        />
+                    })
+
+                    return (
+                        <div className={classes} key={playerIndex} style={styles}>
+                            {/* User disconnected */}
+                            <PlayerDisconnectOverlay
+                                game={game} player={player} playerIndex={playerIndex}
+                                returnToLobby={returnToLobby}
+                                removeDisconnectedPlayer={removeDisconnectedPlayer}
+                            />
+
+                            {/* Upper */}
+                            <div className="player_upper border_shadowed flex flex_center_vertically">
+                                {/* Name */}
+                                <h3>
+                                    {<User
+                                        user={user}
+                                        postName={<span className="small">(P{playerIndex+1})</span>}
+                                    />}
+                                </h3>
+
+                                <EmoteBubble socketID={user?.socketID} />
+
+                                {/* Buttons */}
+                                {!isMe ? null :
+                                    <div className="player_buttons" data-title={sortCards ? "Sort cards (Enabled)" : "Sort cards"}>
+                                        {/* Sort cards */}
+                                        <div
+                                            className="card_sort_button cursor_pointer"
+                                            role="checkbox" tabIndex="0"
+                                            aria-checked={sortCards}
+                                            onClick={toggleSortCards}
+                                        >
+                                            <img src="/icons/Sort.svg" alt="Sort Cards" />
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+
+                            {/* Cards */}
+                            <div className="inner">
+                                {cardsJSX}
+                            </div>
+                        </div>
+                    )
+                })}
+            </main>
+        </div>
 
         {/* Animation overlay */}
         <CardAnimated animation={game.animation} animation_key={game.animation_key} />

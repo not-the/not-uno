@@ -649,7 +649,7 @@
 "card_colors": ["black", "red", "yellow", "blue", "green", "cyan", "purple", "orange", "pink"],
 
 "max_chat_length": 128,
-"reaction_cooldown": 500,
+"reaction_cooldown": 1500,
 "reactions": [
     "😂", "💖", "💤", "👍", "👎", "😬", "😢"
 ]

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import User from "./User"
 import { socket } from "../socket";
 import { clientData } from "../App";
+import UserAvatar from "./UserAvatar";
 
 export default function Chat({
     game,
@@ -137,6 +138,7 @@ export default function Chat({
                                     (data.old_msg ? " old_msg" : "") // +
                                     // (index === 0 ? " msg_in" : "")
                                 }
+                                hideAvatar={data.clump}
                                 key={chatCache - index - 1}
                             />)
                     }
@@ -163,16 +165,21 @@ export default function Chat({
                     </button>
                 </div>
             </div>
+
+            {/* Toggle Chat button */}
             <button id="chat_button" className="panel_button border_shadowed" onClick={toggleChat}>
                 <img src="/icons/chat.svg" alt="Chat" />
                 <span>{chatUnread > 9 ? "9+" : chatUnread || null}</span>
 
                 {/* Bubble */}
                 {chatBubble ?
-                    <div className="bubble" data-expired={chatBubble.bubble_timed_out}>
+                    <div className="bubble" data-expired={chatBubble.bubble_timed_out} key={chatBubble.socketID}>
                         <div className="inner">
-                            <strong>{chatBubble.user?.name}</strong>
-                            <span>{chatBubble.msg}</span>
+                            <UserAvatar avatar={chatBubble?.user?.avatar} />
+                            <div>
+                                <strong>{chatBubble.user?.name}</strong>
+                                <span>{chatBubble.msg}</span>
+                            </div>
                         </div>
                     </div>
                     : null

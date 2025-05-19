@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { socket } from "../socket"
 import UserAvatar from "./UserAvatar";
 
-export default function User({ user, game, tagline, title, postName, classes="", onClick, setProfileOpen }) {
+export default function User({ user, game, tagline, title, postName, classes="", onClick, setProfileOpen, hideAvatar=false }) {
 
     // Kick
     function kick(socketIDToKick) {
@@ -33,7 +33,7 @@ export default function User({ user, game, tagline, title, postName, classes="",
     return (
         <div className={className} data-title={title} onClick={onClick}>
             {/* Avatar */}
-            <UserAvatar avatar={userData?.avatar} />
+            {hideAvatar ? <div className="avatar"/> : <UserAvatar avatar={userData?.avatar} />}
 
             {/* Crown */}
             <span className="crown">

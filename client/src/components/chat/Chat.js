@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
-import User from "./User"
-import { socket } from "../socket";
-import { clientData } from "../App";
-import UserAvatar from "./UserAvatar";
+import User from "../User"
+import { socket } from "../../socket";
+import { clientData } from "../../App";
+import UserAvatar from "../UserAvatar";
 import ChatInput from "./ChatInput";
 
 export default function Chat({

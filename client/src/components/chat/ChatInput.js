@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { socket } from "../socket";
-import { clientData } from "../App";
+import { socket } from "../../socket";
+import { clientData } from "../../App";
 
 export default function ChatInput({ game }) {
     const [inputContent, setInputContent] = useState("");

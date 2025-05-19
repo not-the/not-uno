@@ -4,7 +4,7 @@ import Lobby from './components/Lobby.js'
 import Game from './components/Game.js'
 import Help from './components/Help.js'
 import Toast from './components/Toast.js'
-import Chat from './components/Chat.js'
+import Chat from './components/chat/Chat.js'
 import ProfileMenu from './components/ProfileMenu.js'
 import { get, store, arrRandom, capitalizeFirstLetter, clearURLHash } from './Util.js'
 

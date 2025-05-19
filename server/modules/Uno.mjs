@@ -410,6 +410,12 @@ export default class Uno {
     removePlayer(pnum, socket, updateClients=true) {
         const logEntry = this.log("removePlayer", ...Array.from(arguments));
 
+        // On win screen
+        if(this.winner) {
+            logEntry.amend("false", "Skipped, currently on win screen");
+            return;
+        }
+
         // Take player's cards and shuffle them back into the deck
         if(this.state === "ingame" && Array.isArray(this.deck)) {
             this.deck = [...this.deck, ...this.players?.[pnum]?.cards??[]];
@@ -422,9 +428,8 @@ export default class Uno {
 
         // All players have left
         if((this.clients.length - this.spectatorCount) === 0) {
-            // server.log(`Room [${roomID}] is empty, closing game...`);
             this.emit("toast", { title: "Game ended" });
-            logEntry.amend(false, "Game ended");
+            logEntry.amend(undefined, "Game ended");
             return this.close();
         }
 
@@ -1362,8 +1367,15 @@ export default class Uno {
 
                 // Forfeit
                 else if(this.config.call_penalty === "forfeit") {
-                    this.removePlayer(pnum);
-                    if(this.players.length <= 1) this.returnToLobby();
+                    // Remaining player wins
+                    if(this.players.length <= 2) {
+                        if(this.players?.[0]?.socketID) this.winner = this.players[0].socketID;
+                    }
+                    
+                    // Remove player
+                    else this.removePlayer(pnum);
+
+                    // Toast
                     this.emit("toast", { title:"Forfeit", msg:"Someone failed to call last card and forfeit the game"});
                 }
             }

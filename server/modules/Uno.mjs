@@ -410,12 +410,6 @@ export default class Uno {
     removePlayer(pnum, socket, updateClients=true) {
         const logEntry = this.log("removePlayer", ...Array.from(arguments));
 
-        // On win screen
-        if(this.winner) {
-            logEntry.amend("false", "Skipped, currently on win screen");
-            return;
-        }
-
         // Take player's cards and shuffle them back into the deck
         if(this.state === "ingame" && Array.isArray(this.deck)) {
             this.deck = [...this.deck, ...this.players?.[pnum]?.cards??[]];

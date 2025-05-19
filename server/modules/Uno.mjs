@@ -1415,6 +1415,25 @@ export default class Uno {
         logEntry.amend(true);
     }
 
+    /** Chat */
+    chat(socket, msg) {
+        const obj = {
+            msg: msg,
+            user: {
+                name: socket.name,
+                avatar: socket.avatar
+            },
+            socketID: socket.id
+        }
+
+        // Log
+        // server.log(`🗨  (${this.roomID}) ${socket.name}: ${obj.msg}`);
+        server.log(`🗨  (${this.roomID}) ${socket.name}: [message]`);
+
+        // Broadcast
+        io.to(this.roomID).emit("chat_receive", obj);
+    }
+
     /** Player emote */
     emote(socketID, msg="?", style=null, socket) {
         // Missing parameters

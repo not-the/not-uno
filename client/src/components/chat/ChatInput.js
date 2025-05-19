@@ -5,10 +5,10 @@ import { clientData } from "../../App";
 export default function ChatInput({ game }) {
     const [inputContent, setInputContent] = useState("");
 
-    const sendChat = (msg) => {
+    const sendChat = () => {
         if(game === false) return;
 
-        socket.emit("chat", { msg:inputContent });
+        socket.emit("chat", inputContent);
         // newChatMsg(chatInput);
         setInputContent("");
         document.getElementById("chat_input").value = "";

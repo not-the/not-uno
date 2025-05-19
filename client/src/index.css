@@ -968,6 +968,7 @@ button.share_button {
     align-items: center;
 
     height: 100dvh;
+    user-select: none;
 }
 
 .menu_bar {

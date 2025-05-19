@@ -31,6 +31,7 @@
     /* Other colors */
     --color-support-btn: #d9534f;
     --color-local-network: #2a6343;
+    --color-discord: #5865f2;
 
     /* Text */
     --text: white;
@@ -288,8 +289,6 @@ button kbd {
     position: sticky;
     top: 72px;
 
-    height: fit-content;
-
     flex: 0 0 auto;
     max-width: 290px;
 }
@@ -503,6 +502,7 @@ a.button {
 .button_mainbg { background-color: var(--bg-main); }
 .button_lightbg { background-color: var(--bg-lighter); }
 .button_comp { background-color: var(--bg-comp-light); }
+.button_discord { background-color: var(--color-discord); border-color: var(--color-discord); }
 
 .button_border_bg_lighter { border-color: var(--bg-lighter); }
 .button_border_bg_main { border-color: var(--bg-main); }

@@ -6,6 +6,7 @@ import Config from "./Config.js"
 import ConfigDeck from "./ConfigDeck.js"
 import { clientData } from "../App";
 import EmoteBubble from "./EmoteBubble.js";
+import EmoteReactions from "./EmoteReactions.js";
 // import lang from "../lang.js";
 
 export default function Lobby({ game, startGame, toast, leaveGame, setProfileOpen }) {
@@ -137,6 +138,10 @@ export default function Lobby({ game, startGame, toast, leaveGame, setProfileOpe
                                     />
                                 })}
                             </div>
+
+                            {/* Reactions */}
+                            <br/>
+                            {game.config.reactions ? <EmoteReactions wrap={true} /> : null}
                         </div>
                     </div>
 

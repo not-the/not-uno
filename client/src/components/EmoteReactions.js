@@ -2,7 +2,7 @@ import { socket } from "../socket";
 import { clientData } from "../App";
 import { useState } from "react";
 
-export default function EmoteReactions() {
+export default function EmoteReactions({ wrap }) {
 
     // State
     const [disabled, setDisabled] = useState(null);
@@ -20,7 +20,7 @@ export default function EmoteReactions() {
     }
 
     return (
-        <div className="reactions flex" aria-disabled={disabled}>
+        <div className={`reactions flex${wrap ? " flex_wrap" : ""}`} aria-disabled={disabled}>
             {clientData.reactions.map(char => {
                 return <button
                     className="item"

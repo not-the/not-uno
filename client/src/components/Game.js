@@ -244,15 +244,6 @@ export default function Game({ game, setGame, startGame }) {
     return (<>
         {/* Game container */}
         <div id="game_wrapper">
-            {/* Menu */}
-            <div className="menu_bar flex flex_center_vertically gap_12px">
-                {/* Button */}
-                <button className="button_primary button_secondary button_micro button_mainbg button_border_bg_lighter hover_border_shadowed" id="menu_button" onClick={toggleMenu}>
-                    <span>Menu</span>
-                    {/* <kbd>ESC</kbd> */}
-                </button>
-            </div>
-
             {/* Game */}
             <main id="game">
                 {/* Menu */}

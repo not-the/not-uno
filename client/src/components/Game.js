@@ -244,7 +244,6 @@ export default function Game({ game, setGame, startGame }) {
     return (<>
         {/* Game container */}
         <div id="game_wrapper">
-        <main id="game">
             {/* Menu */}
             <div className="menu_bar flex flex_center_vertically gap_12px">
                 {/* Button */}
@@ -252,6 +251,8 @@ export default function Game({ game, setGame, startGame }) {
                     <span>Menu</span>
                     {/* <kbd>ESC</kbd> */}
                 </button>
+            </div>
+
             {/* Game */}
             <main id="game">
                 {/* Menu */}

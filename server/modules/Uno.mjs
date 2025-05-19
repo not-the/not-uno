@@ -1286,7 +1286,9 @@ export default class Uno {
         // Check if awaiting callout
         else if(this.config.require_call) {
             const lastPlayer = this.players?.[lastPlayerID];
-            if(lastPlayer !== undefined) this.waitForCallout(lastPlayerID);
+            if(lastPlayer !== undefined && lastPlayer?.cards?.length === 1) {
+                this.waitForCallout(lastPlayerID);
+            }
         }
 
         logEntry.amend(true);
@@ -1301,13 +1303,6 @@ export default class Uno {
 
         // Player
         const player = this.players[pnum];
-
-        // Must have 1 card left
-        if(player?.cards?.length !== 1) {
-            // delete player.pre_call;
-            logEntry.amend(false, "Player does not have 1 card");
-            return;
-        }
 
         // Already pre-called
         // if(player.pre_call) {

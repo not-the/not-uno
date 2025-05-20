@@ -1120,11 +1120,20 @@ export default class Uno {
         if(actionChoice === undefined) {
             // Choose color
             if(playerCard.choose_color === true) {
-                this.action = "choose_color";
-                this.action_params = [socketID, ucid];
-                this.updateClients();
-                logEntry.amend(undefined, `Awaiting action (${this.action})`);
-                return;
+                // Single-color wild, skip prompt
+                if(playerCard.colors?.length === 1) {
+                    actionName = "choose_color";
+                    actionChoice = playerCard.colors[0];
+                }
+
+                // Prompt
+                else {
+                    this.action = "choose_color";
+                    this.action_params = [socketID, ucid];
+                    this.updateClients();
+                    logEntry.amend(undefined, `Awaiting action (${this.action})`);
+                    return;
+                }
             }
 
             // Choose swap
@@ -1165,6 +1174,7 @@ export default class Uno {
             else if(actionName === "target_draw") this.drawMultipleCards(actionChoice, playerCard.target_draw);
         }
 
+        // Pass hands
         if(this.piletop.pass_hands) this.passHands();
 
         // End action prompt

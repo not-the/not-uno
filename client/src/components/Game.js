@@ -266,6 +266,15 @@ export default function Game({ game, setGame, startGame }) {
                     }
                 </div>
 
+                {/* Visual effects */}
+                {/* Big Rotation arrows */}
+                <img
+                    src="/icons/Big Rotation Arrows.svg" alt=""
+                    id="big_rotation_arrows"
+                    className={game.direction === 1 ? null : "counter_cw"}
+                    key={game.direction}
+                />
+
                 {/* Center */}
                 <div id="game_center">
                     {/* Upper */}

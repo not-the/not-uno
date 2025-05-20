@@ -64,6 +64,7 @@ export default function Config({ name, game, disabled }) {
 /** Inputs */
 function Input({ id, option, configValue, updateConfig, disabled }) {
     const [localValue, setValue] = useState(configValue);
+    // const [prevValue, setPrevValue] = useState(configValue);
 
     const { type, min, max } = option;
     const step = option.step ?? 1;
@@ -83,23 +84,53 @@ function Input({ id, option, configValue, updateConfig, disabled }) {
             updateConfig(id, newValue);
             document.getElementById(id).value = newValue;
 
+            // Previous value
+            // setPrevValue(old);
+
             return newValue;
         });
     }
 
+    // Number
     if(type === "number") {
-        const buttonDown = <button className="number_input_btn" onClick={() => set(old => old-step)} disabled={configValue === min}>
+        // Minus
+        const buttonDown = <button
+            className="number_input_btn"
+            onClick={() => set(old => old-step)}
+            disabled={configValue === min}
+        >
             -
         </button>;
+        
+        // Input
         const input = <input id={id} type="text" min={min} max={max} value={configValueFormatted} onChange={event => set(Number(event.target.value))} disabled />;
-        const buttonUp = <button className="number_input_btn" onClick={() => set(old => old+step)} disabled={configValue === max}>
+
+        // Plus
+        const buttonUp = <button
+            className="number_input_btn"
+            onClick={() => set(old => old+step)}
+            disabled={configValue === max}
+        >
             +
         </button>;
 
         return (
             <>
                 {disabled ? null : buttonDown}
-                {input}
+                {/* <div className="input_wrapper" data-direction={configValue < prevValue ? "up" : "down"} key={prevValue}> */}
+                    {/* Previous value */}
+                    {/* <span className="number_previous">
+                        {prevValue}
+                    </span>
+
+                    <span className="number_current">
+                        {prevValue}
+                    </span> */}
+
+                    {/* Value */}
+                    {input}
+
+                {/* </div> */}
                 {disabled ? null : buttonUp}
             </>
         )

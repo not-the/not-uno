@@ -912,6 +912,52 @@ select[disabled] {
 .input_container input  { min-width: 64px; }
 .input_container select { font-size: 13pt; text-align: left; max-width: max-content; padding: 0 5px }
 
+/* Number previous value */
+/* .input_container .input_wrapper input {
+    opacity: 0;
+}
+.input_container .input_wrapper {
+    position: relative;
+    overflow: hidden;
+
+    background-color: var(--bg-lighter);
+    z-index: -1;
+}
+.input_container span {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+
+    font-size: 14pt;
+    text-align: center;
+}
+.input_container .input_wrapper[data-direction="up"] .number_current {
+    animation: prev_number_down 0.15s linear reverse;
+}
+.input_container .input_wrapper[data-direction="up"] .number_previous {
+    animation: prev_number_up 0.15s linear;
+}
+@keyframes prev_number_up {
+    to {
+        transform: translateY(-22px);
+    }
+}
+.input_container .input_wrapper[data-direction="down"] .number_current {
+    animation: prev_number_up 0.15s linear reverse;
+}
+.input_container .input_wrapper[data-direction="down"] .number_previous {
+    animation: prev_number_down 0.15s linear;
+}
+@keyframes prev_number_down {
+    from {
+        opacity: 1;
+    }
+    to {
+        transform: translateY(22px);
+        opacity: 0;
+    }
+} */
+
 /* REMOVE INPUT ARROWS */
 /* Chrome, Safari, Edge, Opera */
 .input_container::-webkit-outer-spin-button,

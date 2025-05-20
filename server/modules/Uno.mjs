@@ -177,7 +177,7 @@ export default class Uno {
         return result;
     }
 
-    /** Returns an array of socket IDs in the game
+    /** Returns an array of sockets connected to the room
      * @param {String} roomID 
      * @returns {Array}
      */
@@ -472,7 +472,9 @@ export default class Uno {
 
         this.roomClosed = true;
         this.roomClosedTimestamp = Date.now();
-        this.emit("gameState");
+        
+        // Make spectators leave
+        for(const socket of this.clients) this.leave(socket.id);
 
         // Log
         server.log(`🎮 Closed game (${this.roomID})`);

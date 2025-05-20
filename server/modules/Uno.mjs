@@ -364,7 +364,7 @@ export default class Uno {
      * @param {String} socketID Player's socket ID
      * @param {Boolean} sendtoast Whether or not to send out a toast
      */
-    leave(socketID, sendtoast) {
+    leave(socketID, sendtoast, reason) {
         const logEntry = this.log("leave", ...Array.from(arguments));
 
         // Info
@@ -393,7 +393,8 @@ export default class Uno {
 
         // Tell room someone left
         this.emit("toast", {
-            title: `"${socket?.name ?? "User"}" left!`
+            title: `"${socket?.name ?? "User"}" left!`,
+            msg: reason
         });
 
         // Update remaining clients
@@ -461,7 +462,7 @@ export default class Uno {
         if(toast) io.to(socketIDToKick).emit("toast", { title: "Kicked from game", msg });
 
         // Leave
-        this.leave(socketIDToKick, false);
+        this.leave(socketIDToKick, false, "Kicked from game");
         logEntry.amend(true);
     }
 

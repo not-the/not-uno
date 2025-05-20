@@ -1420,6 +1420,7 @@ export default class Uno {
     chat(socket, msg) {
         const obj = {
             msg: msg,
+            id: crypto.randomUUID(),
             user: {
                 name: socket.name,
                 avatar: socket.avatar

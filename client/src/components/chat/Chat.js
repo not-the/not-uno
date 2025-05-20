@@ -1,13 +1,12 @@
 import { useEffect, useState } from "react";
 import User from "../User"
 import { socket } from "../../socket";
-import { clientData } from "../../App";
 import UserAvatar from "../UserAvatar";
 import ChatInput from "./ChatInput";
 
 export default function Chat({
     game,
-    profile, setUser,
+    profile,
     setProfileOpen
 }) {
     // Chat
@@ -115,10 +114,10 @@ export default function Chat({
                         </div> :
 
                         // Messages
-                        chatCache.map((data, index) => 
+                        chatCache.map((data) => 
                             <User
                                 user={
-                                    data.user === "system" ? "system" : game.usersParsed[data.socketID]
+                                    data.system ? "system" : game.usersParsed[data.socketID]
                                 }
                                 tagline={data.msg}
                                 classes={
@@ -128,7 +127,7 @@ export default function Chat({
                                     // (index === 0 ? " msg_in" : "")
                                 }
                                 hideAvatar={data.clump}
-                                key={chatCache - index - 1}
+                                key={data.id}
                             />)
                     }
                 </div>
@@ -145,7 +144,7 @@ export default function Chat({
 
                 {/* Bubble */}
                 {chatBubble ?
-                    <div className="bubble" data-expired={chatBubble.bubble_timed_out} key={chatBubble.socketID}>
+                    <div className="bubble" data-expired={chatBubble.bubble_timed_out} key={chatBubble.id}>
                         <div className="inner">
                             <UserAvatar avatar={chatBubble?.user?.avatar} />
                             <div>

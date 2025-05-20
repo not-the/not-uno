@@ -1889,7 +1889,7 @@ button.share_button {
     animation: bubble 0.3s ease both;
 }
 .bubble[data-expired="true"] {
-    animation: bubble 0.5s ease both reverse;
+    animation: bubble_out 0.3s ease-in both;
 }
 .bubble > .inner {
     position: relative;
@@ -1907,8 +1907,12 @@ button.share_button {
     color: black;
 }
 @keyframes bubble {
-    from {
-        transform: translateY(6px) rotate(2deg);
+    from { transform: translateY(6px) rotate(2deg); }
+}
+@keyframes bubble_out {
+    to {
+        transform: translateY(6px) rotate(-1deg);
+        opacity: 0.5;
     }
 }
 .bubble .avatar {

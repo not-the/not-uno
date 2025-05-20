@@ -334,19 +334,17 @@ const socketConnection = function(socket) {
                 // Return
                 return sameSubnet;
             });
-        
-        // Delay makes it feel like it's doing more work than it is
-        setTimeout(() => {
-            socket.emit("lobby_list", {
-                // Online users
-                online_users: io.sockets.server.engine.clientsCount,
 
-                // Lobbies
-                publicLobbies,
-                localNetworkLobbies,
-                // spectateLobbies,
-            });
-        }, 250);
+        // Emit
+        socket.emit("lobby_list", {
+            // Online users
+            online_users: io.sockets.server.engine.clientsCount,
+
+            // Lobbies
+            publicLobbies,
+            localNetworkLobbies,
+            // spectateLobbies,
+        });
     })
 
     // Disconnect

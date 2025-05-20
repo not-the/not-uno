@@ -615,7 +615,7 @@ select[disabled] {
     right: 0;
     pointer-events: none;
 }
-.refresh_container[data-list-fetched="false"] > button {
+.refresh_container[aria-disabled="true"] > button {
     transform: translateX(12px);
     opacity: 0;
     pointer-events: none;
@@ -1022,7 +1022,10 @@ button.share_button {
 }
 
 /* Loader */
-.loader_spin { animation: loader_spin 1.5s infinite linear; }
+.loader_spin {
+    margin-right: 3px;
+    animation: loader_spin 1.5s infinite linear;
+}
 @keyframes loader_spin {
     100% { transform: rotate(360deg); }
 }

@@ -1284,6 +1284,41 @@ button.share_button {
 }
 
 
+/* 5+ players */
+/* .player_small {
+    min-width: 30vw;
+    max-width: 33vw;
+}
+.player_small .card {
+    font-size: 72px;
+}
+.player.player_small .user {
+    transform: translateY(8px) rotate(calc(var(--rotate) * -1));
+}
+.position_topleft {
+    --rotate: -5deg;
+    transform: rotate(var(--rotate));
+
+    display: flex;
+    flex-direction: column-reverse;
+
+    position: absolute;
+    left: 12%;
+    top: 75px;
+}
+.position_topright {
+    --rotate: 5deg;
+    transform: rotate(var(--rotate));
+
+    display: flex;
+    flex-direction: column-reverse;
+
+    position: absolute;
+    right: 12%;
+    top: 75px;
+} */
+
+
 #game_center > .upper,
 #game_center > .lower {
     display: flex;
@@ -2894,6 +2929,7 @@ body:has(.spectating_toast) {
     /* Card size */
     .card { font-size: 95px; }
     .card_stack { width: 95px; }
+    /* .player_small .card { font-size: 50px; } */
 
     #game {
         padding-top: 64px;

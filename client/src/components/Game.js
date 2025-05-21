@@ -124,7 +124,9 @@ export default function Game({ game, setGame, startGame }) {
         "left": 0,
         "top": 90,
         "right": 180,
-        "bottom": 270
+        "bottom": 270,
+        // "topleft": 45,
+        // "topright": 135
     }
     
     // Target
@@ -162,7 +164,8 @@ export default function Game({ game, setGame, startGame }) {
             1: ["bottom"],
             2: ["bottom", "top"],
             3: ["bottom", "left", "top"],
-            4: ["bottom", "left", "top", "right"]
+            4: ["bottom", "left", "top", "right"],
+            5: ["bottom", "left", "topleft", "topright", "right"]
         }
 
         return playerPositions
@@ -379,6 +382,7 @@ export default function Game({ game, setGame, startGame }) {
                     position_${playerPosition}
                     ${playerIndex === game.my_num ? "me" : ""}
                     ${game.turn === playerIndex ? "current_turn" : ""}
+                    ${!isMe && game.players.length > 4 ? "player_small" : ""}
                     `;
 
                     // CIRCULAR POSITIONING

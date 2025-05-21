@@ -12,8 +12,9 @@ import EmoteReactions from "./EmoteReactions.js";
 export default function Lobby({ game, startGame, toast, leaveGame, setProfileOpen }) {
 
     const playerMax = game.config.max_players;
-    const playerCount = Object.keys(game.usersParsed).length;
+    const playerCount = game.playerCount;
     const startButtonTooltip = socket?.id !== game?.host ? "Ask the host to start the game" : null;
+    const isHost = game.host === socket.id;
 
 
     function shareRoom() {
@@ -51,7 +52,7 @@ export default function Lobby({ game, startGame, toast, leaveGame, setProfileOpe
                             {/* Start */}
                             <button className="button_primary button_green border_shadowed"
                                 onClick={startGame}
-                                disabled={socket?.id !== game?.host}
+                                disabled={!isHost}
                                 data-title={startButtonTooltip}
                             >
                                 <img src="/icons/play.svg" alt="" className="border_shadowed" />
@@ -111,7 +112,7 @@ export default function Lobby({ game, startGame, toast, leaveGame, setProfileOpe
                             <div className="flex flex_center_vertically">
                                 <h3 className="border_shadowed">Players</h3>
                                 <h4 className={`player_count margin_left_auto${playerCount >= playerMax ? " full border_shadowed" : ""}`}>
-                                    {playerCount >= playerMax ? "Full" : null} {playerCount}/{playerMax}
+                                    {game.isFull ? "Full" : null} {playerCount}/{playerMax}
                                 </h4>
                             </div>
 
@@ -128,7 +129,7 @@ export default function Lobby({ game, startGame, toast, leaveGame, setProfileOpe
 
                             {/* List */}
                             <div className="users_list">
-                                {Object.entries(game.usersParsed).map(([, user], index) => {
+                                {Object.entries(game.usersPlayers).map(([, user], index) => {
                                     return <User
                                         key={index} user={user} game={game}
                                         title={`ID: ${user.socketID}

@@ -125,6 +125,7 @@ export default class Uno {
         return entry;
     }
 
+    /** The game log */
     get getLog() {
         return this.#log;
     }
@@ -163,15 +164,30 @@ export default class Uno {
         return (this.playerCount >= this.config.max_players);
     }
 
-    /** Object of all users' profiles (socketID:data pairs) */
+    /** Object of all connected users' profiles (socketID:data pairs) */
     get users() {
+        let result = {};
+        for(const socket of this.clients) {
+            result[socket.id] = {
+                name: socket.name,
+                avatar: socket.avatar,
+                socketID: socket.id,
+                spectating: socket.spectating
+            };
+        }
+        return result;
+    }
+
+    /** Object of all users' (who are playing) profiles (socketID:data pairs) */
+    get usersPlayers() {
         let result = {};
         for(const socket of this.clients) {
             if(socket.spectating) continue;
             result[socket.id] = {
                 name: socket.name,
                 avatar: socket.avatar,
-                socketID: socket.id
+                socketID: socket.id,
+                spectating: socket.spectating
             };
         }
         return result;
@@ -523,10 +539,10 @@ export default class Uno {
 
         // Flatten data
         clone.usersParsed = this.users; // User list
+        clone.usersPlayers = this.usersPlayers; // User players
+        clone.playerCount = this.playerCount;
         clone.spectatorCount = this.spectatorCount;
         clone.isFull = this.isFull;
-
-        for(let p of clone.players) delete p.call_timer;
 
         // Obfuscate deck
         if(hideCards) hideAll(clone.deck, true);

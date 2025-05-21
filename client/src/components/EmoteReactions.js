@@ -9,7 +9,7 @@ export default function EmoteReactions({ wrap }) {
 
     /** Send emote */
     function emote(char) {
-        console.log("yo");
+        // Emit
         socket.emit("emote", char);
 
         // Cooldown

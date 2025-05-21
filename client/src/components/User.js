@@ -30,6 +30,9 @@ export default function User({ user, game, tagline, title, postName, classes="",
         <img src="/icons/person.svg" alt="(You)" className="you" />
         : null;
 
+    const spectatingIndicator = !user?.spectating ? null :
+        <div className="you smaller">(Spectating)</div>
+
     return (
         <div className={className} data-title={title} onClick={onClick}>
             {/* Avatar */}
@@ -46,7 +49,12 @@ export default function User({ user, game, tagline, title, postName, classes="",
                     <span className={`name ${tagline ? " small_name" : null}`}>
                         {userData?.name ?? "Player"} {postName}
                     </span>
+
+                    {/* You */}
                     {afterName}
+
+                    {/* Spectating */}
+                    {spectatingIndicator}
                 </div>
 
                 {/* Tagline or message */}

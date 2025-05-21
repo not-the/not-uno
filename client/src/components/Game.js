@@ -372,7 +372,7 @@ export default function Game({ game, setGame, startGame }) {
                     // Positioning
                     const playerPosition = getPlayerOnscreenPosition(playerIndex);
 
-                    const user = game.usersParsed[player.socketID];
+                    const user = game.usersPlayers[player.socketID];
                     const isMe = playerIndex === game.my_num;
 
                     // Classes
@@ -380,7 +380,7 @@ export default function Game({ game, setGame, startGame }) {
                     player
                     player_${playerIndex}
                     position_${playerPosition}
-                    ${playerIndex === game.my_num ? "me" : ""}
+                    ${isMe ? "me" : ""}
                     ${game.turn === playerIndex ? "current_turn" : ""}
                     ${!isMe && game.players.length > 4 ? "player_small" : ""}
                     `;
@@ -503,7 +503,7 @@ export default function Game({ game, setGame, startGame }) {
                 <div className="choice_popup choose_swap">
                     <h3>Swap hands:</h3>
                     <div className="users_list">
-                        {Object.entries(game.usersParsed).map(([socketID, user], index) => {
+                        {Object.entries(game.usersPlayers).map(([socketID, user], index) => {
                             // Exclude self
                             return socketID === socket.id ? null
                             :
@@ -522,7 +522,7 @@ export default function Game({ game, setGame, startGame }) {
                 <div className="choice_popup choose_swap">
                     <h3>Give +{2} to:</h3>
                     <div className="users_list">
-                        {Object.entries(game.usersParsed).map(([socketID, user], pnum) => {
+                        {Object.entries(game.usersPlayers).map(([socketID, user], pnum) => {
                             // Exclude self
                             return socketID === socket.id ? null
                             :

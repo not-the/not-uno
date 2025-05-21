@@ -194,6 +194,7 @@ const socketConnection = function(socket) {
         game.start(socket);
     })
 
+    // Lobby
     socket.on("returnToLobby", () => {
         /** @type {Uno} */
         const game = getGameByUser();

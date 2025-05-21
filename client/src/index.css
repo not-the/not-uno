@@ -2146,6 +2146,91 @@ body:has(.overlay) .backdrop {
     background-color: rgba(255, 255, 255, 0.15);
     /* backdrop-filter: saturate(150%); */
 }
+
+/* Box user */
+/* .box_users_list {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+}
+.user.box_user {
+    --bg-color: rgba(23, 44, 40, 0.8);
+    --border-color: rgba(198, 230, 255, 0.2);
+    --border-radius: 10px;
+    --border-width: 2px;
+
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    gap: 9px;
+
+    background-color: var(--bg-color);
+    background: var(--background);
+    backdrop-filter: blur(12px);
+    background-size: cover;
+    background-position: center;
+
+    padding: 10px 12px;
+    border-radius: var(--border-radius);
+}
+.user.box_user::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+
+    background-color: var(--bg-color);
+    backdrop-filter: blur(4px);
+    border: var(--border-width) solid var(--border-color);
+    border-radius: calc(var(--border-radius) - var(--border-width));
+
+    transition: border-color 0.1s ease;
+} */
+/* .user.box_user .avatar { */
+    /* --size: 40px; */
+/* } */
+/* .user.box_user .user_buttons {
+    position: absolute;
+    top: 15px; right: 9px;
+}
+.user.box_user .name {
+    font-size: 12pt;
+}
+.user.box_user .emote_bubble {
+    bottom: calc(100% - 12px);
+} */
+
+/* Add CPU button */
+/* .add_cpu_btn {
+    font-weight: 400;
+    transition: transform 0.2s cubic-bezier(0.075, 0.82, 0.165, 1);
+    user-select: none;
+}
+.add_cpu_btn:hover,
+.add_cpu_btn:focus-visible {
+    --bg-color: rgba(67, 92, 87, 0.8);
+    --border-color: rgb(240, 248, 255);
+    transform: translate(-1px, -1px);
+
+    .avatar {
+        color: black;
+    }
+}
+.add_cpu_btn:active {
+    --border-color: rgb(180, 191, 201);
+
+    transform: translate(1px, 1px);
+}
+.add_cpu_btn > .avatar {
+    background-color: var(--border-color);
+    font-size: 14pt;
+    font-weight: bolder;
+    color: var(--secondary-text);
+    transition: background-color 0.1s ease, color;
+} */
+
+
+/* User inner */
 .avatar {
     --size: 36px;
 

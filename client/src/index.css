@@ -463,7 +463,8 @@ a.button {
     transition: filter 0.2s ease;
 }
 .button_primary > img {
-    width: 18px;
+    max-width: 18px;
+    max-height: 18px;
 }
 /* .button_primary > span {
     --shadow-distance: 2px;

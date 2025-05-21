@@ -2469,6 +2469,11 @@ h3 > .user .avatar {
     gap: 3px;
 }
 
+/* Actual footer */
+#footer {
+    padding: 18px 0 72px;
+}
+
 
 /* Win screen */
 .overlay {

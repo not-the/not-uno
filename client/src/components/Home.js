@@ -2,6 +2,7 @@ import { useEffect, useState } from "react"
 import { isProduction, socket, socketConnectionStatus } from "../socket"
 
 import LobbyListing from "./LobbyListing"
+import Footer from "./Footer";
 
 export default function Home({ setMenu, joinRoom }) {
     const [serverInfo, setServerInfo] = useState(undefined);
@@ -130,40 +131,10 @@ export default function Home({ setMenu, joinRoom }) {
                         }
                     </div>
                 </div>
-                <br/>
-                
-                {/* More */}
-                <footer id="footer" className="flex media_flex gap_12px flex_center_horizontally">
-                    {/* Open deck builder */}
-                    {isProduction ? null :
-                        <button className="button_primary button_secondary button_mainbg button_border_bg_lighter hover_border_shadowed button_mini" onClick={() => setMenu("deck_editor")}>
-                            Custom Deck Builder (WIP)
-                        </button>
-                    }
-
-                    {/* Tutorial */}
-                    <button className="button_primary button_secondary button_mainbg button_border_bg_lighter hover_border_shadowed button_mini" onClick={() => setMenu("help")}>
-                        <span>?</span>
-                        How to play
-                    </button>
-
-                    {/* Changelog */}
-                    <a href="https://notkal.com/posts/not-uno-changelog" target="_blank" rel="noreferrer"
-                        className="button button_primary button_secondary button_mainbg hover_border_shadowed button_border_bg_lighter button_mini"
-                    >
-                        <span>Changelog</span>
-                    </a>
-                </footer>
-
-                <br/>
-                <br/>
-                <p className="secondary_text center">Play UNO online with friends!</p>
-                <br/>
-                <br/>
-                <br/>
-                <br/>
-
             </main>
+
+            {/* Footer */}
+            <Footer setMenu={setMenu} />
         </>
     )
 }

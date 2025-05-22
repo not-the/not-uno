@@ -19,6 +19,14 @@ export default function Footer({ setMenu }) {
                     <span>Changelog</span>
                 </a>
 
+                {/* Feedback */}
+                <a href="https://notkal.com/#contact" target="_blank" rel="noreferrer"
+                    className="button button_primary button_secondary button_mainbg hover_border_shadowed button_border_bg_lighter button_mini"
+                >
+                    <img src="/icons/chat.svg" alt="" className="parent_invert" />
+                    <span>Feedback</span>
+                </a>
+
                 {/* Open deck builder */}
                 {isProduction ? null :
                     <button className="button_primary button_secondary button_mainbg button_border_bg_lighter hover_border_shadowed button_mini" onClick={() => setMenu("deck_editor")}>

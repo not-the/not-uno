@@ -38,7 +38,7 @@ export default function App() {
 
     /** Emits start_game event */
     function startGame() {
-        if(isProduction && Object.keys(game.userPlayers).length === 1) {
+        if(isProduction && Object.keys(game.usersPlayers).length === 1) {
             if(!window.confirm("You are the only player in the lobby. Start anyway?")) return;
         }
         socket.emit("start_game");

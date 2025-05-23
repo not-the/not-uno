@@ -125,7 +125,9 @@ export default function Game({ game, setGame, startGame }) {
         "left": 0,
         "top": 90,
         "right": 180,
-        "bottom": 270
+        "bottom": 270,
+        // "topleft": 45,
+        // "topright": 135
     }
     
     // Target
@@ -163,7 +165,8 @@ export default function Game({ game, setGame, startGame }) {
             1: ["bottom"],
             2: ["bottom", "top"],
             3: ["bottom", "left", "top"],
-            4: ["bottom", "left", "top", "right"]
+            4: ["bottom", "left", "top", "right"],
+            5: ["bottom", "left", "topleft", "topright", "right"]
         }
 
         return playerPositions
@@ -272,6 +275,15 @@ export default function Game({ game, setGame, startGame }) {
                     }
                 </div>
 
+                {/* Visual effects */}
+                {/* Big Rotation arrows */}
+                <img
+                    src="/icons/Big Rotation Arrows.svg" alt=""
+                    id="big_rotation_arrows"
+                    className={game.direction === 1 ? null : "counter_cw"}
+                    key={game.direction}
+                />
+
                 {/* Center */}
                 <div id="game_center">
                     {/* Upper */}
@@ -366,7 +378,7 @@ export default function Game({ game, setGame, startGame }) {
                     // Positioning
                     const playerPosition = getPlayerOnscreenPosition(playerIndex);
 
-                    const user = game.usersParsed[player.socketID];
+                    const user = game.usersPlayers[player.socketID];
                     const isMe = playerIndex === game.my_num;
 
                     // Classes
@@ -374,8 +386,9 @@ export default function Game({ game, setGame, startGame }) {
                     player
                     player_${playerIndex}
                     position_${playerPosition}
-                    ${playerIndex === game.my_num ? "me" : ""}
+                    ${isMe ? "me" : ""}
                     ${game.turn === playerIndex ? "current_turn" : ""}
+                    ${!isMe && game.players.length > 4 ? "player_small" : ""}
                     `;
 
                     // CIRCULAR POSITIONING
@@ -496,7 +509,7 @@ export default function Game({ game, setGame, startGame }) {
                 <div className="choice_popup choose_swap">
                     <h3>Swap hands:</h3>
                     <div className="users_list">
-                        {Object.entries(game.usersParsed).map(([socketID, user], index) => {
+                        {Object.entries(game.usersPlayers).map(([socketID, user], index) => {
                             // Exclude self
                             return socketID === socket.id ? null
                             :
@@ -515,7 +528,7 @@ export default function Game({ game, setGame, startGame }) {
                 <div className="choice_popup choose_swap">
                     <h3>Give +{2} to:</h3>
                     <div className="users_list">
-                        {Object.entries(game.usersParsed).map(([socketID, user], pnum) => {
+                        {Object.entries(game.usersPlayers).map(([socketID, user], pnum) => {
                             // Exclude self
                             return socketID === socket.id ? null
                             :

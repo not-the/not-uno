@@ -2,39 +2,50 @@ import { useEffect, useState } from "react"
 import { isProduction, socket, socketConnectionStatus } from "../socket"
 
 import LobbyListing from "./LobbyListing"
+import Footer from "./Footer";
 
 export default function Home({ setMenu, joinRoom }) {
     const [serverInfo, setServerInfo] = useState(undefined);
-    const [isLobbyListFetched, setIsLobbyListFetched] = useState(false);
+    const [refreshButtonDisabled, setRefreshButtonDisabled] = useState(false);
 
-    const refreshButton = <div className="refresh_container margin_left_auto" data-list-fetched={isLobbyListFetched}>
+    const refreshButton = <div className="refresh_container margin_left_auto" aria-disabled={refreshButtonDisabled}>
         {/* // Loader */}
         <img src="/icons/Loader.svg" alt="Waiting..." className="loader_spin" />
 
         {/* // Button */}
         <button
             className="button_primary button_secondary button_mini button_mainbg button_border_bg_lighter hover_border_shadowed position_relative"
-            onClick={requestLobbies}
+            onClick={refreshButtonDisabled ? null : requestLobbies}
         >
             Refresh
         </button>
     </div>
 
+    /** Requests lobby list from server */
     function requestLobbies() {
-        setIsLobbyListFetched(false);
+        setRefreshButtonDisabled(true);
         socket.emit("request_public_lobbies");
     }
 
+    // Effects
     useEffect(() => {
         // Request lobbies
         requestLobbies();
 
+        // Timer
         let refreshLoop = setInterval(requestLobbies, 6000);
+
+        // Button cooldown
+        let refreshTimeout;
 
         // Recieve lobbies
         socket.on("lobby_list", (response={}) => {
             setServerInfo(response);
-            setIsLobbyListFetched(true);
+
+            clearTimeout(refreshTimeout);
+            refreshTimeout = setTimeout(() => {
+                setRefreshButtonDisabled(false);
+            }, 150);
 
             // Restart loop
             clearInterval(refreshLoop);
@@ -45,6 +56,7 @@ export default function Home({ setMenu, joinRoom }) {
         return () => {
             socket.off("lobby_list");
             clearInterval(refreshLoop);
+            clearTimeout(refreshTimeout);
         }
     }, []);
 
@@ -119,40 +131,10 @@ export default function Home({ setMenu, joinRoom }) {
                         }
                     </div>
                 </div>
-                <br/>
-                
-                {/* More */}
-                <footer id="footer" className="flex media_flex gap_12px flex_center_horizontally">
-                    {/* Open deck builder */}
-                    {isProduction ? null :
-                        <button className="button_primary button_secondary button_mainbg button_border_bg_lighter hover_border_shadowed button_mini" onClick={() => setMenu("deck_editor")}>
-                            Custom Deck Builder (WIP)
-                        </button>
-                    }
-
-                    {/* Tutorial */}
-                    <button className="button_primary button_secondary button_mainbg button_border_bg_lighter hover_border_shadowed button_mini" onClick={() => setMenu("help")}>
-                        <span>?</span>
-                        How to play
-                    </button>
-
-                    {/* Changelog */}
-                    <a href="https://notkal.com/posts/not-uno-changelog" target="_blank" rel="noreferrer"
-                        className="button button_primary button_secondary button_mainbg hover_border_shadowed button_border_bg_lighter button_mini"
-                    >
-                        <span>Changelog</span>
-                    </a>
-                </footer>
-
-                <br/>
-                <br/>
-                <p className="secondary_text center">Play UNO online with friends!</p>
-                <br/>
-                <br/>
-                <br/>
-                <br/>
-
             </main>
+
+            {/* Footer */}
+            <Footer setMenu={setMenu} />
         </>
     )
 }

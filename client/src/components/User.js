@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { socket } from "../socket"
 import UserAvatar from "./UserAvatar";
 
-export default function User({ user, game, tagline, title, postName, classes="", onClick, setProfileOpen }) {
+export default function User({ user, game, tagline, title, postName, classes="", onClick=null, setProfileOpen, hideAvatar=false, background }) {
 
     // Kick
     function kick(socketIDToKick) {
@@ -30,10 +30,13 @@ export default function User({ user, game, tagline, title, postName, classes="",
         <img src="/icons/person.svg" alt="(You)" className="you" />
         : null;
 
+    const spectatingIndicator = !user?.spectating ? null :
+        <div className="you smaller">(Spectating)</div>
+
     return (
-        <div className={className} data-title={title} onClick={onClick}>
+        <div className={className} data-title={title} onClick={onClick} style={!background ? null : { "--background":`url('${background}')` }}>
             {/* Avatar */}
-            <UserAvatar avatar={userData?.avatar} />
+            {hideAvatar ? <div className="avatar"/> : <UserAvatar avatar={userData?.avatar} />}
 
             {/* Crown */}
             <span className="crown">
@@ -46,7 +49,12 @@ export default function User({ user, game, tagline, title, postName, classes="",
                     <span className={`name ${tagline ? " small_name" : null}`}>
                         {userData?.name ?? "Player"} {postName}
                     </span>
+
+                    {/* You */}
                     {afterName}
+
+                    {/* Spectating */}
+                    {spectatingIndicator}
                 </div>
 
                 {/* Tagline or message */}

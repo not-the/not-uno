@@ -10,7 +10,7 @@ export default function GameMenu({ game, isHost, toggleMenu, leaveGame, returnTo
                     <div className="flex">
                         {/* Players */}
                         {/* <div className="users_list">
-                            {Object.entries(game.usersParsed).map(([, user], index) => {
+                            {Object.entries(game.usersPlayers).map(([, user], index) => {
                                 return <User
                                     key={index} user={user} game={game}
                                     title={`ID: ${user.socketID}

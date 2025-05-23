@@ -12,9 +12,10 @@
     /* --bg-darker: rgb(56, 73, 39); */
     /* --bg-main: #366839;
     --bg-darker: #21512B; */
-
     /* --bg-main: #406836; */
     /* --bg-darker: #1f4928; */
+
+    /* BG */
     --bg-main: #365f35;
     --bg-darker: #173d2b;
     --bg-lighter: #629165;
@@ -31,6 +32,7 @@
     /* Other colors */
     --color-support-btn: #d9534f;
     --color-local-network: #2a6343;
+    --color-discord: #5865f2;
 
     /* Text */
     --text: white;
@@ -287,6 +289,7 @@ button kbd {
 .left_col {
     position: sticky;
     top: 72px;
+    z-index: 1;
 
     height: fit-content;
 
@@ -460,7 +463,8 @@ a.button {
     transition: filter 0.2s ease;
 }
 .button_primary > img {
-    width: 18px;
+    max-width: 18px;
+    max-height: 18px;
 }
 /* .button_primary > span {
     --shadow-distance: 2px;
@@ -503,6 +507,7 @@ a.button {
 .button_mainbg { background-color: var(--bg-main); }
 .button_lightbg { background-color: var(--bg-lighter); }
 .button_comp { background-color: var(--bg-comp-light); }
+.button_discord { background-color: var(--color-discord); border-color: var(--color-discord); }
 
 .button_border_bg_lighter { border-color: var(--bg-lighter); }
 .button_border_bg_main { border-color: var(--bg-main); }
@@ -612,7 +617,7 @@ select[disabled] {
     right: 0;
     pointer-events: none;
 }
-.refresh_container[data-list-fetched="false"] > button {
+.refresh_container[aria-disabled="true"] > button {
     transform: translateX(12px);
     opacity: 0;
     pointer-events: none;
@@ -709,11 +714,6 @@ select[disabled] {
     }
 }
 
-/* .config_two_col {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-    column-gap: 12px;
-} */
 
 #config {
     padding-bottom: 200px;
@@ -914,6 +914,52 @@ select[disabled] {
 .input_container input  { min-width: 64px; }
 .input_container select { font-size: 13pt; text-align: left; max-width: max-content; padding: 0 5px }
 
+/* Number previous value */
+/* .input_container .input_wrapper input {
+    opacity: 0;
+}
+.input_container .input_wrapper {
+    position: relative;
+    overflow: hidden;
+
+    background-color: var(--bg-lighter);
+    z-index: -1;
+}
+.input_container span {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+
+    font-size: 14pt;
+    text-align: center;
+}
+.input_container .input_wrapper[data-direction="up"] .number_current {
+    animation: prev_number_down 0.15s linear reverse;
+}
+.input_container .input_wrapper[data-direction="up"] .number_previous {
+    animation: prev_number_up 0.15s linear;
+}
+@keyframes prev_number_up {
+    to {
+        transform: translateY(-22px);
+    }
+}
+.input_container .input_wrapper[data-direction="down"] .number_current {
+    animation: prev_number_up 0.15s linear reverse;
+}
+.input_container .input_wrapper[data-direction="down"] .number_previous {
+    animation: prev_number_down 0.15s linear;
+}
+@keyframes prev_number_down {
+    from {
+        opacity: 1;
+    }
+    to {
+        transform: translateY(22px);
+        opacity: 0;
+    }
+} */
+
 /* REMOVE INPUT ARROWS */
 /* Chrome, Safari, Edge, Opera */
 .input_container::-webkit-outer-spin-button,
@@ -987,11 +1033,14 @@ button.share_button {
     top: 18px;
     left: 24px;
     right: 24px;
-    z-index: 1;
+    z-index: 2;
 }
 
 /* Loader */
-.loader_spin { animation: loader_spin 1.5s infinite linear; }
+.loader_spin {
+    margin-right: 3px;
+    animation: loader_spin 1.5s infinite linear;
+}
 @keyframes loader_spin {
     100% { transform: rotate(360deg); }
 }
@@ -1249,6 +1298,41 @@ button.share_button {
 }
 
 
+/* 5+ players */
+/* .player_small {
+    min-width: 30vw;
+    max-width: 33vw;
+}
+.player_small .card {
+    font-size: 72px;
+}
+.player.player_small .user {
+    transform: translateY(8px) rotate(calc(var(--rotate) * -1));
+}
+.position_topleft {
+    --rotate: -5deg;
+    transform: rotate(var(--rotate));
+
+    display: flex;
+    flex-direction: column-reverse;
+
+    position: absolute;
+    left: 12%;
+    top: 75px;
+}
+.position_topright {
+    --rotate: 5deg;
+    transform: rotate(var(--rotate));
+
+    display: flex;
+    flex-direction: column-reverse;
+
+    position: absolute;
+    right: 12%;
+    top: 75px;
+} */
+
+
 #game_center > .upper,
 #game_center > .lower {
     display: flex;
@@ -1289,6 +1373,30 @@ button.share_button {
     font-weight: 700;
     font-size: 24pt;
     transition: 0.5s scale ease;
+}
+
+#game #big_rotation_arrows {
+    position: absolute;
+    width: 420px;
+    pointer-events: none;
+    
+    --base-transform: perspective(800px) translateY(-5px) rotateX(40deg);
+    transform: var(--base-transform);
+    animation:
+        30s rotate_constant linear infinite,
+        1s change_direction ease;
+}
+#game #big_rotation_arrows.counter_cw {
+    --base-transform: scaleX(-1) perspective(800px) translateY(-5px) rotateX(40deg);
+}
+@keyframes rotate_constant {
+    0% { transform: var(--base-transform) rotateZ(0deg); }
+    100% { transform: var(--base-transform) rotateZ(360deg); }
+}
+@keyframes change_direction {
+    from {
+        filter: brightness(150%);
+    }
 }
 
 #arrow {
@@ -1894,7 +2002,7 @@ button.share_button {
     font-size: 11pt;
 
     width: max-content;
-    max-width: min(95vw, 240px);
+    max-width: min(95vw, 260px);
     /* max-height: 3.2em; */
     padding: 6px 12px;
 
@@ -1904,7 +2012,7 @@ button.share_button {
     animation: bubble 0.3s ease both;
 }
 .bubble[data-expired="true"] {
-    animation: bubble 0.5s ease both reverse;
+    animation: bubble_out 0.3s ease-in both;
 }
 .bubble > .inner {
     position: relative;
@@ -1913,16 +2021,27 @@ button.share_button {
     overflow: hidden;
     text-overflow: ellipsis;
 
+    display: flex;
+    gap: 6px;
+
     color: rgb(170, 170, 170);
 }
-.bubble > .inner::first-line {
+.bubble > .inner > div::first-line {
     color: black;
 }
 @keyframes bubble {
-    from {
-        transform: translateY(6px) rotate(2deg);
+    from { transform: translateY(6px) rotate(2deg); }
+}
+@keyframes bubble_out {
+    to {
+        transform: translateY(6px) rotate(-1deg);
+        opacity: 0.5;
     }
 }
+.bubble .avatar {
+    --size: 20px;
+}
+/* Bubble tail */
 .bubble::before {
     content: "";
     position: absolute;
@@ -2041,6 +2160,91 @@ body:has(.overlay) .backdrop {
     background-color: rgba(255, 255, 255, 0.15);
     /* backdrop-filter: saturate(150%); */
 }
+
+/* Box user */
+/* .box_users_list {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+}
+.user.box_user {
+    --bg-color: rgba(23, 44, 40, 0.8);
+    --border-color: rgba(198, 230, 255, 0.2);
+    --border-radius: 10px;
+    --border-width: 2px;
+
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    gap: 9px;
+
+    background-color: var(--bg-color);
+    background: var(--background);
+    backdrop-filter: blur(12px);
+    background-size: cover;
+    background-position: center;
+
+    padding: 10px 12px;
+    border-radius: var(--border-radius);
+}
+.user.box_user::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+
+    background-color: var(--bg-color);
+    backdrop-filter: blur(4px);
+    border: var(--border-width) solid var(--border-color);
+    border-radius: calc(var(--border-radius) - var(--border-width));
+
+    transition: border-color 0.1s ease;
+} */
+/* .user.box_user .avatar { */
+    /* --size: 40px; */
+/* } */
+/* .user.box_user .user_buttons {
+    position: absolute;
+    top: 15px; right: 9px;
+}
+.user.box_user .name {
+    font-size: 12pt;
+}
+.user.box_user .emote_bubble {
+    bottom: calc(100% - 12px);
+} */
+
+/* Add CPU button */
+/* .add_cpu_btn {
+    font-weight: 400;
+    transition: transform 0.2s cubic-bezier(0.075, 0.82, 0.165, 1);
+    user-select: none;
+}
+.add_cpu_btn:hover,
+.add_cpu_btn:focus-visible {
+    --bg-color: rgba(67, 92, 87, 0.8);
+    --border-color: rgb(240, 248, 255);
+    transform: translate(-1px, -1px);
+
+    .avatar {
+        color: black;
+    }
+}
+.add_cpu_btn:active {
+    --border-color: rgb(180, 191, 201);
+
+    transform: translate(1px, 1px);
+}
+.add_cpu_btn > .avatar {
+    background-color: var(--border-color);
+    font-size: 14pt;
+    font-weight: bolder;
+    color: var(--secondary-text);
+    transition: background-color 0.1s ease, color;
+} */
+
+
+/* User inner */
 .avatar {
     --size: 36px;
 
@@ -2105,7 +2309,6 @@ body:has(.overlay) .backdrop {
     display: none;
 }
 .msg.clump .avatar {
-    opacity: 0;
     height: 0;
 }
 
@@ -2201,7 +2404,7 @@ body:has(.overlay) .backdrop {
         transform: translate(-6px, 6px) scale(0.8);
     }
     16% { transform: unset; }
-    95% { transform: unset; opacity: 1; }
+    90% { transform: unset; opacity: 1; }
     100% {
         transform: translateX(3px) scale(0.8);
         opacity: 0;
@@ -2278,6 +2481,12 @@ h3 > .user .avatar {
     display: flex;
     flex-direction: column;
     gap: 3px;
+}
+
+/* Actual footer */
+#footer {
+    padding-top: 18px;
+    padding-bottom: 72px;
 }
 
 
@@ -2825,6 +3034,7 @@ body:has(.spectating_toast) {
     /* Card size */
     .card { font-size: 95px; }
     .card_stack { width: 95px; }
+    /* .player_small .card { font-size: 50px; } */
 
     #game {
         padding-top: 64px;
@@ -2896,6 +3106,10 @@ body:has(.spectating_toast) {
     .middle { order: 1; }
     #deck   { order: 2; }
     #pile   { order: 3; }
+
+    #game #big_rotation_arrows {
+        width: 330px;
+    }
 
     .player h3 {
         --shadow-distance: 3px;

@@ -194,6 +194,7 @@ const socketConnection = function(socket) {
         game.start(socket);
     })
 
+    // Lobby
     socket.on("returnToLobby", () => {
         /** @type {Uno} */
         const game = getGameByUser();
@@ -270,24 +271,17 @@ const socketConnection = function(socket) {
     })
 
     // Chat message
-    socket.on("chat", (obj) => {
+    socket.on("chat", (msg) => {
         // Invalid message
-        if(typeof obj.msg !== 'string' || obj.msg.length < 1) return;
+        if(typeof msg !== 'string' || msg?.length < 1) return;
 
         // Too long
-        if(obj.msg.length > data.max_chat_length) return socket.emit("toast", { title:"Your message was too long" })
-
-        // Info
-        const roomID = server.usersRooms[socket.id];
-        obj.user = {
-            name: socket.name,
-            avatar: socket.avatar
-        };
-        obj.socketID = socket.id;
+        if(msg.length > data.max_chat_length) return socket.emit("toast", { title:"Your message was too long" })
 
         /** @type {Uno} */
         const game = getGameByUser();
 
+        // Invalid
         if(
             game === undefined ||
             !game?.config?.enable_chat || // Chat is turned off
@@ -303,13 +297,8 @@ const socketConnection = function(socket) {
         // }
         // server.users[socket.id].last_msg = Date.now();
 
-        // Log
-        // server.log(`🗨  (${roomID}) ${socket.name}: ${obj.msg}`);
-        server.log(`🗨  (${roomID}) ${socket.name}: [message]`);
-        // game.log("CHAT", socket.name, socket.id);
-
-        // Broadcast
-        io.to(roomID).emit("chat_receive", obj);
+        // Chat
+        game.chat(socket, msg);
     });
 
     // Public lobby list
@@ -346,19 +335,17 @@ const socketConnection = function(socket) {
                 // Return
                 return sameSubnet;
             });
-        
-        // Delay makes it feel like it's doing more work than it is
-        setTimeout(() => {
-            socket.emit("lobby_list", {
-                // Online users
-                online_users: io.sockets.server.engine.clientsCount,
 
-                // Lobbies
-                publicLobbies,
-                localNetworkLobbies,
-                // spectateLobbies,
-            });
-        }, 250);
+        // Emit
+        socket.emit("lobby_list", {
+            // Online users
+            online_users: io.sockets.server.engine.clientsCount,
+
+            // Lobbies
+            publicLobbies,
+            localNetworkLobbies,
+            // spectateLobbies,
+        });
     })
 
     // Disconnect

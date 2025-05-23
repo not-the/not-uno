@@ -125,6 +125,7 @@ export default class Uno {
         return entry;
     }
 
+    /** The game log */
     get getLog() {
         return this.#log;
     }
@@ -163,21 +164,36 @@ export default class Uno {
         return (this.playerCount >= this.config.max_players);
     }
 
-    /** Object of all users' profiles (socketID:data pairs) */
+    /** Object of all connected users' profiles (socketID:data pairs) */
     get users() {
+        let result = {};
+        for(const socket of this.clients) {
+            result[socket.id] = {
+                name: socket.name,
+                avatar: socket.avatar,
+                socketID: socket.id,
+                spectating: socket.spectating
+            };
+        }
+        return result;
+    }
+
+    /** Object of all users' (who are playing) profiles (socketID:data pairs) */
+    get usersPlayers() {
         let result = {};
         for(const socket of this.clients) {
             if(socket.spectating) continue;
             result[socket.id] = {
                 name: socket.name,
                 avatar: socket.avatar,
-                socketID: socket.id
+                socketID: socket.id,
+                spectating: socket.spectating
             };
         }
         return result;
     }
 
-    /** Returns an array of socket IDs in the game
+    /** Returns an array of sockets connected to the room
      * @param {String} roomID 
      * @returns {Array}
      */
@@ -364,7 +380,7 @@ export default class Uno {
      * @param {String} socketID Player's socket ID
      * @param {Boolean} sendtoast Whether or not to send out a toast
      */
-    leave(socketID, sendtoast) {
+    leave(socketID, sendtoast, reason) {
         const logEntry = this.log("leave", ...Array.from(arguments));
 
         // Info
@@ -393,7 +409,8 @@ export default class Uno {
 
         // Tell room someone left
         this.emit("toast", {
-            title: `"${socket?.name ?? "User"}" left!`
+            title: `"${socket?.name ?? "User"}" left!`,
+            msg: reason
         });
 
         // Update remaining clients
@@ -422,9 +439,8 @@ export default class Uno {
 
         // All players have left
         if((this.clients.length - this.spectatorCount) === 0) {
-            // server.log(`Room [${roomID}] is empty, closing game...`);
             this.emit("toast", { title: "Game ended" });
-            logEntry.amend(false, "Game ended");
+            logEntry.amend(undefined, "Game ended");
             return this.close();
         }
 
@@ -462,7 +478,7 @@ export default class Uno {
         if(toast) io.to(socketIDToKick).emit("toast", { title: "Kicked from game", msg });
 
         // Leave
-        this.leave(socketIDToKick, false);
+        this.leave(socketIDToKick, false, "Kicked from game");
         logEntry.amend(true);
     }
 
@@ -472,7 +488,9 @@ export default class Uno {
 
         this.roomClosed = true;
         this.roomClosedTimestamp = Date.now();
-        this.emit("gameState");
+        
+        // Make spectators leave
+        for(const socket of this.clients) this.leave(socket.id);
 
         // Log
         server.log(`🎮 Closed game (${this.roomID})`);
@@ -521,10 +539,10 @@ export default class Uno {
 
         // Flatten data
         clone.usersParsed = this.users; // User list
+        clone.usersPlayers = this.usersPlayers; // User players
+        clone.playerCount = this.playerCount;
         clone.spectatorCount = this.spectatorCount;
         clone.isFull = this.isFull;
-
-        for(let p of clone.players) delete p.call_timer;
 
         // Obfuscate deck
         if(hideCards) hideAll(clone.deck, true);
@@ -1120,11 +1138,20 @@ export default class Uno {
         if(actionChoice === undefined) {
             // Choose color
             if(playerCard.choose_color === true) {
-                this.action = "choose_color";
-                this.action_params = [socketID, ucid];
-                this.updateClients();
-                logEntry.amend(undefined, `Awaiting action (${this.action})`);
-                return;
+                // Single-color wild, skip prompt
+                if(playerCard.colors?.length === 1) {
+                    actionName = "choose_color";
+                    actionChoice = playerCard.colors[0];
+                }
+
+                // Prompt
+                else {
+                    this.action = "choose_color";
+                    this.action_params = [socketID, ucid];
+                    this.updateClients();
+                    logEntry.amend(undefined, `Awaiting action (${this.action})`);
+                    return;
+                }
             }
 
             // Choose swap
@@ -1165,6 +1192,7 @@ export default class Uno {
             else if(actionName === "target_draw") this.drawMultipleCards(actionChoice, playerCard.target_draw);
         }
 
+        // Pass hands
         if(this.piletop.pass_hands) this.passHands();
 
         // End action prompt
@@ -1287,7 +1315,9 @@ export default class Uno {
         // Check if awaiting callout
         else if(this.config.require_call) {
             const lastPlayer = this.players?.[lastPlayerID];
-            if(lastPlayer !== undefined) this.waitForCallout(lastPlayerID);
+            if(lastPlayer !== undefined && lastPlayer?.cards?.length === 1) {
+                this.waitForCallout(lastPlayerID);
+            }
         }
 
         logEntry.amend(true);
@@ -1302,13 +1332,6 @@ export default class Uno {
 
         // Player
         const player = this.players[pnum];
-
-        // Must have 1 card left
-        if(player?.cards?.length !== 1) {
-            // delete player.pre_call;
-            logEntry.amend(false, "Player does not have 1 card");
-            return;
-        }
 
         // Already pre-called
         // if(player.pre_call) {
@@ -1362,8 +1385,15 @@ export default class Uno {
 
                 // Forfeit
                 else if(this.config.call_penalty === "forfeit") {
-                    this.removePlayer(pnum);
-                    if(this.players.length <= 1) this.returnToLobby();
+                    // Remaining player wins
+                    if(this.players.length <= 2) {
+                        if(this.players?.[0]?.socketID) this.winner = this.players[0].socketID;
+                    }
+                    
+                    // Remove player
+                    else this.removePlayer(pnum);
+
+                    // Toast
                     this.emit("toast", { title:"Forfeit", msg:"Someone failed to call last card and forfeit the game"});
                 }
             }
@@ -1412,6 +1442,26 @@ export default class Uno {
         // Update
         this.updateClients();
         logEntry.amend(true);
+    }
+
+    /** Chat */
+    chat(socket, msg) {
+        const obj = {
+            msg: msg,
+            id: crypto.randomUUID(),
+            user: {
+                name: socket.name,
+                avatar: socket.avatar
+            },
+            socketID: socket.id
+        }
+
+        // Log
+        // server.log(`🗨  (${this.roomID}) ${socket.name}: ${obj.msg}`);
+        server.log(`🗨  (${this.roomID}) ${socket.name}: [message]`);
+
+        // Broadcast
+        io.to(this.roomID).emit("chat_receive", obj);
     }
 
     /** Player emote */

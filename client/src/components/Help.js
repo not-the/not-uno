@@ -8,12 +8,16 @@ export default function Help({ setMenu }) {
     const colors = ["red", "yellow", "blue", "green"];
     let colorIndex = 0;
     useEffect(() => {
+        // Scroll to top
+        window.scrollTo(0, 0);
+
         const colorInterval = setInterval(() => {
             colorIndex++;
             if(colorIndex > colors.length-1) colorIndex = 0;
 
             setCycleColor(colors[colorIndex]);
         }, 3000);
+
         return () => clearInterval(colorInterval);
     }, []);
 

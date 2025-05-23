@@ -1,17 +1,16 @@
 import { useEffect, useState } from "react";
-import User from "./User"
-import { socket } from "../socket";
-import { clientData } from "../App";
+import User from "../User"
+import { socket } from "../../socket";
+import UserAvatar from "../UserAvatar";
+import ChatInput from "./ChatInput";
 
 export default function Chat({
     game,
-    profile, setUser,
+    profile,
     setProfileOpen
 }) {
     // Chat
     const [chatOpen, setChatOpen] = useState(false);
-    const [chatInput, setChatInput] = useState("");
-
 
     const [chatUnread, setChatUnread] = useState(0);
 
@@ -79,16 +78,6 @@ export default function Chat({
         });
     }
 
-    const sendChat = () => {
-        if(game === false) return;
-
-        socket.emit("chat", { msg:chatInput });
-        // newChatMsg(chatInput);
-        setChatInput("");
-        document.getElementById("chat_input").value = "";
-    }
-
-
 
     return (<>
 
@@ -125,10 +114,10 @@ export default function Chat({
                         </div> :
 
                         // Messages
-                        chatCache.map((data, index) => 
+                        chatCache.map((data) => 
                             <User
                                 user={
-                                    data.user === "system" ? "system" : game.usersParsed[data.socketID]
+                                    data.system ? "system" : game.usersParsed[data.socketID]
                                 }
                                 tagline={data.msg}
                                 classes={
@@ -137,42 +126,31 @@ export default function Chat({
                                     (data.old_msg ? " old_msg" : "") // +
                                     // (index === 0 ? " msg_in" : "")
                                 }
-                                key={chatCache - index - 1}
+                                hideAvatar={data.clump}
+                                key={data.id}
                             />)
                     }
                 </div>
 
-                <div className="chat_bottom" aria-disabled={!game?.config?.enable_chat}>
-                    <input
-                        type="text" name="chat_input" id="chat_input"
-                        placeholder="Send a message..."
-                        maxLength={clientData.max_chat_length ?? null}
-                        onChange={event => setChatInput(event.target.value)}
-                        onKeyDown={event => { if(event.key === "Enter") sendChat() }}
-                        disabled={!game?.config?.enable_chat}
-                    />
-                    <button
-                        onClick={sendChat}
-                        className={
-                            (game !== false && chatInput.length > 0) ? "message_ready" : null
-                        }
-                    >
-                        <svg xmlns="http://www.w3.org/2000/svg" width="22.498" height="22.749" viewBox="0 0 22.498 22.749">
-                            <path id="Send" d="M1,22.749a1.016,1.016,0,0,1-.7-.283.992.992,0,0,1-.3-.719v-.511L2.843,13.4,10.8,11.866a.5.5,0,0,0,0-.982L2.843,9.353,0,1.513V1A1,1,0,0,1,1.452.109l20.5,10.373a1,1,0,0,1,0,1.785L1.452,22.64A.985.985,0,0,1,1,22.749Z" fill="#fff"/>
-                        </svg>
-                    </button>
-                </div>
+                {/* Input */}
+                <ChatInput game={game} />
+
             </div>
+
+            {/* Toggle Chat button */}
             <button id="chat_button" className="panel_button border_shadowed" onClick={toggleChat}>
                 <img src="/icons/chat.svg" alt="Chat" />
                 <span>{chatUnread > 9 ? "9+" : chatUnread || null}</span>
 
                 {/* Bubble */}
                 {chatBubble ?
-                    <div className="bubble" data-expired={chatBubble.bubble_timed_out}>
+                    <div className="bubble" data-expired={chatBubble.bubble_timed_out} key={chatBubble.id}>
                         <div className="inner">
-                            <strong>{chatBubble.user?.name}</strong>
-                            <span>{chatBubble.msg}</span>
+                            <UserAvatar avatar={chatBubble?.user?.avatar} />
+                            <div>
+                                <strong>{chatBubble.user?.name}</strong>
+                                <span>{chatBubble.msg}</span>
+                            </div>
                         </div>
                     </div>
                     : null

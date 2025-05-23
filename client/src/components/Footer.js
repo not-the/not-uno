@@ -4,7 +4,7 @@ export default function Footer({ setMenu }) {
     return (
         <footer id="footer" className="container">
             {/* Button links */}
-            <div className="flex media_flex flex_wrap gap_12px flex_center_horizontally">
+            <div className="flex flex_wrap gap_12px flex_center_horizontally">
                 {/* Tutorial */}
                 <button className="button_primary button_secondary button_mainbg button_border_bg_lighter hover_border_shadowed button_mini" onClick={() => setMenu("help")}>
                     <span>?</span>

@@ -2472,7 +2472,8 @@ h3 > .user .avatar {
 
 /* Actual footer */
 #footer {
-    padding: 18px 0 72px;
+    padding-top: 18px;
+    padding-bottom: 72px;
 }
 
 

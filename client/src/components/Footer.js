@@ -36,7 +36,14 @@ export default function Footer({ setMenu }) {
             </div>
 
             <br/>
-            <p className="secondary_text center">Play UNO online with friends!</p>
+
+            {/* Description */}
+            <div className="center">
+                <p className="secondary_text">Play UNO online with friends!</p>
+
+                {/* Links */}
+                <a href="https://notkal.com/about/#privacy" target="_blank" rel="noreferrer noopener" className="button hover_underline">Privacy</a>
+            </div>
         </footer>
     )
 }

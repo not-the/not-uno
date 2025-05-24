@@ -1117,7 +1117,6 @@ button.share_button {
 .player > .inner {
     display: flex;
     gap: 6px;
-    justify-content: center;
 
     width: unset;
     max-width: 100%;

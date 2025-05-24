@@ -151,7 +151,7 @@ function Input({ id, option, configValue, updateConfig, disabled }) {
         return (
             <select name={id} id={id} value={configValue} onChange={event => set(event.target.value)} disabled={disabled}>
                 {option.dropdown.map(item => {
-                    return <option value={item}>{lang.en?.[item] ?? item}</option>
+                    return <option value={item} key={item}>{lang.en?.[item] ?? item}</option>
                 })}
             </select>
         )

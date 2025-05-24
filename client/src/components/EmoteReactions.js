@@ -25,6 +25,7 @@ export default function EmoteReactions({ wrap }) {
                 return <button
                     className="item"
                     onClick={() => disabled ? null : emote(char)}
+                    key={char}
                 >
                     {char}
                 </button>

@@ -35,6 +35,7 @@ export default function ConfigDeck({ game }) {
 
                     return (
                         <li
+                            key={key}
                             className="deck_item"
                             onClick={isActive || !myHost ? null : () => updateStartingDeck(key)}
                             role="button"
@@ -45,7 +46,7 @@ export default function ConfigDeck({ game }) {
                             }}
                         >
 
-                            <h3 class="border_shadowed">{value.name}</h3>
+                            <h3 className="border_shadowed">{value.name}</h3>
                         </li>
                     )
                 })}

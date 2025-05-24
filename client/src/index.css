@@ -15,6 +15,11 @@
     /* --bg-main: #406836; */
     /* --bg-darker: #1f4928; */
 
+    /* RED THEME */
+    /* --bg-main: #9e181e;
+    --bg-darker: #7f1123;
+    --bg-lighter: #c53838; */
+
     /* BG */
     --bg-main: #365f35;
     --bg-darker: #173d2b;
@@ -70,6 +75,7 @@
     box-sizing: border-box;
     padding: 0;
     margin: 0;
+    text-underline-offset: 3px;
 }
 body {
     margin: 0;
@@ -992,42 +998,59 @@ button.share_button {
 }
 
 
-
-/* Game */
-#game_wrapper {
+/* Ads */
+#main_wrapper {
     position: absolute;
     inset: 0;
     overflow: hidden;
     height: 100dvh;
 
     display: flex;
-    flex-direction: column;
+    flex-direction: row-reverse;
 }
+#content {
+    position: relative;
+    flex: 1;
+}
+
+.ad_container {
+    z-index: 0;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    flex: 0 0 auto;
+
+    background-color: var(--bg-darker);
+    overflow: auto;
+
+    /* Desktop */
+    min-width: 300px;
+}
+/* .ad_container::before {
+    content: "Advertisement";
+    position: absolute;
+    color: var(--secondary-text);
+    font-size: 9pt;
+} */
+.ad_container ins.adsbygoogle {
+    display: block;
+    background-color: #162e23;
+    
+}
+
+
+/* Game */
 #game {
     position: relative;
     height: 100%;
+    width: 100%;
 
     display: flex;
     justify-content: center;
     align-items: center;
 }
-/* Ads */
-.ad_container {
-    display: flex;
-    justify-content: center;
-    max-height: 110px;
-    overflow: auto;
-}
-.ad_container .adsbygoogle {
-    background-color: var(--bg-darker);
-}
-.ad_disable_btn {
-    position: absolute;
-    top:6px; left: 6px;
-    z-index: 1;
-    color: var(--secondary-text);
-}
-
 .menu_bar {
     position: absolute;
     top: 18px;
@@ -1109,7 +1132,7 @@ button.share_button {
 
 /* Players */
 .player {
-    max-width: 85vw;
+    max-width: min(85vw, 100%);
     min-width: 20vw;
     pointer-events: none;
 }
@@ -1774,7 +1797,7 @@ button.share_button {
 
 /* Choice popups */
 .choice_popup {
-    position: fixed;
+    position: absolute;
     bottom: 24px;
     right: 24px;
     z-index: 4;
@@ -2116,7 +2139,8 @@ button.share_button {
     border-color: white;
 }
 
-.backdrop {
+.backdrop,
+.content_backdrop {
     position: fixed;
     inset: 0;
     z-index: 3;
@@ -2128,8 +2152,13 @@ button.share_button {
     pointer-events: none;
     transition: opacity 0.1s ease;
 }
+.content_backdrop {
+    position: absolute;
+    z-index: -1;
+}
 body:has(#profile) .backdrop,
-body:has(.overlay) .backdrop {
+body:has(.overlay:not(.content_overlay)) .backdrop,
+body:has(.overlay.content_overlay) .content_backdrop {
     opacity: 1;
     pointer-events: initial;
 }
@@ -2501,6 +2530,9 @@ h3 > .user .avatar {
     align-items: center;
 
     padding: 9px;
+}
+.overlay.content_overlay {
+    position: absolute;
 }
 .overlay > .inner {
     width: 100%;
@@ -3224,6 +3256,20 @@ body:has(.spectating_toast) {
         flex-direction: row;
         gap: auto;
         flex-direction: row-reverse;
+    }
+}
+
+
+/* Mobile AD arrangement */
+@media screen and (max-width: 1099px) {
+    #main_wrapper {
+        flex-direction: column;
+    }
+    .ad_container {
+        width: 100%;
+        min-width: unset;
+        height: 110px;
+        min-height: 110px;
     }
 }
 

@@ -4,8 +4,6 @@ import { useState } from "react";
 
 export default function Advertisement({ adSlot }) {
 
-    // const [adsEnabled, setAdsEnabled] = useState(localStorage.getItem("notuno_allow_ads") === "false" ? false : true);
-
     // Effects
     useEffect(() => {
         try {
@@ -13,34 +11,38 @@ export default function Advertisement({ adSlot }) {
         }
         catch (e) {}
     }, []);
+    
+    // Size
+    const desktopSize = window.screen.availWidth > 1100;
 
-
-    // function disable() {
-    //     setAdsEnabled(false);
-    //     localStorage.setItem("notuno_allow_ads", "false");
-    // }
-
-
-    // Disabled
-    // if(!adsEnabled) return null;
-
-    // HTML
-    return <div>
+    // Tall vertical ad (Desktop)
+    if(desktopSize) return (
         <ins class="adsbygoogle"
             data-adtest={isProduction ? null : "on"}
             style={{
                 display: "block",
-                width:   "728px",
-                height:  "90px"
+                width: "300px",
             }}
             data-ad-client="ca-pub-1407840358707118"
-            data-ad-slot={adSlot}
+            data-ad-slot="7758224997"
             data-ad-format="auto"
             data-full-width-responsive="true"
         />
+    )
 
-        {/* <button className="ad_disable_btn" onClick={disable}>
-            Disable ads
-        </button> */}
-    </div>
+    // Wide banner ad (Mobile)
+    return (
+        <ins class="adsbygoogle"
+            // data-adtest={isProduction ? null : "on"}
+            style={{
+                display: "block",
+                width:   "100%",
+                height:  "110px"
+            }}
+            data-ad-client="ca-pub-1407840358707118"
+            data-ad-slot="4276337064"
+            // data-ad-format="auto"
+            // data-full-width-responsive="true"
+        />
+    )
 }

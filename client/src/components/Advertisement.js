@@ -4,7 +4,7 @@ import { useState } from "react";
 
 export default function Advertisement({ adSlot }) {
 
-    const [adsEnabled, setAdsEnabled] = useState(localStorage.getItem("notuno_allow_ads") === "false" ? false : true);
+    // const [adsEnabled, setAdsEnabled] = useState(localStorage.getItem("notuno_allow_ads") === "false" ? false : true);
 
     // Effects
     useEffect(() => {
@@ -15,14 +15,14 @@ export default function Advertisement({ adSlot }) {
     }, []);
 
 
-    function disable() {
-        setAdsEnabled(false);
-        localStorage.setItem("notuno_allow_ads", "false");
-    }
+    // function disable() {
+    //     setAdsEnabled(false);
+    //     localStorage.setItem("notuno_allow_ads", "false");
+    // }
 
 
     // Disabled
-    if(!adsEnabled) return null;
+    // if(!adsEnabled) return null;
 
     // HTML
     return <div>
@@ -39,8 +39,8 @@ export default function Advertisement({ adSlot }) {
             data-full-width-responsive="true"
         />
 
-        <button className="ad_disable_btn" onClick={disable}>
+        {/* <button className="ad_disable_btn" onClick={disable}>
             Disable ads
-        </button>
+        </button> */}
     </div>
 }

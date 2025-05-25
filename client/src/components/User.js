@@ -27,11 +27,11 @@ export default function User({ user, game, tagline, title, postName, classes="",
 
     const afterName = isMe ?
         // <span className="after_name">(You)</span>
-        <img src="/icons/person.svg" alt="(You)" className="you" />
+        <img src="/icons/person.svg" alt="(You)" className="you extra" />
         : null;
 
     const spectatingIndicator = !user?.spectating ? null :
-        <div className="you smaller">(Spectating)</div>
+        <div className="extra smaller">(Spectating)</div>
 
     return (
         <div className={className} data-title={title} onClick={onClick} style={!background ? null : { "--background":`url('${background}')` }}>

@@ -12,6 +12,7 @@ import EmoteBubble from "./EmoteBubble.js"
 import GameMenu from "./GameMenu.js"
 import WinScreen from "./WinScreen.js"
 import Advertisement from "./Advertisement.js"
+import Spectators from "./Spectators.js"
 
 
 /** Game screen component */
@@ -268,12 +269,7 @@ export default function Game({ game, setGame, startGame }) {
                         {game.config.reactions ? <EmoteReactions /> : null}
 
                         {/* Spectators */}
-                        {game.spectatorCount === 0 ? null :
-                            <p className="secondary_text">
-                                {/* Icon */}
-                                <img src="/icons/eyeball.svg" alt="" className="icon_inline secondary_text" /> {game.spectatorCount} spectator{game.spectatorCount===1?"":"s"}
-                            </p>
-                        }
+                        <Spectators game={game} />
                     </div>
 
                     {/* Visual effects */}

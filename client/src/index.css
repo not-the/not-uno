@@ -2320,6 +2320,8 @@ body:has(.overlay.content_overlay) .content_backdrop {
 .user.has_tagline .after_name { font-size: 7pt; margin-left: 6px; } */
 .user .you {
     width: 12px;
+}
+.user .extra {
     opacity: 0.8;
     margin-left: 8px;
 }
@@ -2333,7 +2335,7 @@ body:has(.overlay.content_overlay) .content_backdrop {
     opacity: 0.6;
 }
 .msg.clump .name,
-.msg.clump .you {
+.msg.clump .extra {
     display: none;
 }
 .msg.clump .avatar {
@@ -2343,12 +2345,10 @@ body:has(.overlay.content_overlay) .content_backdrop {
 .profile_button {
     border-radius: 200px;
 }
-.user.big_user .avatar {
-    --size: 44px;
-}
-.user.big_user .name {
-    font-size: 18pt;
-}
+.user.big_user .avatar { --size: 44px; }
+.user.big_user .name { font-size: 18pt; }
+.user.small_user .avatar { --size: 26px; }
+.user.small_user .name { font-size: 12pt; }
 
 /* User buttons */
 .user_buttons {
@@ -3030,6 +3030,62 @@ h3 > .user .avatar {
     border-radius: 12px;
     margin: 12px 0 6px;
     animation: toast 0.5s ease 3s both;
+}
+
+
+/* Spectators */
+#lobby .spectators_hover {
+    margin-bottom: 15px;
+}
+.spectators_hover {
+    position: relative;
+    z-index: 3;
+    width: 300px;
+    max-width: 100%;
+}
+.spectators_hover > span.inner {
+    cursor: default;
+}
+.spectators_list {
+    --shadow-distance: 4px;
+
+    position: absolute;
+    top: -10px;
+    left: -13px;
+
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+
+    background-color: var(--bg-purple);
+    backdrop-filter: blur(15px);
+    border-radius: 9px;
+    border: 1px solid var(--bg-purple-lighter);
+    padding: 9px 12px;
+    width: 100%;
+
+    opacity: 0;
+    transform-origin: top left;
+    transform: scale(0.98);
+    pointer-events: none;
+    transition: 0.2s ease;
+}
+.spectators_hover:hover,
+.spectators_hover:focus,
+.spectators_hover:focus-visible,
+.spectators_hover:focus-within {
+    /* Inner */
+    span.inner {
+        color: var(--text);
+    }
+    
+    /* List */
+    .spectators_list {
+        opacity: 1;
+        transform: unset;
+        pointer-events: initial;
+        transition-duration: 0.15s;
+    }
 }
 
 

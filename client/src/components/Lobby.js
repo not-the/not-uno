@@ -7,6 +7,7 @@ import ConfigDeck from "./ConfigDeck.js"
 import { clientData } from "../App";
 import EmoteBubble from "./EmoteBubble.js";
 import EmoteReactions from "./EmoteReactions.js";
+import Spectators from "./Spectators.js";
 // import lang from "../lang.js";
 
 export default function Lobby({ game, startGame, toast, leaveGame, setProfileOpen }) {
@@ -117,15 +118,7 @@ export default function Lobby({ game, startGame, toast, leaveGame, setProfileOpe
                             </div>
 
                             {/* Spectating */}
-                            {game.spectatorCount === 0 ? null :
-                                <div className="secondary_text">
-                                    {/* Icon */}
-                                    <img src="/icons/eyeball.svg" alt="" className="icon_inline secondary_text" /> {game.spectatorCount} spectator{game.spectatorCount===1?"":"s"}
-
-                                    <br/>
-                                    <br/>
-                                </div>
-                            }
+                            <Spectators game={game} />
 
                             {/* List */}
                             <div className="users_list">

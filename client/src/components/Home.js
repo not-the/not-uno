@@ -110,7 +110,7 @@ export default function Home({ setMenu, joinRoom }) {
 
                             {/* Player count */}
                             {socketConnectionStatus === true ?
-                                `${serverInfo?.online_users} player${serverInfo?.online_users !== 1 ? "s" : ""} online`
+                                `${serverInfo?.online_users ?? "?"} player${serverInfo?.online_users !== 1 ? "s" : ""} online`
                                 :
                                 "Server offline"
                             }

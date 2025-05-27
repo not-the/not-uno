@@ -90,12 +90,6 @@ export default class Uno {
     
     /** Debug log */
     log(id, ...args) {
-        const stringifiedParams = args.map(a => {
-            if(a?.id !== undefined) return "SOCKET"; // Socket object
-            if(a === undefined) return "undefined"; // Undefined
-            return JSON.stringify(a);
-        });
-
         /** Log entry object */
         class LogEntry {
             constructor(id, params, index) {
@@ -108,6 +102,9 @@ export default class Uno {
                 this.index = index;
             }
 
+            /** Logging disabled */
+            static amend() { }
+
             /** Amend log entry */
             amend(success, msg) {
                 this.success = success;
@@ -117,6 +114,16 @@ export default class Uno {
                 return this;
             }
         }
+
+        // LOGGING DISABLED
+        if(process.env.KEEP_LOGS === undefined) return LogEntry;
+
+        // Stringify parameters
+        const stringifiedParams = args.map(a => {
+            if(a?.id !== undefined) return "SOCKET"; // Socket object
+            if(a === undefined) return "undefined"; // Undefined
+            return JSON.stringify(a);
+        });
 
         // Log
         const entry = new LogEntry(id, stringifiedParams, this.#log.length);

@@ -134,7 +134,7 @@ const server = {
         console.log(full);
 
         // History
-        this.logHistory.push({
+        if(process.env.KEEP_LOGS !== undefined) this.logHistory.push({
             timestamp: Date.now(),
             message,
             cleanMessage: message.replace(/\033\[[0-9;]*m/g, "") // Message with console formatting codes removed

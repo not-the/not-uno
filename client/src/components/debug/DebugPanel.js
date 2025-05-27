@@ -114,26 +114,30 @@ export default function DebugPanel({ game, joinRoom }) {
                 </button>
 
                 {/* Server log */}
-                <details>
-                    <summary>Server log</summary>
-                    <div className="inner debug_log smaller">
-                        <br/>
+                {lobbies?.serverLogHistory?.length !== 0 ? 
+                    <details>
+                        <summary>Server log</summary>
+                        <div className="inner debug_log smaller">
+                            <br/>
 
-                        {/* Unique keys needed */}
-                        {[ ...(lobbies?.serverLogHistory ?? []) ].reverse().map(entry => {
-                            return <div className="item" style={{ lineHeight:"1.9" }} key={entry.timestamp}>
-                                <span className="debug_block secondary_text" style={{ display:"inline" }}>
-                                    {formattedDate(new Date(entry.timestamp))}
-                                </span>
-                                <span className="text" style={{ whiteSpace:"pre" }}>
-                                    {/* Remove console formatting codes */}
-                                    {entry.cleanMessage}
-                                </span>
-                            </div>
-                        })}
-                        <br/>
-                    </div>
-                </details>
+                            {/* Unique keys needed */}
+                            {[ ...(lobbies?.serverLogHistory ?? []) ].reverse().map(entry => {
+                                return <div className="item" style={{ lineHeight:"1.9" }} key={entry.timestamp}>
+                                    <span className="debug_block secondary_text" style={{ display:"inline" }}>
+                                        {formattedDate(new Date(entry.timestamp))}
+                                    </span>
+                                    <span className="text" style={{ whiteSpace:"pre" }}>
+                                        {/* Remove console formatting codes */}
+                                        {entry.cleanMessage}
+                                    </span>
+                                </div>
+                            })}
+                            <br/>
+                        </div>
+                    </details>
+                    :
+                    <p className="secondary_text smaller"><br/><i>Log history is disabled</i></p>
+                }
                 <br/>
                 <hr/>
                 <br/>
@@ -156,7 +160,7 @@ export default function DebugPanel({ game, joinRoom }) {
                         Refresh
                     </button>
                 </div>
-                
+
                 {/* Open */}
                 <div className="debug_lobbies">
                     {/* DEBUG - ALL LOBBIES */}

@@ -139,7 +139,13 @@ export default function DebugLobbyListing({ lobby, joinRoom, classes, game }) {
 
                         {/* Log */}
                         <details>
-                            <summary>Log</summary>
+                            <summary>
+                                {lobby.log.length === 0 ?
+                                    <i className="secondary_text">No logs</i>
+                                    :
+                                    "Log"
+                                }
+                            </summary>
                             <div className="inner">
                                 <DebugLog lobby={lobby} />
                             </div>

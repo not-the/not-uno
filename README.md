@@ -13,6 +13,11 @@ cd ./client
 npm start
 ```
 
+**Client Config**
+Create a `/client/.env` file (or define environment variables using your hosting platform)
+
+- `REACT_APP_SERVER_URL` (Optional) Server URL to connect to. Defaults to http://localhost:443
+
 
 ### Server
 Run server:

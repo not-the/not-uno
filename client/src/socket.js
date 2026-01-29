@@ -4,10 +4,8 @@ import { store } from './Util'
 /** Boolean representing whether or not the app is in a production environment */
 const isProduction = process.env.NODE_ENV === 'production';
 
-// "undefined" means the URL will be computed from the `window.location` object
-const serverURL = isProduction ?
-    "https://uno-server1.notkal.com:443" : // Production endpoint
-    'http://localhost:443'; // Development
+// If undefined, the URL will be computed from the `window.location` object (this assumes the server is hosted at the same location)
+const serverURL = process.env.REACT_APP_SERVER_URL
 
 
 const URLKey = new URL(window.location).searchParams.get("key");

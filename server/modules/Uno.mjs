@@ -1465,7 +1465,7 @@ export default class Uno {
 
         // Log
         // server.log(`🗨  (${this.roomID}) ${socket.name}: ${obj.msg}`);
-        server.log(`🗨  (${this.roomID}) ${socket.name}: [message]`);
+        // server.log(`🗨  (${this.roomID}) ${socket.name}: [message]`);
 
         // Broadcast
         io.to(this.roomID).emit("chat_receive", obj);

@@ -47,7 +47,7 @@ export default function DebugLobbyListing({ lobby, joinRoom, classes, game }) {
                     onClick={() => inspect(lobby)}
                     aria-checked={inspectOpen}
                 >
-                    <img src="/icons/Magnify.svg" alt="Inspect" class="icon_inline secondary_text" />
+                    <img src="/icons/Magnify.svg" alt="Inspect" className="icon_inline secondary_text" />
                 </div>
 
                 {/* Inner */}
@@ -109,7 +109,7 @@ export default function DebugLobbyListing({ lobby, joinRoom, classes, game }) {
                         onClick={allowJoin ? () => joinRoom(lobby.roomID) : null}
                         aria-disabled={!allowJoin}
                     >
-                        <img src="/icons/Door.svg" alt="Click to join" class="icon_inline secondary_text" />
+                        <img src="/icons/Door.svg" alt="Click to join" className="icon_inline secondary_text" />
                     </div>
                     :
                     <div className="spectate_btn flex flex_center">

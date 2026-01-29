@@ -36,6 +36,10 @@ export default function Lobby({ game, startGame, toast, leaveGame, setProfileOpe
 
     }
 
+    // Socket
+    function addCPU() { socket.emit("add_cpu"); }
+    function removeCPU() { socket.emit("remove_cpu"); }
+
     return (
         <>
             {/* Upper */}
@@ -125,12 +129,25 @@ export default function Lobby({ game, startGame, toast, leaveGame, setProfileOpe
                                 {Object.entries(game.usersPlayers).map(([, user], index) => {
                                     return <User
                                         key={index} user={user} game={game}
-                                        title={`ID: ${user.socketID}
-                                        ${user.socketID === game.host ? " (Host)":""}`}
-                                        postName={<EmoteBubble socketID={user?.socketID} />}
+                                        postName={<EmoteBubble pnum={index} socketID={user?.socketID} />}
                                         setProfileOpen={setProfileOpen}
+
+                                {/* CPUS */}
+                                {new Array(game.cpus).fill(null).map((cpu, index) => {
+                                    return <User
+                                        user={{ name:`CPU ${index+1}`, avatar:clientData.avatars[index] }}
+                                        classes="box_user"
+                                        onClick={removeCPU}
                                     />
                                 })}
+
+                                {/* Add CPU */}
+                                {!isHost || game.isFull ? null :
+                                    <div className="user box_user add_cpu_btn button hover_border_shadowed" role="button" tabIndex="0" onClick={addCPU}>
+                                        <div className="avatar flex flex_center">+</div>
+                                        <span>({game.cpus}) Add CPU</span>
+                                    </div>
+                                }
                             </div>
 
                             {/* Reactions */}

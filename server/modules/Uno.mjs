@@ -58,6 +58,7 @@ export default class Uno {
         // Room
         this.roomID = roomID;
         this.nameIsUUID = nameIsUUID; // Will be true unless the UUID was player-chosen
+        this.cpus = 0;
         this.setHost(hostSocket);
 
         // Player-specific
@@ -208,7 +209,7 @@ export default class Uno {
 
     /** Gives the number of users who are in play (whether or not the game has started). Spectators excluded. */
     get playerCount() {
-        return this.clients.filter(socket => !socket.spectating).length;
+        return this.clients.filter(socket => !socket.spectating).length + this.cpus;
     }
 
     /** Gives current number of spectators */
@@ -800,6 +801,47 @@ export default class Uno {
         // Update
         this.updateClients();
 
+        // CPU thinks
+        this.CPUThink();
+
+        logEntry.amend(true);
+    }
+
+    /** CPU's turn */
+    CPUThink() {
+        const logEntry = this.log("CPUThink", ...Array.from(arguments));
+
+        // Player
+        const pnum = this.turn;
+        const player = this.players[pnum];
+
+        // Not a CPU
+        if(!player.isCPU) return logEntry.amend(false, "Current player is not a CPU");
+
+        // Functions
+        const matchingCard = () => {
+            player.cards.findIndex(card => Uno.testCards(card, this.piletop));
+        }
+
+        const matchingDrawCard = () => {
+            player.cards.findIndex(card => card.draw === this.draw_debt);
+        }
+
+        // Draw debt
+        if(this.draw_debt > 0) {
+            const index = matchingDrawCard();
+            if(index !== -1) this.playCard(undefined, player.cards[index].ucid);
+        }
+
+        // No debt
+        else {
+            const index = matchingCard();
+            if(index !== -1) {
+                console.log(index);
+                this.playCard(undefined, player.cards[index].ucid)
+            }
+        }
+
         logEntry.amend(true);
     }
 
@@ -837,25 +879,67 @@ export default class Uno {
         logEntry.amend(true);
     }
 
+    /** Registers a CPU player
+     * @param {Object} socket Socket of the user who made the request
+     */
+    addCPU(socket, change=1) {
+        const logEntry = this.log("addCPU", ...Array.from(arguments));
+
+        // Not the host
+        if(this.host !== socket.id) {
+            logEntry.amend(false, "You are not the host");
+            return;
+        }
+
+        // No CPUs to remove
+        if(change < 0 && this.cpus === 0) {
+            logEntry.amend(false, "No CPUs left to remove");
+            return;
+        }
+
+        // Game is full
+        if(change > 0 && this.isFull) {
+            logEntry.amend(false, "Game is full");
+            return;
+        }
+
+        // Register CPU player
+        this.cpus += change;
+
+        // Update
+        this.updateClients();
+
+        logEntry.amend(true);
+    }
+
     /** Runs the addPlayer() method for each connected user */
     generatePlayers() {
         const sockets = this.clients;
+
+        // User Players
         for(let i = 0; i < sockets.length; i++) {
             if(sockets?.[i]?.spectating) continue;
             this.addPlayer(sockets[i].id, sockets[i].rejoin_key);
         }
+
+        // CPU Players
+        for(let i = 0; i < this.cpus; i++) {
+            this.addPlayer(undefined, undefined, true);
+        }
     }
 
     /** Adds a new player to the players array and gives them their cards */
-    addPlayer(socketID, rejoin_key) {
+    addPlayer(socketID, rejoin_key, isCPU) {
         // Push new player object
-        this.players.push({
-            socketID,
+        const obj = {
+            socketID: socketID,
             cards: []
-        });
+        };
+        obj.isCPU ??= isCPU; // isCPU
+        this.players.push(obj);
 
         // Register rejoin keys
-        this.#rejoin_keys[rejoin_key] = socketID;
+        if(socketID) this.#rejoin_keys[rejoin_key] = socketID;
 
         // Give cards
         const pnum = this.players.length-1;
@@ -1329,6 +1413,9 @@ export default class Uno {
 
         logEntry.amend(true);
 
+        // CPU think
+        this.CPUThink();
+
         // Did draw cards, return true
         if(didDrawCards) return true;
     }
@@ -1412,11 +1499,8 @@ export default class Uno {
     }
 
     /** Callout last card */
-    callout(socketID) {
+    callout(pnum) {
         const logEntry = this.log("callout", ...Array.from(arguments));
-
-        // pnum
-        const pnum = this.getPnumFromSocketID(socketID);
 
         // Invalid pnum
         if(pnum === -1) {
@@ -1444,7 +1528,7 @@ export default class Uno {
         delete player.awaiting_call;
 
         // Bubble
-        this.emote(socketID, "UNO!", 1);
+        this.emote(pnum, "UNO!", 1);
 
         // Update
         this.updateClients();
@@ -1471,17 +1555,25 @@ export default class Uno {
         io.to(this.roomID).emit("chat_receive", obj);
     }
 
-    /** Player emote */
-    emote(socketID, msg="?", style=null, socket) {
+    /** Player emote
+     * @param {String} playerIdentifier 
+     * @param {String} msg Emote to send
+     * @param {Number} style (Optional) If 1, emote will take on UNO! styling
+     * @param {Object} socket (Optional) User's socket
+     * @returns 
+     */
+    emote(playerIdentifier, msg, style=null, socket) {
         // Missing parameters
-        if(!socketID) return;
+        if(playerIdentifier === undefined || !msg) return;
 
         // Reactions disabled
         if(!this.config.reactions && socket) return;
 
+        console.log(`emote_from_${playerIdentifier}`);
+
         // Emit
-        this.emit(`emote_from_${socketID}`, {
-            socketID,
+        this.emit(`emote_from_${playerIdentifier}`, {
+            // socketID: socket?.id,
             style,
             msg,
             id: crypto.randomUUID()

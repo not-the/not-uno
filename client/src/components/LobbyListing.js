@@ -11,6 +11,7 @@ export default function LobbyListing({ lobby, joinRoom, classes }) {
 
     // Host socketID
     const host = lobby?.usersParsed[lobby?.host];
+    const playerCount = lobby.playerCount;
 
     const allClasses = [
         "lobby flex gap_12px",
@@ -45,7 +46,8 @@ export default function LobbyListing({ lobby, joinRoom, classes }) {
                             Host: <b>{host?.name}</b>
                         </p>
                         <p className="margin_left_auto">
-                            Players: {Object.keys(lobby?.usersParsed??{}).length}/{lobby.config.max_players}
+                            {playerCount}/{lobby.config.max_players} players
+                            {lobby.cpus === 0 ? null : ` (${lobby.cpus} CPUS)`}
                         </p>
                     </div>
                 </div>

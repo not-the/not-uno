@@ -210,6 +210,23 @@ const socketConnection = function(socket) {
         game.setConfigOption(socket, option, value);
     })
 
+    // socket.on("add_cpu", () => {
+    //     /** @type {Uno} */
+    //     const game = getGameByUser();
+    //     if(game === undefined) return;
+
+    //     game.addCPU(socket);
+    // })
+
+    // socket.on("remove_cpu", () => {
+    //     /** @type {Uno} */
+    //     const game = getGameByUser();
+    //     if(game === undefined) return;
+
+    //     game.addCPU(socket, -1);
+    // })
+
+    // Gameplay
     socket.on("drawCard", () => {
         /** @type {Uno} */
         const game = getGameByUser();
@@ -235,7 +252,9 @@ const socketConnection = function(socket) {
         /** @type {Uno} */
         const game = getGameByUser();
         if(game === undefined) return;
-        game.callout(socket.id);
+
+        const pnum = game.getPnumFromSocketID(socket.id);
+        game.callout(pnum);
     })
 
     socket.on("requestRematch", () => {

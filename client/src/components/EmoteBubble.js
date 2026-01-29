@@ -2,21 +2,26 @@ import { useEffect } from "react";
 import { useState } from "react";
 import { socket } from "../socket";
 
-export default function EmoteBubble({ socketID }) {
-
-    // return null;
+export default function EmoteBubble({ pnum, socketID }) {
 
     // Emote
     const [emote, setEmote] = useState(null);
 
     // Effects
     useEffect(() => {
-        if(!socketID) return;
-
-        const eventName = `emote_from_${socketID}`;
+        const eventPnum = `emote_from_${pnum}`;
+        const eventSocketID = `emote_from_${socketID}`;
 
         // Emote event
-        socket.on(eventName, (data) => {
+        if(pnum !== undefined) socket.on(eventPnum, handleReceiveEmote);
+        if(socketID !== undefined) socket.on(eventSocketID, handleReceiveEmote);
+
+        
+        // Handler
+        function handleReceiveEmote(data) {
+
+            console.log(data);
+
             // Set
             setEmote(data);
 
@@ -28,10 +33,14 @@ export default function EmoteBubble({ socketID }) {
                     else return old; // Is a different emote now
                 }); 
             }, 3000);
-        });
+        }
+
 
         // Cleanup
-        return () => socket.off(eventName);
+        return () => {
+            socket.off(eventPnum);
+            socket.off(eventSocketID);
+        };
     })
 
     // JSX

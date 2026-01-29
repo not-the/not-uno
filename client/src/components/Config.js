@@ -140,7 +140,7 @@ function Input({ id, option, configValue, updateConfig, disabled }) {
     else if(type === "boolean") {
         return (
             <div className="toggle" aria-disabled={disabled}>
-                <input type="checkbox" name={id} id={id} checked={configValue} onClick={() => set(old => !old)} disabled={disabled} />
+                <input type="checkbox" name={id} id={id} checked={configValue} onChange={() => set(old => !old)} disabled={disabled} />
                 <span/>
             </div>
         )

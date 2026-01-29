@@ -71,26 +71,28 @@ export default function DebugPanel({ game, joinRoom }) {
                     <summary>Client state</summary>
                     <div className="inner">
                         <table>
-                            <tr>
-                                <th>socketConnectionStatus</th>
-                                <td>{JSON.stringify(socketConnectionStatus)}</td>
-                            </tr>
-                            <tr>
-                                <th>socket.id</th>
-                                <td>{socket?.id}</td>
-                            </tr>
-                            <tr>
-                                <th>game.my_num</th>
-                                <td>{game?.my_num}</td>
-                            </tr>
-                            <tr>
-                                <th>game.my_spectating</th>
-                                <td>{String(game.my_spectating)}</td>
-                            </tr>
-                            <tr>
-                                <th>game.deck.length</th>
-                                <td>{String(game?.deck?.length)}</td>
-                            </tr>
+                            <tbody>
+                                <tr>
+                                    <th>socketConnectionStatus</th>
+                                    <td>{JSON.stringify(socketConnectionStatus)}</td>
+                                </tr>
+                                <tr>
+                                    <th>socket.id</th>
+                                    <td>{socket?.id}</td>
+                                </tr>
+                                <tr>
+                                    <th>game.my_num</th>
+                                    <td>{game?.my_num}</td>
+                                </tr>
+                                <tr>
+                                    <th>game.my_spectating</th>
+                                    <td>{String(game.my_spectating)}</td>
+                                </tr>
+                                <tr>
+                                    <th>game.deck.length</th>
+                                    <td>{String(game?.deck?.length)}</td>
+                                </tr>
+                            </tbody>
                         </table>
 
 

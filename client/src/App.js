@@ -24,7 +24,9 @@ if(clientData === undefined) {
     clientData = {};
 }
 
-export { clientData };
+let colorblind, setColorblind;
+
+export { clientData, colorblind };
 
 /** App */
 export default function App() {
@@ -35,6 +37,15 @@ export default function App() {
 
     // UI state
     const [profileOpen, setProfileOpen] = useState(false);
+    [colorblind, setColorblind] = useState(Boolean(localStorage.getItem("notuno_colorblind") ?? false));
+
+    /** Toggles colorblind mode */
+    function toggleColorblind() {
+        setColorblind(old => {
+            localStorage.setItem("notuno_colorblind", !old);
+            return !old;
+        });
+    }
 
     /** Emits start_game event */
     function startGame() {
@@ -94,7 +105,7 @@ export default function App() {
     );
     const page =
         // Game
-        menu === "game" ? <Game game={game} setGame={setGame} startGame={startGame} /> :
+        menu === "game" ? <Game game={game} setGame={setGame} startGame={startGame} toggleColorblind={toggleColorblind} /> :
         // Lobby
         menu === "lobby" ? <Lobby game={game} setGame={setGame} startGame={startGame} leaveGame={leaveGame} toast={toast} setProfileOpen={setProfileOpen} /> :
         // Joining...
@@ -218,7 +229,7 @@ export default function App() {
     }, []);
 
     return (
-        <>
+        <div className={colorblind ? "colorblind_mode" : ""} style={{ display: "contents" }}>
             {/* Header */}
             {menu !== "game" /*&& menu !== "deck_editor"*/ ?
                 <Header />
@@ -285,7 +296,7 @@ export default function App() {
                 {/* Notifications */}
                 {toasts.map((t, index) => <Toast data={t} key={t.id} timed={t.timed} />)}
             </div>
-        </>
+        </div>
     );
 }
 

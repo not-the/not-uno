@@ -228,6 +228,27 @@ export default function App() {
         }
     }, []);
 
+    // Adsense script
+    // https://stackoverflow.com/a/34425083
+    useEffect(() => {
+        // Ads enabled
+        if (process.env.REACT_APP_ADSENSE_CLIENT) {
+            const script = document.createElement('script');
+
+            script.src = `https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${process.env.REACT_APP_ADSENSE_CLIENT}`;
+            script.async = true;
+            script.crossorigin="anonymous"
+
+            // Append
+            document.body.appendChild(script);
+
+            // Unmount
+            return () => {
+                document.body.removeChild(script);
+            }
+        }
+    }, []);
+
     return (
         <div className={colorblind ? "colorblind_mode" : ""} style={{ display: "contents" }}>
             {/* Header */}

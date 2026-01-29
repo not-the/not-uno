@@ -451,7 +451,7 @@ export default function Game({ game, setGame, startGame, toggleColorblind }) {
                                         />}
                                     </h3>
 
-                                    <EmoteBubble socketID={user?.socketID} />
+                                    <EmoteBubble pnum={playerIndex} socketID={user?.socketID} />
 
                                     {/* Buttons */}
                                     {!isMe ? null : <>
@@ -566,9 +566,10 @@ export default function Game({ game, setGame, startGame, toggleColorblind }) {
                     <GameMenu game={game} isHost={isHost} toggleMenu={toggleMenu} leaveGame={leaveGame} returnToLobby={returnToLobby} />
                 }
             </div>
-        </div>
 
-        {/* Animation overlay */}
-        <CardAnimated animation={game.animation} animation_key={game.animation_key} />
+            {/* Animation overlay */}
+            <CardAnimated animation={game.animation} animation_key={game.animation_key} />
+
+        </div>
     </>);
 }

@@ -252,9 +252,13 @@ export default function Game({ game, setGame, startGame, toggleColorblind }) {
         {/* Game container */}
         <div id="main_wrapper">
             {/* Advertisement */}
-            <div className="ad_container">
-                <Advertisement />
-            </div>
+            {
+                !process.env.REACT_APP_ADSENSE_CLIENT
+                    ? null
+                    : <div className="ad_container">
+                         <Advertisement />
+                     </div>
+            }
 
             {/* Game */}
             <div id="content">

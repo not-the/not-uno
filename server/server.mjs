@@ -21,22 +21,18 @@ import word_blacklist from './word_blacklist.json' with { type: 'json' }
 
 // Environment
 const isProduction = process.env.NODE_ENV === 'production';
-const clientOrigin = isProduction ?
-    "https://uno.notkal.com" :  // Production website
-    process.env.DEVELOPMENT_CLIENT_ORIGIN ?? "http://localhost:3000";    // Development
+const clientUrl = process.env.CLIENT_URL;
+const SSL_MODE = process.env.SSL_MODE === "true" ? true : false
 
 // SSL
 let privateKey, certificate;
-if(isProduction) {
-    const PRIVATE_KEY_LOCATION="/etc/letsencrypt/live/uno-server1.notkal.com/privkey.pem"
-    const CERTIFICATE_LOCATION="/etc/letsencrypt/live/uno-server1.notkal.com/fullchain.pem"
-
+if(SSL_MODE) {
     try {
-        privateKey = fs.readFileSync(PRIVATE_KEY_LOCATION, 'utf8');
-        certificate = fs.readFileSync(CERTIFICATE_LOCATION, 'utf8');
+        privateKey = fs.readFileSync(process.env.PRIVATE_KEY_LOCATION, 'utf8');
+        certificate = fs.readFileSync(process.env.CERTIFICATE_LOCATION, 'utf8');
     } catch (error) {
-        console.warn("SSL keys not found. Error below:");
-        console.warn(error);
+        console.warn("SSL keys not found. Make sure you have both PRIVATE_KEY_LOCATION and CERTIFICATE_LOCATION defined in .env and that they lead to valid files. Or to start in http mode instead, set SSL_MODE to \"false\" in .env. Error below:");
+        throw new Error(error)
     }
 }
 
@@ -46,18 +42,21 @@ const app = express();
 app.use(cors()); // Use cors package as middleware
 
 /** Express server */
-const webServer = isProduction ?
-    https.createServer({
-        key: privateKey, cert: certificate
-    }, app) : // Production, SSL
-    http.createServer(app); // Development
+const webServer = SSL_MODE
+    // https
+    ? https.createServer({
+        key: privateKey,
+        cert: certificate,
+    }, app)
+    // http
+    : http.createServer(app);
 
 
 /** Socket.io server */
 const io = new Server(webServer, {
     cors: {
         // Frontend origin
-        origin: clientOrigin,
+        origin: clientUrl,
         methods: ["GET", "POST"]
     }
 });
@@ -200,7 +199,7 @@ server.log(
     `
     \x1b[47m\x1b[30m  Starting Not UNO server...  \x1b[0m
     > Environment: \x1b[33m${process.env.NODE_ENV}\x1b[0m
-    > Client origin: \x1b[33m${clientOrigin}\x1b[0m
+    > Client origin: \x1b[33m${clientUrl}\x1b[0m
     ${word_blacklist === undefined ?
         "> No ./word_blacklist.json provided\n" :
         `> \x1b[33m${word_blacklist?.deny?.length}\x1b[0m blacklisted strings (word_blacklist.json)`

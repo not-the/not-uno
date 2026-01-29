@@ -1178,19 +1178,23 @@ button.share_button {
 .player .player_buttons {
     margin-left: auto;
 }
-.card_sort_button {
+.player_button {
     position: relative;
     opacity: 0.6;
     transform: scale(0.9);
     transition: 0.1s ease;
 }
-.card_sort_button[aria-checked="true"] {
+.player_button img {
+    width: 34px;
+    height: 34px;
+    object-fit: contain;
+}
+.player_button[aria-checked="true"] {
     opacity: 1;
     transform: unset;
 }
-.card_sort_button::after {
+.player_button::after {
     content: "x";
-    /* background-color: var(--bg-main); */
     line-height: 100%;
     font-size: 14pt;
     padding: 5px 3px 1px 5px;
@@ -1198,7 +1202,7 @@ button.share_button {
     position: absolute;
     bottom:-5px; right:-5px;
 }
-.card_sort_button[aria-checked="true"]::after {
+.player_button[aria-checked="true"]::after {
     content: "✓";
     font-weight: bolder;
 }
@@ -1615,6 +1619,22 @@ button.share_button {
     right: 18px;
 }
 
+.card .colorblind_indicator {
+    position: absolute;
+    --inset: calc(var(--border-width) * -1);
+    bottom: var(--inset); left: var(--inset);
+
+    font-size: 0.3em;
+    border-top-right-radius: 0.45em;
+    padding: 1px 9px;
+    color: black;
+    font-weight: bold;
+    background-color: white;
+}
+.card.wild .colorblind_indicator span {
+    transform: rotate(90deg) !important;
+}
+
 /* Wild card */
 .card.style_wild {
     /* Default wild card colors */
@@ -1682,17 +1702,59 @@ button.share_button {
 }
 
 /* Colors */
-.black { background-color: var(--black) !important; }
-.red { background-color: var(--red) !important; }
-.yellow { background-color: var(--yellow) !important; }
-.green { background-color: var(--green) !important; }
-.blue { background-color: var(--blue) !important; }
+.black { --card-color: var(--black); }
+.red { --card-color: var(--red); }
+.yellow { --card-color: var(--yellow); }
+.green { --card-color: var(--green); }
+.blue { --card-color: var(--blue); }
 
 /* Bonus colors */
-.purple { background-color: var(--purple) !important; }
-.orange { background-color: var(--orange) !important; }
-.cyan { background-color: var(--cyan) !important; }
-.pink { background-color: var(--pink) !important; }
+.purple { --card-color: var(--purple); }
+.orange { --card-color: var(--orange); }
+.cyan { --card-color: var(--cyan); }
+.pink { --card-color: var(--pink); }
+
+
+/* Colorblind mode */
+/* .red { --card-color: var(--red); }
+.yellow { --card-color: var(--yellow); }
+.green { --card-color: var(--green); } */
+.colorblind_mode {
+    .red {
+        --dark-red: #a31641;
+        --card-color: repeating-conic-gradient(var(--red) 0 25%, var(--dark-red) 0 50%) 50% / 80px 80px
+    }
+    .yellow {
+        --stripe-size: 40px;
+        --dark-yellow: #e9a513;
+        --card-color: repeating-linear-gradient(
+            320deg,
+            var(--dark-yellow),
+            var(--dark-yellow) var(--stripe-size),
+            var(--yellow) var(--stripe-size),
+            var(--yellow) calc(var(--stripe-size) * 2)
+        );
+    }
+    .green {
+        --dark-green:  #006d05;
+        --light-green: #3ba000;
+        --card-color: conic-gradient(
+            at center,
+            var(--green)         0%   5%,
+            var(--dark-green)    5%  40%,
+            var(--green)        40%  44%,
+            var(--light-green)  44%  48%,
+            var(--green)        48%  60%,
+            var(--dark-green)   60%  88%,
+            var(--green)        88%  94%,
+            var(--light-green)  94%  98%,
+            var(--green)        98% 100%
+        );
+    }
+    .blue {
+        --card-color: radial-gradient(circle at bottom, #0b3abb 40%, var(--blue) 40%);
+    }
+}
 
 
 /* Card back */
@@ -1700,7 +1762,7 @@ button.share_button {
     --card-color: black;
 }
 .card.back > .oval {
-    background-color: var(--red);
+    --card-color: var(--red);
 }
 .card.back p {
     font-size: 26pt !important;

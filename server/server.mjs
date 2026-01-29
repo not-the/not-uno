@@ -13,10 +13,10 @@ import socketConnection from './modules/socket.connection.mjs'
 import { arrRandom, capitalizeFirstLetter, formattedDate } from './modules/utils.mjs'
 
 // Game data
-import data from './data.json' assert { type: 'json' }
+import data from './data.json' with { type: 'json' }
 
 // Config
-import word_blacklist from './word_blacklist.json' assert { type: 'json' }
+import word_blacklist from './word_blacklist.json' with { type: 'json' }
 
 
 // Environment

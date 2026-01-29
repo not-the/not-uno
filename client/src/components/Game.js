@@ -1,8 +1,10 @@
-// import Icon from "./Icon.js"
-import Card from "./Card.js"
-import { clamp } from "../Util.js"
 import { useEffect, useState, useRef } from "react"
 import { socket } from "../socket.js"
+import { clamp } from "../Util.js"
+import { colorblind } from "../App.js"
+
+// Components
+import Card from "./Card.js"
 import User from "./User.js"
 import CardAnimated from "./CardAnimated.js"
 import CardStack from "./CardStack.js"
@@ -16,7 +18,7 @@ import Spectators from "./Spectators.js"
 
 
 /** Game screen component */
-export default function Game({ game, setGame, startGame }) {
+export default function Game({ game, setGame, startGame, toggleColorblind }) {
     // State
     const [optionsOpen, setOptionsOpen] = useState(false);
     const [sortCards, setSortCards] = useState(Boolean(localStorage.getItem("notuno_sort_cards") ?? false));
@@ -452,19 +454,34 @@ export default function Game({ game, setGame, startGame }) {
                                     <EmoteBubble socketID={user?.socketID} />
 
                                     {/* Buttons */}
-                                    {!isMe ? null :
-                                        <div className="player_buttons" data-title={sortCards ? "Sort cards (Enabled)" : "Sort cards"}>
+                                    {!isMe ? null : <>
+                                        <div className="player_buttons flex gap_12px">
+                                            {/* Colorblind mode */}
+                                            <div data-title={colorblind ? "Differentiate without color (Enabled)" : "Differentiate without color"}>
+                                                <div
+                                                    className="player_button cursor_pointer"
+                                                    role="checkbox" tabIndex="0"
+                                                    aria-checked={colorblind}
+                                                    onClick={toggleColorblind}
+                                                >
+                                                    <img src="/icons/eyeball.svg" alt="Differentiate without color" />
+                                                </div>
+                                            </div>
+
                                             {/* Sort cards */}
-                                            <div
-                                                className="card_sort_button cursor_pointer"
-                                                role="checkbox" tabIndex="0"
-                                                aria-checked={sortCards}
-                                                onClick={toggleSortCards}
-                                            >
-                                                <img src="/icons/Sort.svg" alt="Sort Cards" />
+                                            <div data-title={sortCards ? "Sort cards (Enabled)" : "Sort cards"}>
+                                                <div
+                                                    className="player_button card_sort_button cursor_pointer"
+                                                    role="checkbox" tabIndex="0"
+                                                    aria-checked={sortCards}
+                                                    
+                                                    onClick={toggleSortCards}
+                                                >
+                                                    <img src="/icons/Sort.svg" alt="Sort Cards" />
+                                                </div>
                                             </div>
                                         </div>
-                                    }
+                                    </>}
                                 </div>
 
                                 {/* Cards */}

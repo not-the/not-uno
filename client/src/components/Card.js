@@ -1,4 +1,5 @@
 // import { cloneElement } from 'react';
+import { colorblind } from "../App.js"
 
 import Icon from "./Icon.js"
 
@@ -37,7 +38,7 @@ export default function Card({ data=null, owner, game, rotation=0, onClick, styl
     // let bottomCornerSymbol = cloneElement(cornerSymbol, { className: cornerSymbol.props.className + " bottom_corner_symbol"});
 
     // CSS
-    let classes = `card${data.color === 'black' ? ' no_decorator' : ''}`;
+    let classes = `card${data.color === 'black' ? ' no_decorator' : ''} ${data.color}`;
     if(visible && game?.config?.xray) classes += " xrayed";
     classes += ` ${data.type}`;
     if((owner === game?.my_num && onClick !== undefined) || clickable) classes += " clickable";
@@ -48,7 +49,6 @@ export default function Card({ data=null, owner, game, rotation=0, onClick, styl
 
 
     // Wild (conic gradient)
-    // let conic = data.color === "black" ? null : `var(--${data.color})`;
     let conic = null;
     if(data.style === "wild" && data.colors !== undefined) {
 
@@ -73,7 +73,6 @@ export default function Card({ data=null, owner, game, rotation=0, onClick, styl
             style={{
                 ...style,
                 "transform": `rotate(${data.rotation}deg)`,
-                "--card-color": `var(--${data.color})`,
                 "--conic": conic
             }}
         >
@@ -82,13 +81,24 @@ export default function Card({ data=null, owner, game, rotation=0, onClick, styl
                 <div className="oval_inner"/>
             </div>
 
-            {/* Corner */}
+            {/* Symbol - Top left */}
             {/* {cornerSymbol} */}
 
             {/* Symbol */}
             <Icon icon={data.type} amount={amount} />
 
-            {/* Bottom corner */}
+            {/* Bottom left */}
+            {!colorblind ? null :
+                <div className="colorblind_indicator">
+                    <span>
+                        {
+                            data.color === "black" ? "*" : data.color[0].toUpperCase()
+                        }
+                    </span>
+                </div>
+            }
+
+            {/* Symbol - Bottom right */}
             {/* {bottomCornerSymbol} */}
         </div>
     )

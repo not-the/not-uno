@@ -1501,6 +1501,8 @@ button.share_button {
 .card {
     --card-color: gray;
     --border-color: white;
+    --border-width: 0.044em;
+    --border-radius: 0.132em; /* 12px */
 
     font-size: 110px; /* Determines card width */
     width: 1em;
@@ -1513,9 +1515,9 @@ button.share_button {
     overflow: hidden;
     flex: none;
 
-    background-color: var(--card-color);
-    border: 0.044em solid var(--border-color); /* 4px */
-    border-radius: 0.132em; /* 12px */
+    background: var(--card-color);
+    border: var(--border-width) solid var(--border-color); /* 4px */
+    border-radius: var(--border-radius);
     box-shadow: 0 5px 9px rgba(0, 0, 0, 0.8);
 
     user-select: none;
@@ -1545,7 +1547,7 @@ button.share_button {
     --height: 70%;
     position: absolute;
 
-    background-color: var(--card-color);
+    background: var(--card-color);
     border-radius: 100%;
     transform: skew(-25deg);
     border: 0.06em solid var(--border-color); /* 6px */

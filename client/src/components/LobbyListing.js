@@ -59,7 +59,7 @@ export default function LobbyListing({ lobby, joinRoom, classes }) {
                     role="button" tabIndex="0"
                     onClick={() => joinRoom(lobby.roomID, true)}
                 >
-                    <img src="/icons/eyeball.svg" alt="Click to spectate" class="icon_inline secondary_text" />
+                    <img src="/icons/eyeball.svg" alt="Click to spectate" className="icon_inline secondary_text" />
                 </div>
             }
         </div>

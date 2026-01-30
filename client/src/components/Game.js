@@ -514,7 +514,7 @@ export default function Game({ game, setGame, startGame, toggleColorblind }) {
 
                             {/* Cancel */}
                             <br/>
-                            <button class="button_primary button_secondary hover_border_shadowed" onClick={cancelAction}>Cancel</button>
+                            <button className="button_primary button_secondary hover_border_shadowed" onClick={cancelAction}>Cancel</button>
                         </div>
                         :
 
@@ -533,7 +533,7 @@ export default function Game({ game, setGame, startGame, toggleColorblind }) {
 
                             {/* Cancel */}
                             <br/>
-                            <button class="button_primary button_secondary hover_border_shadowed" onClick={cancelAction}>Cancel</button>
+                            <button className="button_primary button_secondary hover_border_shadowed" onClick={cancelAction}>Cancel</button>
                         </div>
                         :
 
@@ -552,7 +552,7 @@ export default function Game({ game, setGame, startGame, toggleColorblind }) {
 
                             {/* Cancel */}
                             <br/>
-                            <button class="button_primary button_secondary hover_border_shadowed" onClick={cancelAction}>Cancel</button>
+                            <button className="button_primary button_secondary hover_border_shadowed" onClick={cancelAction}>Cancel</button>
                         </div>
                         : null
                     )

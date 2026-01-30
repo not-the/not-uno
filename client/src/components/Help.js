@@ -65,7 +65,7 @@ function Classic({ cycleColor }) {
     return (<>
         {/* Classic */}
         <section>
-            <h3 class="fancy_title">
+            <h3 className="fancy_title">
                 <span>Classic - How to play</span>
             </h3>
 
@@ -79,7 +79,7 @@ function Classic({ cycleColor }) {
 
         {/* Cards */}
         <section>
-            <h3 class="fancy_title">
+            <h3 className="fancy_title">
                 <span>Special cards</span>
             </h3>
 
@@ -128,7 +128,7 @@ function AllWild() {
     return (<>
         {/* Classic */}
         <section>
-            <h3 class="fancy_title">
+            <h3 className="fancy_title">
                 <span>All Wild! - How to play</span>
             </h3>
 
@@ -139,7 +139,7 @@ function AllWild() {
 
         {/* Cards */}
         <section>
-            <h3 class="fancy_title">
+            <h3 className="fancy_title">
                 <span>Special cards</span>
             </h3>
 
@@ -172,7 +172,7 @@ function AllWild() {
 function SevenORule({ cycleColor }) {
     return (
         <section>
-            <h3 class="fancy_title">
+            <h3 className="fancy_title">
                 <span>7-0 rule</span>
             </h3>
 

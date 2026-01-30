@@ -163,7 +163,7 @@ export default function DeckEditor({ setMenu, toast }) {
 
                     {/* Import */}
                     <div className="input_container ">
-                        <select name="import_deck" id="import_deck" class="button_mainbg" onChange={handleImportDeck}>
+                        <select name="import_deck" id="import_deck" className="button_mainbg" onChange={handleImportDeck}>
                             <option value="none">
                                 Import deck...
                             </option>
@@ -215,10 +215,10 @@ export default function DeckEditor({ setMenu, toast }) {
         {!awaitingResponse ? null :
             <div className="overlay">
                 <div className="inner">
-                    <h3 class="border_shadowed">
+                    <h3 className="border_shadowed">
                         <img src="/icons/Loader.svg" alt="Waiting..." className="loader_spin icon_inline" /> Submitting deck...
                     </h3>
-                    <p class="secondary_text">If this gets stuck, the server may be unavailable</p>
+                    <p className="secondary_text">If this gets stuck, the server may be unavailable</p>
 
                     
                 </div>

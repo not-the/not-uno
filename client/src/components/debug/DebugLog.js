@@ -17,7 +17,7 @@ export default function DebugLog({ lobby }) {
     }
     
     return (
-        <div class="debug_log">
+        <div className="debug_log">
             {/* Filters */}
             {filters.length === 0 ? null :
                 <>
@@ -46,7 +46,7 @@ export default function DebugLog({ lobby }) {
 
                 // const userVisual
 
-                return <div class="item flex" key={entry.index}>
+                return <div className="item flex" key={entry.index}>
                     {/* Inner */}
                     <div>
                         {/* Timestamp */}
@@ -83,7 +83,7 @@ export default function DebugLog({ lobby }) {
 
                         {/* Amendment */}
                         <br />
-                        <b class="bold smaller">
+                        <b className="bold smaller">
                             {entry.amendment}
                         </b>
                     </div>

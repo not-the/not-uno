@@ -18,7 +18,7 @@ export default function SupportBlurb() {
             {/* Left */}
             <div>
                 <h4 className="border_shadowed">Support NOT UNO</h4>
-                <p class="secondary_text">Help cover server costs by leaving a tip</p>
+                <p className="secondary_text">Help cover server costs by leaving a tip</p>
             </div>
 
             {/* Button */}

@@ -1704,17 +1704,17 @@ button.share_button {
 }
 
 /* Colors */
-.black { --card-color: var(--black); }
-.red { --card-color: var(--red); }
-.yellow { --card-color: var(--yellow); }
-.green { --card-color: var(--green); }
-.blue { --card-color: var(--blue); }
+.black { --card-color: var(--black) !important; }
+.red { --card-color: var(--red) !important; }
+.yellow { --card-color: var(--yellow) !important; }
+.green { --card-color: var(--green) !important; }
+.blue { --card-color: var(--blue) !important; }
 
 /* Bonus colors */
-.purple { --card-color: var(--purple); }
-.orange { --card-color: var(--orange); }
-.cyan { --card-color: var(--cyan); }
-.pink { --card-color: var(--pink); }
+.purple { --card-color: var(--purple) !important; }
+.orange { --card-color: var(--orange) !important; }
+.cyan { --card-color: var(--cyan) !important; }
+.pink { --card-color: var(--pink) !important; }
 
 
 /* Colorblind mode */
@@ -1724,7 +1724,7 @@ button.share_button {
 .colorblind_mode {
     .red {
         --dark-red: #a31641;
-        --card-color: repeating-conic-gradient(var(--red) 0 25%, var(--dark-red) 0 50%) 50% / 80px 80px
+        --card-color: repeating-conic-gradient(var(--red) 0 25%, var(--dark-red) 0 50%) 50% / 80px 80px !important;
     }
     .yellow {
         --stripe-size: 40px;
@@ -1735,7 +1735,7 @@ button.share_button {
             var(--dark-yellow) var(--stripe-size),
             var(--yellow) var(--stripe-size),
             var(--yellow) calc(var(--stripe-size) * 2)
-        );
+        ) !important;
     }
     .green {
         --dark-green:  #006d05;
@@ -1751,10 +1751,10 @@ button.share_button {
             var(--green)        88%  94%,
             var(--light-green)  94%  98%,
             var(--green)        98% 100%
-        );
+        ) !important;
     }
     .blue {
-        --card-color: radial-gradient(circle at bottom, #0b3abb 40%, var(--blue) 40%);
+        --card-color: radial-gradient(circle at bottom, #0b3abb 40%, var(--blue) 40%) !important;
     }
 }
 
@@ -1891,6 +1891,8 @@ button.share_button {
     width: 50%;
     height: 50%;
     border: 2px solid white;
+
+    background: var(--card-color);
 
     transition: box-shadow 0.15s ease, transform 0.15s ease, border-width 0.15s ease, filter 0.25s ease;
 }

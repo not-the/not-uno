@@ -124,14 +124,12 @@ export default function Lobby({ game, startGame, toast, leaveGame, setProfileOpe
                             <div className="box_users_list">
                                 {Object.entries(game.usersPlayers).map(([, user], index) => {
                                     return <User
+                                        display="box"
                                         key={index} user={user} game={game}
                                         title={`ID: ${user.socketID}
                                         ${user.socketID === game.host ? " (Host)":""}`}
                                         postName={<EmoteBubble socketID={user?.socketID} />}
                                         setProfileOpen={setProfileOpen}
-
-                                        classes="box_user"
-                                        background={`/avatars/${user.avatar}.png`}
                                     />
                                 })}
                             </div>

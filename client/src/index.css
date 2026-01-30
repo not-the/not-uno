@@ -2263,6 +2263,12 @@ body:has(.overlay.content_overlay) .content_backdrop {
 }
 .user.box_user {
     --bg-color: rgba(23, 44, 40, 0.8);
+    /* --user-color: #172c28;
+    --bg-color: color-mix(
+        in srgb,
+        color-mix(in srgb, var(--user-color), black 0%),
+        transparent 30%
+    ); */
     --border-color: rgba(255, 255, 255, 0.25);
     --border-radius: 10px;
     --border-width: 2px;

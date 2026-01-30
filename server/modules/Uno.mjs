@@ -1210,11 +1210,9 @@ export default class Uno {
         if(playerCard.reverse) this.direction *= -1;
 
         // 2 player reverse
-        if(playerCard.reverse && this.players.length === 2) {
+        const twoPlayerReverse = playerCard.reverse && this.players.length === 2
+        if(twoPlayerReverse) {
             this.draw_count = 0;
-            if(updateClients) this.updateClients();
-            logEntry.amend(true, "2 player reverse");
-            return;
         }
 
         // Add draw card debt
@@ -1223,13 +1221,16 @@ export default class Uno {
         }
 
         // Next turn
-        this.nextTurn(playerCard.skip, playerCard);
+        this.nextTurn(playerCard.skip, playerCard, twoPlayerReverse);
 
         // Update state
         // setGame(modifiedGame);
         if(updateClients) this.updateClients();
 
-        logEntry.amend(true);
+        logEntry.amend(
+            true,
+            !twoPlayerReverse ? undefined : "Two player reverse"
+        );
     }
 
 

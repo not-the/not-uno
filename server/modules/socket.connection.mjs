@@ -1,8 +1,8 @@
 import ip from 'ip'
 
-import { io, server, data, word_blacklist, isProduction } from "../server.mjs"
-import { arrRandom } from "./utils.mjs"
+import { io, server, data } from "../server.mjs"
 import Uno from "./Uno.mjs"
+import { setUser } from './setUser.mjs'
 
 /** Creates a URL-safe base64 encoded UUID */
 function generateRoomUUID() {
@@ -14,6 +14,10 @@ function generateRoomUUID() {
     result = result.substring(0, 9);
 
     return result;
+}
+
+export function getGameByUser(socket) {
+    return server.games[server.usersRooms[socket.id]];
 }
 
 /** Socket.io on "connection" */
@@ -110,78 +114,25 @@ const socketConnection = function(socket) {
     }
 
     socket.on("leave", () => {
-        getGameByUser()?.leave(socket.id, true);
+        getGameByUser(socket)?.leave(socket.id, true);
         socket.emit("leave");
     });
 
     socket.on("action", data => {
         /** @type {Uno} */
-        const game = getGameByUser();
+        const game = getGameByUser(socket);
         if(game === undefined || data === undefined) return;
 
         game.performAction(socket, data);
     });
     
     // Set user profile
-    socket.on("setUser", data => setUser(data));
-    function setUser(newUser) {
-        // Type check
-        if(typeof newUser !== 'object') return;
-        if(newUser.name === '' || typeof newUser.name !== 'string') return;
-        if(typeof newUser?.avatar !== 'string') return;
-
-        const toastInvalidUsername = {
-            title: "Invalid username",
-            msg: `Maximum username length is 32 characters.`
-        };
-
-        // Length requirement
-        if(newUser?.name.length > 32) return socket.emit("toast", toastInvalidUsername);
-
-        // Word blacklist
-        if(word_blacklist !== undefined) {
-            if(word_blacklist.deny.some((word) => newUser.name.includes(word))) {
-                return socket.emit("toast", toastInvalidUsername);
-            }
-        }
-
-        // Ratelimit
-        const ratelimit = (socket?.name_changes??0) > 100 ?
-            15000 : // 15 seconds (if user has updated themselves 100+ times)
-            250; // 0.25 seconds
-        if(
-            socket?.name_changes >= 5 &&
-            Date.now() <= (socket?.name_last_changed??0) + ratelimit
-        ) return socket.emit("toast", {
-            title: "Wait before trying again"
-        })
-
-        // Update socket
-        Object.assign(socket, {
-            name:               newUser?.name   ?? socket?.name   ?? "Player",
-            avatar:             newUser?.avatar ?? socket?.avatar ?? arrRandom(data.avatars),
-            socketID:           socket.id,
-            name_changes:       (socket?.name_changes??0) + 1,
-            name_last_changed:  Date.now() // Timestamp
-        })
-
-        // Emit new profile
-        const profile = {
-            name:   socket.name,
-            avatar: socket.avatar,
-        }
-        if(socket.elevated) profile.elevated = true;
-        socket.emit("myProfile", profile);
-
-        // Update
-        getGameByUser()?.updateClients();
-    }
-
+    socket.on("setUser", data => setUser(socket, data));
 
     // Start game
     socket.on("start_game", data => {
         /** @type {Uno} */
-        const game = getGameByUser();
+        const game = getGameByUser(socket);
         if(game === undefined) {
             server.log(`Warning: Game is undefined. User: [${socket.id}]`);
             socket.emit("toast", {
@@ -197,14 +148,14 @@ const socketConnection = function(socket) {
     // Lobby
     socket.on("returnToLobby", () => {
         /** @type {Uno} */
-        const game = getGameByUser();
+        const game = getGameByUser(socket);
         if(game === undefined) return;
         game.returnToLobby(socket);
     })
 
     socket.on("update_config", ({ option, value }) => {
         /** @type {Uno} */
-        const game = getGameByUser();
+        const game = getGameByUser(socket);
         if(game === undefined || typeof option !== 'string') return;
 
         game.setConfigOption(socket, option, value);
@@ -212,42 +163,42 @@ const socketConnection = function(socket) {
 
     socket.on("drawCard", () => {
         /** @type {Uno} */
-        const game = getGameByUser();
+        const game = getGameByUser(socket);
         if(game === undefined) return;
         game.drawCard(socket.id);
     })
 
     socket.on("playCard", ucid => {
         /** @type {Uno} */
-        const game = getGameByUser();
+        const game = getGameByUser(socket);
         if(game === undefined) return;
         game.playCard(socket.id, ucid);
     })
 
     socket.on("endTurn", () => {
         /** @type {Uno} */
-        const game = getGameByUser();
+        const game = getGameByUser(socket);
         if(game === undefined) return;
         game.endTurn(socket.id);
     })
     
     socket.on("callout", () => {
         /** @type {Uno} */
-        const game = getGameByUser();
+        const game = getGameByUser(socket);
         if(game === undefined) return;
         game.callout(socket.id);
     })
 
     socket.on("requestRematch", () => {
         /** @type {Uno} */
-        const game = getGameByUser();
+        const game = getGameByUser(socket);
         if(game === undefined) return;
         game.requestRematch(socket.id);
     })
 
     socket.on("kick", (socketIDToKick) => {
         /** @type {Uno} */
-        const game = getGameByUser();
+        const game = getGameByUser(socket);
         if(game === undefined) return;
         game.kick(socket, socketIDToKick);
     })
@@ -255,7 +206,7 @@ const socketConnection = function(socket) {
     // Emote message
     socket.on("emote", (msg) => {
         /** @type {Uno} */
-        const game = getGameByUser();
+        const game = getGameByUser(socket);
         if(game === undefined) return;
 
         // Invalid reaction
@@ -279,7 +230,7 @@ const socketConnection = function(socket) {
         if(msg.length > data.max_chat_length) return socket.emit("toast", { title:"Your message was too long" })
 
         /** @type {Uno} */
-        const game = getGameByUser();
+        const game = getGameByUser(socket);
 
         // Invalid
         if(
@@ -352,7 +303,7 @@ const socketConnection = function(socket) {
     socket.on("disconnect", () => {
         server.log(`\u001b[1;31m← \u001b[0m ${socket.name} disconnected (${socket.id})`);
 
-        getGameByUser()?.disconnect(socket.id);
+        getGameByUser(socket)?.disconnect(socket.id);
     });
 
     // Remove disconnected player
@@ -361,7 +312,7 @@ const socketConnection = function(socket) {
         if(typeof pnum !== 'number') return;
 
         /** @type {Uno} */
-        const game = getGameByUser();
+        const game = getGameByUser(socket);
         if(game === undefined) return;
 
         // Player is connected
@@ -431,12 +382,6 @@ const socketConnection = function(socket) {
                 serverLogHistory: server.logHistory
             })
         });
-    }
-
-
-    // FUNCTIONS
-    function getGameByUser() {
-        return server.games[server.usersRooms[socket.id]];
     }
 }
 

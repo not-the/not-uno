@@ -40,10 +40,9 @@ Copy `server/.env.example` and rename it to `server/.env` (or define environment
 - `CLIENT_URL` The server will accept connections from this URL
 
 **SSL**
-- `SSL_MODE` If "true", the server will start in https mode. PRIVATE_KEY_LOCATION and CERTIFICATE_LOCATION are required.
+- `SSL_MODE` If "true", the server will start in https mode. PRIVATE_KEY_LOCATION and CERTIFICATE_LOCATION are required when SSL mode is enabled.
 - `PRIVATE_KEY_LOCATION` Path to privkey.pem
 - `CERTIFICATE_LOCATION` Path to fullchain.pem
-<br>
 
 **Debug**
 - `KEEP_LOGS` (Optional) If defined, server and individual room logs will be stored to arrays for later viewing (development only, not for use in production. logs are stored in memory and are never cleared).

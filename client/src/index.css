@@ -1995,7 +1995,7 @@ button.share_button {
     border-radius: 5px;
 }
 .panel .chat_bottom:focus-within {
-    background-color: var(var(--bg-comp-light));
+    background-color: var(--bg-comp-light);
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
 }
 .panel .chat_bottom[aria-disabled="true"] {

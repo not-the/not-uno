@@ -16,7 +16,7 @@ import { arrRandom, capitalizeFirstLetter, formattedDate } from './modules/utils
 import data from './data.json' with { type: 'json' }
 
 // Config
-import word_blacklist from './word_blacklist.json' with { type: 'json' }
+import word_blacklist from '../word_blacklist.json' with { type: 'json' }
 
 
 // Environment

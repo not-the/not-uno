@@ -5,8 +5,8 @@
   "main": "server.mjs",
   "private": true,
   "scripts": {
-    "start": "nodemon --env-file=.env server.mjs",
-    "prod": "cross-env NODE_ENV=production node --env-file=.env server.mjs",
+    "start": "nodemon --env-file=.env src/server.mjs",
+    "prod": "cross-env NODE_ENV=production node --env-file=.env src/server.mjs",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "not-the",

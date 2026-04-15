@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 30 30">
+  <g id="Target_Draw" data-name="Target Draw" transform="translate(-493 -1545)">
+    <g id="Circle" transform="translate(497 1549)" fill="none" stroke="#fff" stroke-width="4">
+      <circle cx="11" cy="11" r="11" stroke="none"/>
+      <circle cx="11" cy="11" r="9" fill="none"/>
+    </g>
+    <rect id="T" width="4" height="5" transform="translate(506 1545)" fill="#fff"/>
+    <rect id="L" width="5" height="4" transform="translate(493 1558)" fill="#fff"/>
+    <rect id="B" width="4" height="5" transform="translate(506 1570)" fill="#fff"/>
+    <rect id="R" width="5" height="4" transform="translate(518 1558)" fill="#fff"/>
+    <text id="_2" data-name="+2" transform="translate(501.25 1563.5)" fill="#fff" font-size="10" font-family="Arial-Black, Arial" font-weight="800" letter-spacing="-0.054em"><tspan x="0" y="0">+2</tspan></text>
+  </g>
+</svg>

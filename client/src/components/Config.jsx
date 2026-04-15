@@ -2,7 +2,7 @@
 import { useState } from "react"
 import { socket } from "../socket"
 
-import { clientData } from "../App.js"
+import { clientData } from "../App.jsx"
 import lang from "../lang"
 
 /** Config item */

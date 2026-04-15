@@ -5,7 +5,7 @@ import { store } from './Util'
 const isProduction = process.env.NODE_ENV === 'production';
 
 // If undefined, the URL will be computed from the `window.location` object (this assumes the server is hosted at the same location)
-const serverURL = process.env.REACT_APP_SERVER_URL
+const serverURL = import.meta.env.VITE_APP_SERVER_URL
 
 
 const URLKey = new URL(window.location).searchParams.get("key");

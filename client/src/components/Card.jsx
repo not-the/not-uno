@@ -1,7 +1,7 @@
 // import { cloneElement } from 'react';
-import { colorblind } from "../App.js"
+import { colorblind } from "../App.jsx"
 
-import Icon from "./Icon.js"
+import Icon from "./Icon.jsx"
 
 export default function Card({ data=null, owner, game, rotation=0, onClick, style={}, animated, clickable }) {
 

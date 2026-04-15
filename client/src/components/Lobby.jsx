@@ -1,13 +1,13 @@
 // import { config } from "./App"
 // import { useState } from "react";
 import { socket } from "../socket.js";
-import User from "./User.js"
-import Config from "./Config.js"
-import ConfigDeck from "./ConfigDeck.js"
+import User from "./User.jsx"
+import Config from "./Config.jsx"
+import ConfigDeck from "./ConfigDeck.jsx"
 import { clientData } from "../App";
-import EmoteBubble from "./EmoteBubble.js";
-import EmoteReactions from "./EmoteReactions.js";
-import Spectators from "./Spectators.js";
+import EmoteBubble from "./EmoteBubble.jsx";
+import EmoteReactions from "./EmoteReactions.jsx";
+import Spectators from "./Spectators.jsx";
 // import lang from "../lang.js";
 
 export default function Lobby({ game, startGame, toast, leaveGame, setProfileOpen }) {

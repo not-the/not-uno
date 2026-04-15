@@ -1,22 +1,25 @@
 import { useState, useEffect } from 'react'
-import Home from './components/Home.js'
-import Lobby from './components/Lobby.js'
-import Game from './components/Game.js'
-import Help from './components/Help.js'
-import Toast from './components/Toast.js'
-import Chat from './components/chat/Chat.js'
-import ProfileMenu from './components/ProfileMenu.js'
+import Home from './components/Home.jsx'
+import Lobby from './components/Lobby.jsx'
+import Game from './components/Game.jsx'
+import Help from './components/Help.jsx'
+import Toast from './components/Toast.jsx'
+import Chat from './components/chat/Chat.jsx'
+import ProfileMenu from './components/ProfileMenu.jsx'
 import { get, store, arrRandom, capitalizeFirstLetter, clearURLHash } from './Util.js'
 
 // Socket.io
 import { socket, isProduction, socketConnectionStatus, serverURL } from './socket.js'
-import Header from './components/Header.js'
-import DeckEditor from './components/DeckEditor.js'
-import DebugPanel from './components/debug/DebugPanel.js'
+import Header from './components/Header.jsx'
+import DeckEditor from './components/DeckEditor.jsx'
+import DebugPanel from './components/debug/DebugPanel.jsx'
 
 // Game
 const appdataURL = serverURL + '/data.json';
 let clientData = get(appdataURL);
+
+console.log('testing')
+console.log(clientData)
 
 // data.json fetch failed
 if(clientData === undefined) {
@@ -232,10 +235,10 @@ export default function App() {
     // https://stackoverflow.com/a/34425083
     useEffect(() => {
         // Ads enabled
-        if (process.env.REACT_APP_ADSENSE_CLIENT) {
+        if (import.meta.env.VITE_APP_ADSENSE_CLIENT) {
             const script = document.createElement('script');
 
-            script.src = `https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${process.env.REACT_APP_ADSENSE_CLIENT}`;
+            script.src = `https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${import.meta.env.VITE_APP_ADSENSE_CLIENT}`;
             script.async = true;
             script.crossorigin="anonymous"
 

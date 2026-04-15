@@ -72,17 +72,18 @@ export default function ProfileMenu({ profile, getRandomName, setUser, setProfil
             {/* Avatar */}
             <h5>Avatar</h5>
             <div className="avatar_list">
-                {clientData.avatars.map((name, index) => {
-                    return (
-                        <button data-title={capitalizeFirstLetter(name)} key={index}
-                            onClick={() => setUser(undefined, name)}
-                            className={name === profile.avatar ? "active" : null}
-                        >
-                            <img src={`/avatars/${name}.png`} alt={name} className="avatar_preview" />
-                        </button>
-                    )
-                })
-                    
+                {!clientData
+                    ? <p>Server was unreachable</p>
+                    : clientData.avatars.map((name, index) => {
+                        return (
+                            <button data-title={capitalizeFirstLetter(name)} key={index}
+                                onClick={() => setUser(undefined, name)}
+                                className={name === profile.avatar ? "active" : null}
+                            >
+                                <img src={`/avatars/${name}.png`} alt={name} className="avatar_preview" />
+                            </button>
+                        )
+                    })
                 }
             </div>
 

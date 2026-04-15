@@ -1,20 +1,20 @@
 import { useEffect, useState, useRef } from "react"
 import { socket } from "../socket.js"
 import { clamp } from "../Util.js"
-import { colorblind } from "../App.js"
+import { colorblind } from "../App.jsx"
 
 // Components
-import Card from "./Card.js"
-import User from "./User.js"
-import CardAnimated from "./CardAnimated.js"
-import CardStack from "./CardStack.js"
-import PlayerDisconnectOverlay from "./PlayerDisconnectOverlay.js"
-import EmoteReactions from "./EmoteReactions.js"
-import EmoteBubble from "./EmoteBubble.js"
-import GameMenu from "./GameMenu.js"
-import WinScreen from "./WinScreen.js"
-import Advertisement from "./Advertisement.js"
-import Spectators from "./Spectators.js"
+import Card from "./Card.jsx"
+import User from "./User.jsx"
+import CardAnimated from "./CardAnimated.jsx"
+import CardStack from "./CardStack.jsx"
+import PlayerDisconnectOverlay from "./PlayerDisconnectOverlay.jsx"
+import EmoteReactions from "./EmoteReactions.jsx"
+import EmoteBubble from "./EmoteBubble.jsx"
+import GameMenu from "./GameMenu.jsx"
+import WinScreen from "./WinScreen.jsx"
+import Advertisement from "./Advertisement.jsx"
+import Spectators from "./Spectators.jsx"
 
 
 /** Game screen component */
@@ -253,7 +253,7 @@ export default function Game({ game, setGame, startGame, toggleColorblind }) {
         <div id="main_wrapper">
             {/* Advertisement */}
             {
-                !process.env.REACT_APP_ADSENSE_CLIENT
+                !import.meta.env.VITE_APP_ADSENSE_CLIENT
                     ? null
                     : <div className="ad_container">
                          <Advertisement />

@@ -13,7 +13,7 @@
         {
             "label": "not-uno client",
             "type": "shell",
-            "command": "cd ./client && npm start",
+            "command": "cd ./client && npm run dev",
             "isBackground": true,
             "presentation": {
                 "panel": "dedicated",

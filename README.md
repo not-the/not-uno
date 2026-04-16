@@ -16,7 +16,7 @@ npm start
 #### Client .env
 Copy `client/.env.example` and rename it to `client/.env` (or define environment variables using your hosting platform)
 
-- `REACT_APP_SERVER_URL` (Optional) Server URL to connect to. Defaults to http://localhost:443
+- `VITE_APP_SERVER_URL` (Optional) Server URL to connect to. Defaults to http://localhost:443
 
 
 ### Server
@@ -24,7 +24,7 @@ Run server:
 ```bash
 # Development server
 cd ./server
-npm start
+npm run dev
 
 # Production server
 # NODE_ENV is automatically set to 'production' using the 'cross-env' package
@@ -49,4 +49,5 @@ Copy `server/.env.example` and rename it to `server/.env` (or define environment
 - `DISCORD_WEBHOOK_URL` If defined, server events will be logged to this webhook.
 - `WEBHOOK_LOG_MODE` Can be 'all' or 'uncaughtExceptions'. 'all' logs everything that is also sent to server.log(). 'uncaughtExceptions' will only use the  Discord webhook for crash events.
 <br>
+
 - `DEBUG_ACCESS_KEY` (Optional) Adding ?key=\<DEBUG_ACCESS_KEY\> to the end of the page URL will allow access to the debug panel. Leave undefined to disable it.

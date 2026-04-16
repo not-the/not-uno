@@ -3,7 +3,9 @@ import type { Socket } from "socket.io"
 export interface UserSocket extends Socket {
     name: string
     avatar: string
+    spectating: boolean
     elevated?: boolean
+    rejoin_key?: string
 }
 
 export type Game = any
@@ -21,7 +23,7 @@ export type NotUnoServer = {
     }
     
     /** Console logging shorthand w/ fancy formatting and timestamps */
-    log(message: string, includeTimestamp: boolean): void
+    log(message: string, includeTimestamp?: boolean): void
     logHistory: any[]
 
     maxGameAge: number

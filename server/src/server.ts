@@ -128,7 +128,7 @@ const server: NotUnoServer = {
 
     logHistory: [],
 
-    log(message, includeTimestamp) {
+    log(message, includeTimestamp=false) {
         // Timestamp
         const timestamp = !includeTimestamp ? "" : `\u001b[1;36m[${formattedDate()}]\u001b[0m `
 

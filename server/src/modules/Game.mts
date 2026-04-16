@@ -1,7 +1,15 @@
-import { io, server } from "../server.ts"
+import { io, server } from "../server.js"
+import type { UserSocket } from "../types.js"
 import LogEntry from "./LogEntry.mjs"
 // import { repeat, clamp, shuffle, rotateArr} from "./utils.mjs"
 
+type GameConstructorOptions = {
+    roomID: string
+    hostSocket: UserSocket
+    nameIsUUID: boolean
+}
+
+type SocketID = string
 
 /** Game class and methods (Uno) */
 export default class Game {
@@ -9,7 +17,32 @@ export default class Game {
     #rejoin_keys = []
     #log = []
 
-    constructor({ roomID, hostSocket, nameIsUUID }) {
+    // Types
+    config: {
+        // Lobby
+        public_lobby: boolean
+        spectators: boolean
+        visible_over_same_network: boolean
+        enable_chat: boolean
+        reactions: boolean
+        max_players: number
+    }
+    roomID: string
+    nameIsUUID: boolean
+    host: SocketID
+    my_num: number
+    state: 'lobby' | 'ingame'
+    roomClosed?: boolean
+    roomClosedTimestamp?: number
+    destroyed?: boolean
+    round: number
+    turn: number
+    players: any[]
+    winner?: SocketID
+    roomCreatedTimestamp: number
+
+    /** Constructor */
+    constructor({ roomID, hostSocket, nameIsUUID }: GameConstructorOptions) {
         // Statistics
         server.stats.total_games++
 
@@ -56,7 +89,7 @@ export default class Game {
     }
 
     /** Debug log */
-    log(id, ...args) {
+    log(id: string, ...args: any[]) {
         // LOGGING DISABLED
         if(process.env.KEEP_LOGS === undefined) return LogEntry
 
@@ -86,8 +119,8 @@ export default class Game {
 
     /** Object of all connected users' profiles (socketID:data pairs) */
     get users() {
-        let result = {}
-        for(const socket of this.clients) {
+        const result = {}
+        for(const socket of this.clients as UserSocket[]) {
             result[socket.id] = {
                 name: socket.name,
                 avatar: socket.avatar,
@@ -100,7 +133,7 @@ export default class Game {
 
     /** Object of all users' (who are playing) profiles (socketID:data pairs) */
     get usersPlayers() {
-        let result = {}
+        const result = {}
         for(const socket of this.clients) {
             if(socket.spectating) continue
             result[socket.id] = {
@@ -113,11 +146,10 @@ export default class Game {
         return result
     }
 
-    /** Returns an array of sockets connected to the room
-     * @param {String} roomID 
-     * @returns {Array}
-     */
-    get clients() { return [...io.sockets.adapter.rooms.get(this.roomID) ?? []].map(id => io.sockets.sockets.get(id)) }
+    /** Returns an array of sockets connected to the room */
+    get clients(): UserSocket[] {
+        return [...io.sockets.adapter.rooms.get(this.roomID) ?? []].map(id => io.sockets.sockets.get(id)) as UserSocket[]
+    }
 
     /** Gives the number of users who are in play (whether or not the game has started). Spectators excluded. */
     get playerCount() {
@@ -133,7 +165,7 @@ export default class Game {
      * @param {*} socket New host's socket object
      * @param {Boolean} updateClients Whether or not to update connected clients
      */
-    setHost(socket, updateClients=false) {
+    setHost(socket: UserSocket, updateClients: boolean=false) {
         const logEntry = this.log("setHost", ...Array.from(arguments))
 
         if(typeof socket !== 'object') throw new Error("Error in Uno.setHost(): socket parameter is invalid")
@@ -267,10 +299,8 @@ export default class Game {
         return true
     }
 
-    /** Player was disconnected. The host will have an option to remove them from the game.
-     * @param {String} socketID
-     */
-    disconnect(socketID) {
+    /** Player was disconnected. The host will have an option to remove them from the game. */
+    disconnect(socketID: SocketID) {
         const logEntry = this.log("disconnect", ...Array.from(arguments))
 
         // Not ingame
@@ -300,14 +330,14 @@ export default class Game {
      * @param {String} socketID Player's socket ID
      * @param {Boolean} sendtoast Whether or not to send out a toast
      */
-    leave(socketID, sendtoast, reason) {
+    leave(socketID: SocketID, sendtoast: boolean = false, reason?: string) {
         const logEntry = this.log("leave", ...Array.from(arguments))
 
         // Info
         const roomID = this.roomID
 
         // Get socket
-        const socket = io.sockets.sockets.get(socketID)
+        const socket = io.sockets.sockets.get(socketID) as UserSocket
         if(socket !== undefined) socket.leave(roomID)
 
         // De-register user as being in room
@@ -444,8 +474,10 @@ export default class Game {
      * @param {String} socketID Socket ID of the player to test
      * @returns {Boolean} True if user is a spectator
      */
-    isSpectating(socketID) {
-        return Boolean(io.sockets.sockets.get(socketID)?.spectating)
+    isSpectating(socketID: SocketID) {
+        const socket = io.sockets.sockets.get(socketID) as UserSocket
+        if(!socket) return false
+        return Boolean(socket.spectating)
     }
 
     /** Returns the index of a given socket id within the players list
@@ -458,12 +490,12 @@ export default class Game {
     }
 
     /** Emits to game's room */
-    emit(eventName="gameState", data=false) {
+    emit(eventName="gameState", data?: any) {
         io.in(this.roomID).emit(eventName, data)
     }
 
     /** Sets game state to lobby */
-    returnToLobby(socket) {
+    returnToLobby(socket: UserSocket) {
         const logEntry = this.log("returnToLobby", ...Array.from(arguments))
 
         // Already in lobby
@@ -504,7 +536,7 @@ export default class Game {
     }
 
     /** Chat */
-    chat(socket, msg) {
+    chat(socket: UserSocket, msg: string) {
         const obj = {
             msg: msg,
             id: crypto.randomUUID(),
@@ -524,7 +556,7 @@ export default class Game {
     }
 
     /** Player emote */
-    emote(socketID, msg="?", style=null, socket) {
+    emote(socketID: SocketID, msg: string="?", style: any | undefined, socket: UserSocket) {
         // Missing parameters
         if(!socketID) return
 

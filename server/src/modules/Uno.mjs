@@ -1,5 +1,5 @@
 import Game from "./Game.mjs"
-import { io, data } from "../server.mjs"
+import { io, data } from "../server.ts"
 import { repeat, clamp, shuffle, rotateArr} from "./utils.mjs"
 // import LogEntry from "./LogEntry.mjs";
 

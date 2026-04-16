@@ -1,14 +1,17 @@
 /* NOT UNO */
 
 // .env
-import 'dotenv/config';
+import 'dotenv/config'
+
+// Types
+import type { NotUnoServer, UserSocket } from "./types.ts"
 
 // Dependencies
 import express from 'express'
 import fs from 'fs'
 import http from 'http'
 import https from 'https'
-import { Server, Socket } from 'socket.io'
+import { Server } from 'socket.io'
 import cors from 'cors'
 
 // Modules
@@ -23,8 +26,8 @@ import word_blacklist from '../word_blacklist.json' with { type: 'json' }
 
 
 // Environment
-const isProduction: boolean = process.env.NODE_ENV === 'production';
-const clientUrl: string = process.env.CLIENT_URL;
+const isProduction: boolean = process.env.NODE_ENV === 'production'
+const clientUrl: string = process.env.CLIENT_URL
 const SSL_MODE: boolean = process.env.SSL_MODE === "true"
 
 // SSL
@@ -32,8 +35,8 @@ let privateKey: string
 let certificate: string
 if(SSL_MODE) {
     try {
-        privateKey = fs.readFileSync(process.env.PRIVATE_KEY_LOCATION, 'utf8');
-        certificate = fs.readFileSync(process.env.CERTIFICATE_LOCATION, 'utf8');
+        privateKey = fs.readFileSync(process.env.PRIVATE_KEY_LOCATION, 'utf8')
+        certificate = fs.readFileSync(process.env.CERTIFICATE_LOCATION, 'utf8')
     } catch (error) {
         throw new Error(
             "Failed to find SSL key(s) in filesystem. Make sure you have both PRIVATE_KEY_LOCATION and CERTIFICATE_LOCATION defined in .env and that they lead to valid files. Or to start in http mode instead, set SSL_MODE to \"false\" in .env",
@@ -44,8 +47,8 @@ if(SSL_MODE) {
 
 
 // Express setup
-const app = express();
-app.use(cors()); // Use cors package as middleware
+const app = express()
+app.use(cors()) // Use cors package as middleware
 
 /** Express server */
 const webServer = SSL_MODE
@@ -55,7 +58,7 @@ const webServer = SSL_MODE
         cert: certificate,
     }, app)
     // http
-    : http.createServer(app);
+    : http.createServer(app)
 
 
 /** Socket.io server */
@@ -65,41 +68,36 @@ const io = new Server(webServer, {
         origin: clientUrl,
         methods: ["GET", "POST"]
     }
-});
+})
 
-interface UserSocket extends Socket {
-    name: string
-    avatar: string
-    elevated?: boolean
-}
+
 
 // Socket.io pre-connect middleware
 io.use((socket: UserSocket, next) => {
     // Profile
-    const name = socket.handshake?.query?.name as string;
-    const avatar = socket.handshake?.query?.avatar as string;
-    socket.name = name ?? getRandomName();
-    socket.avatar = avatar ?? arrRandom(data.avatars);
+    const name = socket.handshake?.query?.name as string
+    const avatar = socket.handshake?.query?.avatar as string
+    socket.name = name ?? getRandomName()
+    socket.avatar = avatar ?? arrRandom(data.avatars)
 
     // Elevate
     if(socket.handshake?.query?.key === process.env.DEBUG_ACCESS_KEY) {
-        socket.elevated = true;
-        socket.emit("elevated");
+        socket.elevated = true
+        socket.emit("elevated")
     }
 
-    next();
+    next()
 
     // copied from app.js. Might convert to an api endpoint
     function getRandomName(): string {
-        const adjective = capitalizeFirstLetter(arrRandom(data.names.adjectives));
-        const noun = arrRandom(data.names.nouns);
-        return `${adjective} ${noun}`;
+        const adjective = capitalizeFirstLetter(arrRandom(data.names.adjectives))
+        const noun = arrRandom(data.names.nouns)
+        return `${adjective} ${noun}`
     }
-});
-
+})
 
 /** Server object (unrelated to express/socket.io, scroll up for those) */
-const server = {
+const server: NotUnoServer = {
     usersRooms: {},
     games: {},
     // users: {},
@@ -112,75 +110,68 @@ const server = {
 
         /** Server uptime in milliseconds */
         get uptime_ms() {
-            return Date.now() - this.startup_time;
+            return Date.now() - this.startup_time
         },
 
-        /** Returns uptime in the form of a human-readable string
-         * @returns {String}
-         */
+        /** Returns uptime in the form of a human-readable string */
         getUptime() {
-            const minutes = server.stats.uptime_ms / 60000;
-            const hours = minutes / 60;
-            const days = hours / 24;
+            const minutes = server.stats.uptime_ms / 60000
+            const hours = minutes / 60
+            const days = hours / 24
     
-            if(days >= 2) return `${days.toFixed(1)} days`; // Days (more than 48 hours)
-            if(minutes >= 60) return `${hours.toFixed(1)} hours`; // Hours
-            return `${minutes.toFixed(1)} minutes`; // Minutes
+            if(days >= 2) return `${days.toFixed(1)} days` // Days (more than 48 hours)
+            if(minutes >= 60) return `${hours.toFixed(1)} hours` // Hours
+            return `${minutes.toFixed(1)} minutes` // Minutes
         }
     },
 
 
     logHistory: [],
 
-    /** Console logging shorthand w/ fancy formatting and timestamps
-     * @param {String} message Message to log to console
-     */
-    log(message, includeTimestamp=true) {
+    log(message, includeTimestamp) {
         // Timestamp
-        const timestamp = !includeTimestamp ? "" : `\u001b[1;36m[${formattedDate()}]\u001b[0m `;
+        const timestamp = !includeTimestamp ? "" : `\u001b[1;36m[${formattedDate()}]\u001b[0m `
 
-        const full = `${timestamp}${message}`;
+        const full = `${timestamp}${message}`
 
         // Console
-        console.log(full);
+        console.log(full)
 
         // History
         if(process.env.KEEP_LOGS !== undefined) this.logHistory.push({
             timestamp: Date.now(),
             message,
-            cleanMessage: message.replace(/\033\[[0-9;]*m/g, "") // Message with console formatting codes removed
+            cleanMessage: message.replace(/\\x1b\\[[0-9;]*m/g, "") // Message with console formatting codes removed
         })
 
         // Discord
-        if(process.env.WEBHOOK_LOG_MODE === "all" && process.env.DISCORD_WEBHOOK_URL) this.webhook(message);
+        if(process.env.WEBHOOK_LOG_MODE === "all" && process.env.DISCORD_WEBHOOK_URL) this.webhook(message)
     },
 
     // Cleanup config
     maxGameAge: 172800000, // 48 hours
     cleanupPeriod: 43200000, // 12 hours
 
-    /** Loops all game object and removes closed games older than maxGameAge */
     performCleanup() {
         for(const [roomID, game] of Object.entries(server.games)) {
-            if(!game.roomClosed) continue;
+            if(!game.roomClosed) continue
             if(
                 (game.roomClosedTimestamp + server.maxGameAge) < Date.now() // Over max age
-            ) game.destroy();
+            ) game.destroy()
         }
     },
 
-    /** Sends a message */
     webhook(msg) {
         // URL
-        const webhookURL = process.env.DISCORD_WEBHOOK_URL;
-        if(!webhookURL) return; // Not specified
+        const webhookURL = process.env.DISCORD_WEBHOOK_URL
+        if(!webhookURL) return // Not specified
 
         // JSON data
         const data = JSON.stringify({
-            content: msg.replace(/\033\[[0-9;]*m/g, "") // Remove console formatting codes
-        });
+            content: msg.replace(/\\x1b\\[[0-9;]*m/g, "") // Remove console formatting codes
+        })
 
-        const url = new URL(webhookURL);
+        const url = new URL(webhookURL)
 
         // https request
         const options = {
@@ -193,15 +184,15 @@ const server = {
             }
         }
         const req = https.request(options, (res) => {
-            res.on("data", d => process.stdout.write(d));
-        });
+            res.on("data", d => process.stdout.write(d))
+        })
 
         // Error
-        req.on('error', err => console.error(err));
+        req.on('error', err => console.error(err))
 
         // Send
-        req.write(data);
-        req.end();
+        req.write(data)
+        req.end()
     }
 }
 
@@ -214,34 +205,36 @@ server.log(
     > Client origin: \x1b[33m${clientUrl}\x1b[0m
     ${word_blacklist === undefined ?
         "> No ./word_blacklist.json provided\n" :
-        `> \x1b[33m${word_blacklist?.deny?.length}\x1b[0m blacklisted strings (word_blacklist.json)`
-    }`, false);
+        `> \x1b[33m${word_blacklist?.deny?.length}\x1b[0m blacklisted strings (word_blacklist.json)`}
+    `,
+    false
+)
 
 
 // Crash handler
 import processUncaughtException from './modules/process.uncaughtException.mjs'
-process.on("uncaughtException", processUncaughtException);
+process.on("uncaughtException", processUncaughtException)
 
 
 // Game cleanup
-const cleanupTimer = setInterval(server.performCleanup, server.cleanupPeriod);
+const cleanupTimer = setInterval(server.performCleanup, server.cleanupPeriod)
 
 // Storing custom decks in memory is temporary- make this a database instead
-const customDecks = {};
+// const customDecks = {}
 
 
 // Export
-export { io, data, word_blacklist, server, isProduction };
+export { io, data, word_blacklist, server, isProduction }
 
 
 // Listeners
-io.on("connection", socketConnection);
+io.on("connection", socketConnection)
 
 
 // API site confirmation
 app.get('/', (req, res) => {
-    const clientsCount = io.sockets.server.engine.clientsCount;
-    const responseJSON = {
+    const clientsCount = io.sockets.server.engine.clientsCount
+    const responseJSON: any = {
         // Status
         online_users:   clientsCount,
         games:          Object.keys(server.games).length,
@@ -251,7 +244,7 @@ app.get('/', (req, res) => {
         // Statistics
         uptime: server.stats.getUptime(),
         serverStats: server.stats,
-    };
+    }
 
     // Debug
     if(!isProduction) {
@@ -263,19 +256,19 @@ app.get('/', (req, res) => {
     }
 
     // Respond w/ JSON
-    res.send(responseJSON);
+    res.send(responseJSON)
 })
 
 // avatars.json
 app.get('/data.json', (req, res) => {
-    res.setHeader('Content-Type', 'application/json');
-    res.end(JSON.stringify(data));
+    res.setHeader('Content-Type', 'application/json')
+    res.end(JSON.stringify(data))
 })
 
 
 // Listen
 // const port = 3001;
-const port = 443;
+const port = 443
 webServer.listen(port, () => {
-    console.log(`Listening on port \x1b[36m${port}\x1b[0m\n`);
+    console.log(`Listening on port \x1b[36m${port}\x1b[0m\n`)
 })

@@ -56,7 +56,7 @@ export default function DebugLog({ lobby }) {
                         <br />
 
                         {/* Success status */}
-                        {entry.success === undefined ? null :
+                        {entry.success === null ? null :
                             entry.success ? "✅ " : "❌ "
                         }
 

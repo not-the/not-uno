@@ -2,11 +2,10 @@
  
 /** Repeats a provided function x number of times
  * https://stackoverflow.com/a/35556907/11039898
- * @param {Function} func 
- * @param {Number} times 
  */
-export function repeat(func, times=1) {
+export function repeat(func: () => any, times: number=1) {
     func()
+    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
     times && --times && repeat(func, times)
 }
 
@@ -14,7 +13,7 @@ export function repeat(func, times=1) {
 // ----- NUMBERS ----- //
 
 /** Uses the modulus operator to keep a value within amount */
-export function clamp(value, max) {
+export function clamp(value: number, max: number) {
     return ((value % max) + max) % max
 }
 
@@ -24,13 +23,13 @@ export function clamp(value, max) {
 /** Shuffles are array by modifying it, then returns original array (now shuffled)
  * https://stackoverflow.com/a/2450976/11039898
 */
-export function shuffle(array) {
+export function shuffle(array: any[]) {
     let currentIndex = array.length
  
     // While there remain elements to shuffle...
     while(currentIndex !== 0) {
         // Pick a remaining element...
-        let randomIndex = Math.floor(Math.random() * currentIndex)
+        const randomIndex = Math.floor(Math.random() * currentIndex)
         currentIndex--;
  
         // And swap it with the current element.
@@ -45,39 +44,34 @@ export function shuffle(array) {
  * @param {Number} dir Direction to rotate in (accepts either 1 or -1, any other input will result in an unchanged array)
  * @returns {Array} The original array, now modified
  */
-export function rotateArr(arr, dir=1) {
-	if(dir === 1) arr.unshift(arr.pop())
-	else if(dir === -1) arr.push(arr.shift())
+export function rotateArr(arr: any[], dir: number=1) {
+    if(dir === 1) arr.unshift(arr.pop())
+    else if(dir === -1) arr.push(arr.shift())
     return arr
 }
 
-/** Takes an array and returns a random entry from it
- * @param {Array} arr 
- * @returns {*}
- */
-export function arrRandom(arr) {
+/** Takes an array and returns a random entry from it */
+export function arrRandom(arr: any[]): any {
     return arr[Math.floor(Math.random()*arr.length)]
 }
 
 
 // ----- STRINGS ----- //
 
-/** Capitalizes the first letter of a string
- * @param {String} string 
- * @returns {String}
- */
-export function capitalizeFirstLetter(string) {
+/** Capitalizes the first letter of a string */
+export function capitalizeFirstLetter(string: string): string {
     return string.charAt(0).toUpperCase() + string.slice(1)
 }
 
 /** Create a formatted date from Date object. Defaults to current time.
- * @param {Date} date (Optional) new Date object. Uses the current date is undefined.
- * @returns {String} Provided date in a readable format
+ * @returns {string} Provided date in a readable format
  */
-export function formattedDate(date=new Date()) {
+export function formattedDate(
+    date: Date = new Date() /** (Optional) new Date object. Uses the current date is undefined. */
+) {
     let hours = date.getHours()
-    let minutes = date.getMinutes()
-    let seconds = date.getSeconds()
+    let minutes: string | number = date.getMinutes()
+    let seconds: string | number = date.getSeconds()
 
     const ampm = hours >= 12 ? 'PM' : 'AM'
     hours = hours % 12

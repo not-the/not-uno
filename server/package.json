@@ -2,11 +2,12 @@
   "name": "not-uno-server",
   "version": "1.0.0",
   "description": "",
-  "main": "server.mjs",
+  "main": "src/server.ts",
+  "type": "module",
   "private": true,
   "scripts": {
-    "start": "nodemon --env-file=.env src/server.mjs",
-    "prod": "cross-env NODE_ENV=production node --env-file=.env src/server.mjs",
+    "start": "tsx watch src/server.ts",
+    "prod": "cross-env NODE_ENV=production node --env-file=.env src/server.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "not-the",
@@ -25,12 +26,14 @@
     "@types/jest": "^30.0.0",
     "@types/node": "^25.6.0",
     "@typescript-eslint/parser": "^8.58.2",
+    "dotenv": "^17.4.2",
     "eslint": "^10.2.0",
     "globals": "^17.5.0",
     "jiti": "^2.6.1",
     "nodemon": "^3.1.10",
     "ts-node": "^10.9.2",
     "ts-node-dev": "^2.0.0",
+    "tsx": "^4.21.0",
     "typescript": "^6.0.2",
     "typescript-eslint": "^8.58.2"
   }

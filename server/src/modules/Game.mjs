@@ -1,4 +1,4 @@
-import { io, data, server } from "../server.mjs"
+import { io, data, server } from "../server.ts"
 import LogEntry from "./LogEntry.mjs";
 import { repeat, clamp, shuffle, rotateArr} from "./utils.mjs";
 

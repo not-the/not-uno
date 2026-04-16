@@ -1,4 +1,4 @@
-import { data, word_blacklist } from "../server.mjs"
+import { data, word_blacklist } from "../server.ts"
 import { getGameByUser } from "./socket.connection.mjs";
 
 // copied from app.js. Might convert to an api endpoint

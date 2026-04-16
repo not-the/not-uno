@@ -88,7 +88,7 @@ export function clearURLHash() {
     window.history.replaceState("", document.title, window.location.pathname + window.location.search);
 }
 
-/** COPIED FROM SERVER.MJS --- Create a formatted date from Date object. Defaults to current time.
+/** COPIED FROM SERVER.TS --- Create a formatted date from Date object. Defaults to current time.
  * @param {Date} date (Optional) new Date object. Uses the current date is undefined.
  * @returns {String} Provided date in a readable format
  */

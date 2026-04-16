@@ -1,11 +1,14 @@
 /* NOT UNO */
 
+// .env
+import 'dotenv/config';
+
 // Dependencies
 import express from 'express'
 import fs from 'fs'
 import http from 'http'
 import https from 'https'
-import { Server } from 'socket.io'
+import { Server, Socket } from 'socket.io'
 import cors from 'cors'
 
 // Modules
@@ -20,19 +23,22 @@ import word_blacklist from '../word_blacklist.json' with { type: 'json' }
 
 
 // Environment
-const isProduction = process.env.NODE_ENV === 'production';
-const clientUrl = process.env.CLIENT_URL;
-const SSL_MODE = process.env.SSL_MODE === "true" ? true : false
+const isProduction: boolean = process.env.NODE_ENV === 'production';
+const clientUrl: string = process.env.CLIENT_URL;
+const SSL_MODE: boolean = process.env.SSL_MODE === "true"
 
 // SSL
-let privateKey, certificate;
+let privateKey: string
+let certificate: string
 if(SSL_MODE) {
     try {
         privateKey = fs.readFileSync(process.env.PRIVATE_KEY_LOCATION, 'utf8');
         certificate = fs.readFileSync(process.env.CERTIFICATE_LOCATION, 'utf8');
     } catch (error) {
-        console.warn("SSL keys not found. Make sure you have both PRIVATE_KEY_LOCATION and CERTIFICATE_LOCATION defined in .env and that they lead to valid files. Or to start in http mode instead, set SSL_MODE to \"false\" in .env. Error below:");
-        throw new Error(error)
+        throw new Error(
+            "Failed to find SSL key(s) in filesystem. Make sure you have both PRIVATE_KEY_LOCATION and CERTIFICATE_LOCATION defined in .env and that they lead to valid files. Or to start in http mode instead, set SSL_MODE to \"false\" in .env",
+            { cause: error }
+        )
     }
 }
 
@@ -61,11 +67,17 @@ const io = new Server(webServer, {
     }
 });
 
+interface UserSocket extends Socket {
+    name: string
+    avatar: string
+    elevated?: boolean
+}
+
 // Socket.io pre-connect middleware
-io.use((socket, next) => {
+io.use((socket: UserSocket, next) => {
     // Profile
-    const name = socket.handshake?.query?.name;
-    const avatar = socket.handshake?.query?.avatar;
+    const name = socket.handshake?.query?.name as string;
+    const avatar = socket.handshake?.query?.avatar as string;
     socket.name = name ?? getRandomName();
     socket.avatar = avatar ?? arrRandom(data.avatars);
 
@@ -78,7 +90,7 @@ io.use((socket, next) => {
     next();
 
     // copied from app.js. Might convert to an api endpoint
-    function getRandomName() {
+    function getRandomName(): string {
         const adjective = capitalizeFirstLetter(arrRandom(data.names.adjectives));
         const noun = arrRandom(data.names.nouns);
         return `${adjective} ${noun}`;

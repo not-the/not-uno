@@ -1,6 +1,6 @@
 import ip from 'ip'
 
-import { io, server, data } from "../server.mjs"
+import { io, server, data } from "../server.ts"
 import Uno from "./Uno.mjs"
 import { setUser } from './setUser.mjs'
 

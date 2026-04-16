@@ -1,7 +1,7 @@
 import fs from 'fs'
 
 // Modules
-import { server } from "../server.mjs";
+import { server } from "../server.ts";
 import { formattedDate } from "./utils.mjs";
 
 /** process.on uncaughtException event handler */

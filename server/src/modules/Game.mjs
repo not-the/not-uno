@@ -1,6 +1,6 @@
-import { io, data, server } from "../server.ts"
-import LogEntry from "./LogEntry.mjs";
-import { repeat, clamp, shuffle, rotateArr} from "./utils.mjs"
+import { io, server } from "../server.ts"
+import LogEntry from "./LogEntry.mjs"
+// import { repeat, clamp, shuffle, rotateArr} from "./utils.mjs"
 
 
 /** Game class and methods (Uno) */
@@ -385,9 +385,9 @@ export default class Game {
         logEntry.amend(true)
     }
 
-    setConfigOption(socket, option, value) {
+    // setConfigOption(socket, option, value) {
         
-    }
+    // }
 
     /** Marks game as closed, automatically gets deleted after 24-48 hours */
     close() {

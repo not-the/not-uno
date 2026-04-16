@@ -153,6 +153,7 @@ const server: NotUnoServer = {
     cleanupPeriod: 43200000, // 12 hours
 
     performCleanup() {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         for(const [roomID, game] of Object.entries(server.games)) {
             if(!game.roomClosed) continue
             if(
@@ -217,6 +218,7 @@ process.on("uncaughtException", processUncaughtException)
 
 
 // Game cleanup
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const cleanupTimer = setInterval(server.performCleanup, server.cleanupPeriod)
 
 // Storing custom decks in memory is temporary- make this a database instead

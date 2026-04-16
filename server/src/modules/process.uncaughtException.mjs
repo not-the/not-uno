@@ -1,16 +1,16 @@
 import fs from 'fs'
 
 // Modules
-import { server } from "../server.ts";
-import { formattedDate } from "./utils.mjs";
+import { server } from "../server.ts"
+import { formattedDate } from "./utils.mjs"
 
 /** process.on uncaughtException event handler */
 export default function processUncaughtException(error) {
     // Log
-    console.error(error);
+    console.error(error)
 
     // Write to file
-    const filename = "./latest-log.json";
+    const filename = "./latest-log.json"
     const logComplete =
 `{
 "statement": "An uncaughtException event occured at ${formattedDate()} [${Date.now()}]
@@ -21,31 +21,34 @@ The error is below, followed by server.logHistory, then a list of game objects",
         return `    "
     ${formattedDate(new Date(entry.timestamp))} [${entry.timestamp}]
     ${entry.cleanMessage}
-    "`;
+    "`
     }).join(",\n")}
 ],
 
-"games": ${JSON.stringify(Object.fromEntries(
-    Object.entries(server.games).map(([key, game]) => {
-        const clone = game.publicClone(false);
-        clone.log = game.getLog;
-        return [key, clone];
-    })
-), null, 4)}
+"games": ${JSON.stringify(
+        Object.fromEntries(
+            Object.entries(server.games).map(([key, game]) => {
+                const clone = game.publicClone(false)
+                clone.log = game.getLog
+                return [key, clone]
+            })
+        ),
+        null, 4
+    )}
 
-}`;
+}`
 
     // Write
     fs.writeFile(filename, logComplete, err => {
         if(err) {
-            console.error(`ERROR WRITING TO ${filename}. Details below:`);
-            console.error(err);
+            console.error(`ERROR WRITING TO ${filename}. Details below:`)
+            console.error(err)
         }
-        else server.log(`Saved uncaughtException to ${filename}`);
-    });
+        else server.log(`Saved uncaughtException to ${filename}`)
+    })
     
     // Webhook
     if(process.env.WEBHOOK_LOG_MODE === "uncaughtExceptions") {
-        server.webhook(`[Server] uncaughtException\n\`\`\`${JSON.stringify(error.stack)}\`\`\``);
+        server.webhook(`[Server] uncaughtException\n\`\`\`${JSON.stringify(error.stack)}\`\`\``)
     }
 }

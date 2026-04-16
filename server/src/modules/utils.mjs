@@ -6,8 +6,8 @@
  * @param {Number} times 
  */
 export function repeat(func, times=1) {
-    func();
-    times && --times && repeat(func, times);
+    func()
+    times && --times && repeat(func, times)
 }
 
 
@@ -15,7 +15,7 @@ export function repeat(func, times=1) {
 
 /** Uses the modulus operator to keep a value within amount */
 export function clamp(value, max) {
-    return ((value % max) + max) % max;
+    return ((value % max) + max) % max
 }
 
 
@@ -25,19 +25,19 @@ export function clamp(value, max) {
  * https://stackoverflow.com/a/2450976/11039898
 */
 export function shuffle(array) {
-    let currentIndex = array.length;
+    let currentIndex = array.length
  
     // While there remain elements to shuffle...
     while(currentIndex !== 0) {
         // Pick a remaining element...
-        let randomIndex = Math.floor(Math.random() * currentIndex);
+        let randomIndex = Math.floor(Math.random() * currentIndex)
         currentIndex--;
  
         // And swap it with the current element.
-        [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
+        [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]]
     }
  
-    return array;
+    return array
 }
 
 /** Modifies the provided array by rotating all of its items
@@ -46,9 +46,9 @@ export function shuffle(array) {
  * @returns {Array} The original array, now modified
  */
 export function rotateArr(arr, dir=1) {
-	if(dir === 1) arr.unshift(arr.pop());
-	else if(dir === -1) arr.push(arr.shift());
-    return arr;
+	if(dir === 1) arr.unshift(arr.pop())
+	else if(dir === -1) arr.push(arr.shift())
+    return arr
 }
 
 /** Takes an array and returns a random entry from it
@@ -67,7 +67,7 @@ export function arrRandom(arr) {
  * @returns {String}
  */
 export function capitalizeFirstLetter(string) {
-    return string.charAt(0).toUpperCase() + string.slice(1);
+    return string.charAt(0).toUpperCase() + string.slice(1)
 }
 
 /** Create a formatted date from Date object. Defaults to current time.
@@ -75,18 +75,18 @@ export function capitalizeFirstLetter(string) {
  * @returns {String} Provided date in a readable format
  */
 export function formattedDate(date=new Date()) {
-    let hours = date.getHours();
-    let minutes = date.getMinutes();
-    let seconds = date.getSeconds();
+    let hours = date.getHours()
+    let minutes = date.getMinutes()
+    let seconds = date.getSeconds()
 
-    const ampm = hours >= 12 ? 'PM' : 'AM';
-    hours = hours % 12;
-    hours = hours ? hours : 12;
-    minutes = minutes < 10 ? '0' + minutes : minutes;
-    seconds = seconds < 10 ? '0' + seconds : seconds;
+    const ampm = hours >= 12 ? 'PM' : 'AM'
+    hours = hours % 12
+    hours = hours ? hours : 12
+    minutes = minutes < 10 ? '0' + minutes : minutes
+    seconds = seconds < 10 ? '0' + seconds : seconds
 
-    const monthYear = date.toISOString().split('T')[0];
+    const monthYear = date.toISOString().split('T')[0]
 
     // Combine time and date
-    return `${hours}:${minutes}:${seconds} ${ampm}, ${monthYear}`;
+    return `${hours}:${minutes}:${seconds} ${ampm}, ${monthYear}`
 }

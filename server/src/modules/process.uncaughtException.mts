@@ -1,11 +1,11 @@
 import fs from 'fs'
 
 // Modules
-import { server } from "../server.ts"
+import { server } from "../server.js"
 import { formattedDate } from "./utils.mjs"
 
 /** process.on uncaughtException event handler */
-export default function processUncaughtException(error) {
+export default function processUncaughtException(error: Error) {
     // Log
     console.error(error)
 
